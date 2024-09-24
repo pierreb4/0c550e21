@@ -87,8 +87,12 @@ void run(int only_sid = -1, int arg = -1) {
   /*vector<Sample> sample = readAll("evaluation", -1);
   samples = sample.size();
   sample = vector<Sample>(sample.begin()+samples-100,sample.end());*/
+  
+  // Do all samples
   vector<Sample> sample = readAll(sample_dir, samples);
-  //sample = vector<Sample>(sample.begin()+200, sample.begin()+300);
+  
+  // Limit to a range of samples
+  sample = vector<Sample>(sample.begin()+20, sample.begin()+30);
 
   int scores[4] = {};
 
@@ -126,8 +130,8 @@ void run(int only_sid = -1, int arg = -1) {
     //auto base_train = train;
     if (add_flips) {
       for (auto&[in,out] : s.train) {
-	auto [rin,rout] = sim(in,out);
-	train.push_back({rigid(rin,add_flip_id),rigid(rout,add_flip_id)});
+	      auto [rin,rout] = sim(in,out);
+	      train.push_back({rigid(rin,add_flip_id),rigid(rout,add_flip_id)});
       }
     }
     auto [test_in,test_out] = sim(s.test_in, s.test_out);
@@ -136,11 +140,11 @@ void run(int only_sid = -1, int arg = -1) {
       int insumsz = 0, outsumsz = 0, macols = 0;
       int maxside = 0, maxarea = 0;
       for (auto&[in,out] : s.train) {
-	maxside = max({maxside, in.w, in.h, out.w, out.h});
-	maxarea = max({maxarea, in.w*in.h, out.w*out.h});
-	insumsz += in.w*in.h;
-	outsumsz += out.w*out.h;
-	macols = max(macols, __builtin_popcount(core::colMask(in)));
+	      maxside = max({maxside, in.w, in.h, out.w, out.h});
+	      maxarea = max({maxarea, in.w*in.h, out.w*out.h});
+	      insumsz += in.w*in.h;
+	      outsumsz += out.w*out.h;
+	      macols = max(macols, __builtin_popcount(core::colMask(in)));
       }
       int sumsz = max(insumsz, outsumsz);
       cerr << "Features: " << insumsz << ' ' << outsumsz << ' ' << macols << endl;
@@ -188,26 +192,26 @@ void run(int only_sid = -1, int arg = -1) {
     if (print_mem) {
       double size = 0, child = 0, other = 0, inds = 0, maps = 0;
       for (DAG&d : pieces.dag) {
-	/*for (Node&n : d.node) {
-	  for (Image_ img : n.state.vimg) {
-	    size += img.mask.size();
-	  }
-	  child += n.child.size()*8;
-	  other += sizeof(Node);
-	  }*/
-	other += sizeof(TinyNode)*d.tiny_node.size();
-	size += 4*d.tiny_node.bank.mem.size();
-	for (TinyNode&n : d.tiny_node.node) {
-	  if (n.child.sz < TinyChildren::dense_thres)
-	    child += n.child.cap*8;
-	  else
-	    child += n.child.cap*4;
-	}
-	maps += 16*d.hashi.data.size()+4*d.hashi.table.size();
-	//maps += (d.hashi.bucket_count()*32+d.hashi.size()*16);
+	      /*for (Node&n : d.node) {
+	        for (Image_ img : n.state.vimg) {
+	          size += img.mask.size();
+	        }
+	        child += n.child.size()*8;
+	        other += sizeof(Node);
+	      }*/
+	      other += sizeof(TinyNode)*d.tiny_node.size();
+	      size += 4*d.tiny_node.bank.mem.size();
+	      for (TinyNode&n : d.tiny_node.node) {
+	        if (n.child.sz < TinyChildren::dense_thres)
+	          child += n.child.cap*8;
+	        else
+	          child += n.child.cap*4;
+	      }
+	      maps += 16*d.hashi.data.size()+4*d.hashi.table.size();
+	      //maps += (d.hashi.bucket_count()*32+d.hashi.size()*16);
       }
       for (Piece3&p : pieces.piece) {
-	inds += sizeof(p);
+	      inds += sizeof(p);
       }
       inds += sizeof(pieces.mem[0])*pieces.mem.size();
       printf("Memory: %.1f + %.1f + %.1f + %.1f + %.1f MB\n", size/1e6, child/1e6, other/1e6, maps/1e6, inds/1e6);
@@ -217,7 +221,7 @@ void run(int only_sid = -1, int arg = -1) {
     for (DAG&d : pieces.dag) {
       d.hashi.clear();
       for (TinyNode&n : d.tiny_node.node) {
-	n.child.clear();
+	      n.child.clear();
       }
     }
 
