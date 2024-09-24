@@ -88,13 +88,12 @@ void run(int only_sid = -1, int arg = -1) {
   samples = sample.size();
   sample = vector<Sample>(sample.begin()+samples-100,sample.end());*/
   
-  // Do all samples
+  // Load all samples
   vector<Sample> sample = readAll(sample_dir, samples);
 
   // Limit to a range of samples
   //sample = vector<Sample>(sample.begin()+200, sample.begin()+300);
-  sample = vector<Sample>(sample.begin()+20, sample.begin()+30);
-
+  
   int scores[4] = {};
 
   Visu visu;
