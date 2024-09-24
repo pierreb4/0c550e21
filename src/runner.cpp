@@ -54,8 +54,7 @@ int MAXDEPTH = -1; //Argument
 
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
 
-//int print_times = 1, print_mem = 1, print_nodes = 1;
-int print_times = 0, print_mem = 1, print_nodes = 1;
+int print_times = 1, print_mem = 1, print_nodes = 1;
 
 void run(int only_sid = -1, int arg = -1) {
   //rankFeatures();
@@ -73,7 +72,8 @@ void run(int only_sid = -1, int arg = -1) {
   if (arg == -1) arg = 2;
   MAXDEPTH = arg % 10 * 10;
 
-  int eval = 1;
+  // Set back to 1 before submission Pierre 20240924
+  int eval = 0;
 
   int skips = 0;
 
