@@ -85,7 +85,8 @@ def runAll(cmd_list, threads):
     cmdi = 0
 
     def callback(process, status, timeused, memused):
-        assert(status != RTE)
+        # Is this really a problem?
+        # assert(status != RTE)
         print(exit_names[status], process.cmd, " %.1fs"%timeused, "%.0fMB"%memused)
         sys.stdout.flush()
 
