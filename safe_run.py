@@ -43,7 +43,11 @@ class Process:
         self.maxmemory = maxmemory
 
     def update(self):
-        self.memory = self.mp.memory_info().rss/2**20
+        # Pierre 20240624
+        try:
+            self.memory = self.mp.memory_info().rss/2**20
+        except (psutil.ZombieProcess, psutil.NoSuchProcess):
+            self.memory = 0
         self.memused = max(self.memused, self.memory)
         self.timeused = time.time()-self.start_time
         if self.memory > self.maxmemory:
@@ -85,8 +89,7 @@ def runAll(cmd_list, threads):
     cmdi = 0
 
     def callback(process, status, timeused, memused):
-        # Is this really a problem?
-        # assert(status != RTE)
+        assert(status != RTE)
         print(exit_names[status], process.cmd, " %.1fs"%timeused, "%.0fMB"%memused)
         sys.stdout.flush()
 
