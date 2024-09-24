@@ -90,9 +90,9 @@ void run(int only_sid = -1, int arg = -1) {
   
   // Do all samples
   vector<Sample> sample = readAll(sample_dir, samples);
-  
+
   // Limit to a range of samples
-  sample = vector<Sample>(sample.begin()+20, sample.begin()+30);
+  //sample = vector<Sample>(sample.begin()+200, sample.begin()+300);
 
   int scores[4] = {};
 
@@ -105,7 +105,7 @@ void run(int only_sid = -1, int arg = -1) {
 
 
   assert(only_sid < sample.size());
-  //Remember to fix Timers before running parallel
+  // Remember to fix Timers before running parallel
 
   for (int si = 0; si < sample.size(); si++) {
     if (only_sid != -1 && si != only_sid) continue;
@@ -119,7 +119,7 @@ void run(int only_sid = -1, int arg = -1) {
 
     const Sample&s = sample[si];
 
-    //Normalize sample
+    // Normalize sample
     Simplifier sim = normalizeCols(s.train);
     if (no_norm) sim = normalizeDummy(s.train);
 
@@ -167,7 +167,7 @@ void run(int only_sid = -1, int arg = -1) {
       point predsz = out_sizes.back();
       out_sizes.clear();
       for (auto [in,out] : train)
-	out_sizes.push_back(out.sz);
+	    out_sizes.push_back(out.sz);
       out_sizes.push_back(predsz);
       assert(out_sizes.size() == train.size()+1);
       }*/
@@ -252,16 +252,16 @@ void run(int only_sid = -1, int arg = -1) {
       set<ull> seen;
       for (const Candidate&cand : cands) {
 
-	//printf("%.20f\n", cand.score);
+	      //printf("%.20f\n", cand.score);
 
-	ull h = hashImage(cand.imgs.back());
-	if (seen.insert(h).second) {
-	  filtered.push_back(cand);
-	  if (filtered.size() == 3+skips*3) break;
-	}
+	      ull h = hashImage(cand.imgs.back());
+	      if (seen.insert(h).second) {
+	        filtered.push_back(cand);
+	        if (filtered.size() == 3+skips*3) break;
+	      }
       }
       for (int i = 0; i < skips*3 && filtered.size(); i++)
-	filtered.erase(filtered.begin());
+	      filtered.erase(filtered.begin());
       answers = move(filtered);
     }
 
@@ -272,7 +272,7 @@ void run(int only_sid = -1, int arg = -1) {
       rec_answers.push_back(sim.rec(s.test_in, cand.imgs.back()));
       double score = cand.score;
       if (add_flips) {
-	score /= 2-1e-5;
+	      score /= 2-1e-5;
       }
       answer_scores.push_back(score);
     }
@@ -282,14 +282,14 @@ void run(int only_sid = -1, int arg = -1) {
 
     if (!eval) {//!eval && s1 && !s2) {
       {
-	visu.next(to_string(si) + " - test");
-	for (auto&[in,out] : train) visu.add(in,out);
-	visu.next(to_string(si) + " - test");
-	visu.add(test_in,test_out);
-	visu.next(to_string(si) + " - cands");
-	for (int i = 0; i < min((int)answers.size(), 5); i++) {
-	  visu.add(test_in, answers[i].imgs.back());
-	}
+	      visu.next(to_string(si) + " - test");
+	      for (auto&[in,out] : train) visu.add(in,out);
+	      visu.next(to_string(si) + " - test");
+	      visu.add(test_in,test_out);
+	      visu.next(to_string(si) + " - cands");
+	      for (int i = 0; i < min((int)answers.size(), 5); i++) {
+	        visu.add(test_in, answers[i].imgs.back());
+	      }
       }
     }
 
