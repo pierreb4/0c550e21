@@ -43,7 +43,6 @@ class Process:
         self.maxmemory = maxmemory
 
     def update(self):
-        # Pierre 20240624
         try:
             self.memory = self.mp.memory_info().rss/2**20
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
@@ -89,8 +88,9 @@ def runAll(cmd_list, threads):
     cmdi = 0
 
     def callback(process, status, timeused, memused):
-        assert(status != RTE)
+ #       assert(status != RTE)
         print(exit_names[status], process.cmd, " %.1fs"%timeused, "%.0fMB"%memused)
+        assert(status != RTE)
         sys.stdout.flush()
 
         ret_stats[process.cmd] = (status, timeused, memused)
