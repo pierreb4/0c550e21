@@ -72,8 +72,8 @@ void run(int only_sid = -1, int arg = -1) {
   if (arg == -1) arg = 2;
   MAXDEPTH = arg % 10 * 10;
 
-  // Set back to 1 before submission Pierre 20240924
-  int eval = 0;
+  // Make this 1 before submission - Pierre 20240924
+  int eval = 1;
 
   int skips = 0;
 
