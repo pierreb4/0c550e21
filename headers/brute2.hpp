@@ -82,5 +82,5 @@ struct DAG {
 };
 
 
-//struct Pieces;
+struct Pieces;
 vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes);
