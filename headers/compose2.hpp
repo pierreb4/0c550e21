@@ -1,26 +1,13 @@
 struct Candidate {
-  vector<DAG>& dag;
   vImage imgs;
   double score;
   int cnt_pieces, sum_depth, max_depth;
-  Candidate(vector<DAG>& dag_, vImage_ imgs_, double score_) : dag(dag_), imgs(imgs_), score(score_) {
+  Candidate(vImage_ imgs_, double score_) : imgs(imgs_), score(score_) {
     cnt_pieces = sum_depth = max_depth = -1;
   }
-  Candidate(vector<DAG>& dag_, vImage_ imgs_, int cnt_pieces_, int sum_depth_, int max_depth_) :
-    dag(dag_), imgs(imgs_), cnt_pieces(cnt_pieces_), sum_depth(sum_depth_), max_depth(max_depth_) {
+  Candidate(vImage_ imgs_, int cnt_pieces_, int sum_depth_, int max_depth_) :
+    imgs(imgs_), cnt_pieces(cnt_pieces_), sum_depth(sum_depth_), max_depth(max_depth_) {
     score = -1;
-  }
-
-  Candidate& operator=(const Candidate& other) {
-    if (this != &other) {
-      dag = other.dag;
-      imgs = other.imgs;
-      score = other.score;
-      cnt_pieces = other.cnt_pieces;
-      sum_depth = other.sum_depth;
-      max_depth = other.max_depth;
-    }
-    return *this;
   }
 };
 

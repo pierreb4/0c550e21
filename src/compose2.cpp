@@ -323,7 +323,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 		            if (img.w*img.h <= 0) ok = 0;
 	            }
 	            if (ok)
-		            rets.emplace_back(pieces.dag, cp, cnt_pieces+1, sum_depth, max_depth);
+		            rets.emplace_back(cp, cnt_pieces+1, sum_depth, max_depth);
 	          }
 	          greedy_fill_time.stop();
 	        }
@@ -334,7 +334,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	        if (c == 10) c = 0;
 	      */
 
-	      rets.emplace_back(pieces.dag, ret, cnt_pieces, sum_depth, max_depth);
+	      rets.emplace_back(ret, cnt_pieces, sum_depth, max_depth);
       }
     }
   }
@@ -396,7 +396,7 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
 	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
 
     if (goods)
-      ret.emplace_back(cand.dag, imgs, score);
+      ret.emplace_back(imgs, score);
   }
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);
