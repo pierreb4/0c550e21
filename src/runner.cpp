@@ -244,9 +244,8 @@ void run(int only_sid = -1, int arg = -1) {
 
     cands = evaluateCands(cands, train);
 
-    // Test - Pierre 20240925
-    // int s2 = 0;
-    // if (!eval) s2 = scoreCands(cands, test_in, test_out);
+    int s2 = 0;
+    if (!eval) s2 = scoreCands(cands, test_in, test_out);
 
 
     //Pick best candidates

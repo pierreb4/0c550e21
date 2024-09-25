@@ -8,13 +8,11 @@ using namespace std;
 #include "pieces.hpp"
 #include "compose2.hpp"
 
-/*
 int scoreCands(const vector<Candidate>&cands, Image_ test_in, Image_ test_out) {
   for (const Candidate&cand : cands)
     if (cand.imgs.back() == test_out) return 1;
   return 0;
 }
-*/
 
 int scoreAnswers(vImage_ answers, Image_ test_in, Image_ test_out) {
   assert(answers.size() <= 3);

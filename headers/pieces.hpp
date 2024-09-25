@@ -16,5 +16,4 @@ struct Pieces {
 // using Pieces_ = const Pieces&;
 
 
-struct Candidate;
 Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes);
