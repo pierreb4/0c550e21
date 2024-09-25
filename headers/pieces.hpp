@@ -13,7 +13,7 @@ struct Pieces {
   vector<int> mem;
 };
 
-using Pieces_ = const Pieces&;
+// using Pieces_ = const Pieces&;
 
 
 struct Candidate;
