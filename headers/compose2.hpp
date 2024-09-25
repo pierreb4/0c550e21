@@ -13,7 +13,7 @@ struct Candidate {
     score = -1;
   }
 
-Candidate& operator=(const Candidate& other) {
+  Candidate& operator=(const Candidate& other) {
     if (this != &other) {
       dag = other.dag;
       imgs = other.imgs;
