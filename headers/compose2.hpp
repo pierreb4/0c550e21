@@ -1,12 +1,13 @@
 struct Candidate {
+  Pieces pieces;
   vImage imgs;
   double score;
   int cnt_pieces, sum_depth, max_depth;
-  Candidate(vImage_ imgs_, double score_) : imgs(imgs_), score(score_) {
+  Candidate(Pieces pieces_, vImage_ imgs_, double score_) : pieces(pieces_), imgs(imgs_), score(score_) {
     cnt_pieces = sum_depth = max_depth = -1;
   }
-  Candidate(vImage_ imgs_, int cnt_pieces_, int sum_depth_, int max_depth_) :
-    imgs(imgs_), cnt_pieces(cnt_pieces_), sum_depth(sum_depth_), max_depth(max_depth_) {
+  Candidate(Pieces pieces_, vImage_ imgs_, int cnt_pieces_, int sum_depth_, int max_depth_) :
+    pieces(pieces_), imgs(imgs_), cnt_pieces(cnt_pieces_), sum_depth(sum_depth_), max_depth(max_depth_) {
     score = -1;
   }
 };
