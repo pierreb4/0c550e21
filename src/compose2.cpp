@@ -253,88 +253,88 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
     for (int it0 = 0; it0 < 10; it0++) {
       for (int mask = 1; mask < min(1<<target.size(), 1<<5); mask++) {
-	vector<int> maskv;
-	for (int j = 0; j < target.size(); j++)
-	  if (mask>>j&1) maskv.push_back(j);
+	      vector<int> maskv;
+	      for (int j = 0; j < target.size(); j++)
+	      if (mask>>j&1) maskv.push_back(j);
 
-	int caremask;
-	if (it0 < maskv.size()) {
-	  caremask = 1<<maskv[it0];
-	} else {
-	  continue;
-	  /*caremask = 1<<maskv[mrand()%maskv.size()];
-	    for (int i = 0; i < n; i++)
-	    skip[i] = mrand()%3;
-	    random_shuffle(order.begin(), order.end());*/
-	}
-
-	mybitset cur(M), careMask(M);
-	{
-	  int base = 0;
-	  for (int j = 0; j < sz.size(); j++) {
-	    if (!(mask>>j&1))
-	      for (int k = 0; k < sz[j]; k++)
-		cur.set(base+k, 1);
-	    if ((caremask>>j&1))
-	      for (int k = 0; k < sz[j]; k++)
-		careMask.set(base+k, 1);
-	    base += sz[j];
-	  }
-	}
-
-
-	int cnt_pieces = 0;
-	vector<int> piece_depths;
-	int sum_depth = 0, max_depth = 0;
-
-	vector<Image> ret = init;
-	for (int it = 0; it < maxiters; it++) {
-
-	  int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret);
-	  if (depth == -1) break;
-	  piece_depths.push_back(depth);
-	  cnt_pieces++;
-	  sum_depth += depth;
-	  max_depth = max(max_depth, depth);
-
-
-	  {
-	    greedy_fill_time.start();
-	    vImage cp = ret;
-	    int carei = 31-__builtin_clz(caremask);
-	    assert(caremask == 1<<carei);
-	    int ok = 1;
-	    {
-	      Image& img = cp[carei];
-	      for (char&c : img.mask) if (c == 10) c = 0;
-	      img = greedyFillBlack(img);
-	      if (img != target[carei]) ok = 0;
-	    }
-	    if (ok) {
-	      for (int i = 0; i < cp.size(); i++) {
-		if (i == carei) continue;
-		Image& img = cp[i];
-		for (char&c : img.mask) if (c == 10) c = 0;
-		ull h = hashImage(img);
-		if (!greedy_fill_mem.count(h)) {
-		  greedy_fill_mem[h] = greedyFillBlack(img);
-		}
-		img = greedy_fill_mem[h];
-		if (img.w*img.h <= 0) ok = 0;
+	      int caremask;
+	      if (it0 < maskv.size()) {
+	        caremask = 1<<maskv[it0];
+	      } else {
+	        continue;
+	        /*caremask = 1<<maskv[mrand()%maskv.size()];
+	        for (int i = 0; i < n; i++)
+	        skip[i] = mrand()%3;
+	        random_shuffle(order.begin(), order.end());*/
 	      }
-	      if (ok)
-		rets.emplace_back(cp, cnt_pieces+1, sum_depth, max_depth);
-	    }
-	    greedy_fill_time.stop();
-	  }
-	}
 
-	/*for (Image&img : ret)
-	  for (char&c : img.mask)
-	  if (c == 10) c = 0;
-	*/
+	      mybitset cur(M), careMask(M);
+	      {
+	        int base = 0;
+	        for (int j = 0; j < sz.size(); j++) {
+	          if (!(mask>>j&1))
+	            for (int k = 0; k < sz[j]; k++)
+		        cur.set(base+k, 1);
+	          if ((caremask>>j&1))
+	            for (int k = 0; k < sz[j]; k++)
+		        careMask.set(base+k, 1);
+	          base += sz[j];
+	        }
+	      }
 
-	rets.emplace_back(ret, cnt_pieces, sum_depth, max_depth);
+
+	      int cnt_pieces = 0;
+	      vector<int> piece_depths;
+	      int sum_depth = 0, max_depth = 0;
+
+	      vector<Image> ret = init;
+	      for (int it = 0; it < maxiters; it++) {
+
+	        int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret);
+	        if (depth == -1) break;
+	        piece_depths.push_back(depth);
+	        cnt_pieces++;
+	        sum_depth += depth;
+	        max_depth = max(max_depth, depth);
+
+
+	        {
+	          greedy_fill_time.start();
+	          vImage cp = ret;
+	          int carei = 31-__builtin_clz(caremask);
+	          assert(caremask == 1<<carei);
+	          int ok = 1;
+	          {
+	            Image& img = cp[carei];
+	            for (char&c : img.mask) if (c == 10) c = 0;
+	            img = greedyFillBlack(img);
+	            if (img != target[carei]) ok = 0;
+	          }
+	          if (ok) {
+	            for (int i = 0; i < cp.size(); i++) {
+		            if (i == carei) continue;
+		            Image& img = cp[i];
+		            for (char&c : img.mask) if (c == 10) c = 0;
+		            ull h = hashImage(img);
+		            if (!greedy_fill_mem.count(h)) {
+		              greedy_fill_mem[h] = greedyFillBlack(img);
+		            }
+		            img = greedy_fill_mem[h];
+		            if (img.w*img.h <= 0) ok = 0;
+	            }
+	            if (ok)
+		            rets.emplace_back(cp, cnt_pieces+1, sum_depth, max_depth);
+	          }
+	          greedy_fill_time.stop();
+	        }
+	      }
+
+	      /*for (Image&img : ret)
+	        for (char&c : img.mask)
+	        if (c == 10) c = 0;
+	      */
+
+	      rets.emplace_back(ret, cnt_pieces, sum_depth, max_depth);
       }
     }
   }

@@ -20,20 +20,20 @@ pair<Image,Image> iOuterProductSI(Image_ img, int w, int h) {
     for (int jj = 0; jj < img.w/w; jj++) {
       int all0 = 1;
       for (int i = 0; i < h; i++)
-	for (int j = 0; j < w; j++)
-	  if (img(ii*h+i,jj*w+j)) all0 = 0;
+	      for (int j = 0; j < w; j++)
+	        if (img(ii*h+i,jj*w+j)) all0 = 0;
 
       big(ii,jj) = !all0;
 
       if (!all0) {
-	for (int i = 0; i < h; i++) {
-	  for (int j = 0; j < w; j++) {
-	    char& a = small(i,j);
-	    char b = img(ii*h+i,jj*w+j);
-	    if (a != -1 && a != b) return {badImg,badImg};
-	    a = b;
-	  }
-	}
+	      for (int i = 0; i < h; i++) {
+	        for (int j = 0; j < w; j++) {
+	          char& a = small(i,j);
+	          char b = img(ii*h+i,jj*w+j);
+	          if (a != -1 && a != b) return {badImg,badImg};
+	          a = b;
+	        }
+	      }
       }
     }
   }
@@ -50,20 +50,20 @@ pair<Image,Image> iOuterProductIS(Image_ img, int w, int h) {
     for (int jj = 0; jj < img.w/w; jj++) {
       int mask = 0;
       for (int i = 0; i < h; i++)
-	for (int j = 0; j < w; j++)
-	  mask |= 1<<img(ii*h+i,jj*w+j);
+	      for (int j = 0; j < w; j++)
+	        mask |= 1<<img(ii*h+i,jj*w+j);
 
       if (__builtin_popcount(mask&~1) > 1) return {badImg,badImg};
       big(ii,jj) = 31-__builtin_clz(mask);
       if (big(ii,jj)) {
-	for (int i = 0; i < h; i++) {
-	  for (int j = 0; j < w; j++) {
-	    char& a = small(i,j);
-	    char b = img(ii*h+i,jj*w+j) > 0;
-	    if (a != -1 && a != b) return {badImg,badImg};
-	    a = b;
-	  }
-	}
+	      for (int i = 0; i < h; i++) {
+	        for (int j = 0; j < w; j++) {
+	          char& a = small(i,j);
+	          char b = img(ii*h+i,jj*w+j) > 0;
+	          if (a != -1 && a != b) return {badImg,badImg};
+	          a = b;
+	        }
+	      }
       }
     }
   }
@@ -79,23 +79,23 @@ deduceOuterProduct::deduceOuterProduct(vector<pair<Image,Image>> train) {
       vector<Image> imgs;
       int allequal = 1;
       for (int ti = 0; ti < pa.size(); ti++) {
-	Image img = k ? pa[ti].second : pa[ti].first;
-	if (img.w*img.h <= 0) return 1e9;
+	      Image img = k ? pa[ti].second : pa[ti].first;
+	      if (img.w*img.h <= 0) return 1e9;
 
-	imgs.push_back(img);
-	if (imgs[0] != imgs.back()) allequal = 0;
+	      imgs.push_back(img);
+	      if (imgs[0] != imgs.back()) allequal = 0;
       }
       if (allequal && imgs.size() > 1) continue;
 
       for (Image_ img : imgs) {
-	int cols = __builtin_popcount(core::colMask(img)&~1);
-	if (cols <= 1 && core::isRectangle(img)) {
-	  ans += log(img.w+1)+log(img.h+1);
-	} else if (cols <= 1) {
-	  ans += log(2)*img.w*img.h;
-	} else {
-	  ans += log(10)*img.w*img.h;
-	}
+	      int cols = __builtin_popcount(core::colMask(img)&~1);
+	      if (cols <= 1 && core::isRectangle(img)) {
+	        ans += log(img.w+1)+log(img.h+1);
+	      } else if (cols <= 1) {
+	        ans += log(2)*img.w*img.h;
+	      } else {
+	        ans += log(10)*img.w*img.h;
+	      }
       }
       //ans *= 1-1e-5*1;//(fi*2-1);
     }
@@ -121,26 +121,26 @@ deduceOuterProduct::deduceOuterProduct(vector<pair<Image,Image>> train) {
   for (int h = 1; h <= minh; h++) {
     for (int w = 1; w <= minw; w++) {
       for (int l : {0,1}) {
-	for (int k : {0,1}) {
-	  auto f = k ? iOuterProductSI : iOuterProductIS;
-	  vector<pair<Image,Image>> is;
-	  int bad = 0;
-	  for (auto [in,out] : train) {
-	    int sw = w, sh = h;
-	    if (l) {
-	      if (out.w%w || out.h%h) bad = 1;
-	      sw = out.w/w;
-	      sh = out.h/h;
-	    }
-	    is.push_back(f(out, sw, sh));
-	  }
-	  double entropy = score(is,k);
-	  if (entropy < best_score) {
-	    best_score = entropy;
-	    rec_funci = k;
-	    train_targets = is;
-	  }
-	}
+	      for (int k : {0,1}) {
+	        auto f = k ? iOuterProductSI : iOuterProductIS;
+	        vector<pair<Image,Image>> is;
+	        int bad = 0;
+	        for (auto [in,out] : train) {
+	          int sw = w, sh = h;
+	          if (l) {
+	            if (out.w%w || out.h%h) bad = 1;
+	            sw = out.w/w;
+	            sh = out.h/h;
+	          }
+	          is.push_back(f(out, sw, sh));
+	        }
+	        double entropy = score(is,k);
+	        if (entropy < best_score) {
+	          best_score = entropy;
+	          rec_funci = k;
+	          train_targets = is;
+	        }
+	      }
       }
     }
   }
@@ -153,14 +153,14 @@ deduceOuterProduct::deduceOuterProduct(vector<pair<Image,Image>> train) {
     for (int ti = 0; ti < train.size(); ti++) {
       Image target = train[ti].second;
       for (int h = 1; h <= target.h; h++) {
-	for (int w = 1; w <= target.w; w++) {
-	  auto is = f(target, w, h);
-	  double entropy = score({is},k);
-	  if (entropy < best_at[ti]) {
-	    best_at[ti] = entropy;
-	    best_single[ti] = is;
-	  }
-	}
+	      for (int w = 1; w <= target.w; w++) {
+	        auto is = f(target, w, h);
+	        double entropy = score({is},k);
+	        if (entropy < best_at[ti]) {
+	          best_at[ti] = entropy;
+	          best_single[ti] = is;
+	        }
+	      }
       }
     }
     double entropy = score(best_single,k);
@@ -209,12 +209,12 @@ void addDeduceOuterProduct(Pieces&pieces, vector<pair<Image,Image>> train, vecto
     auto add = [&](vImage_ vi) {
       int matches = 0;
       for (int i = 0; i < train.size(); i++) {
-	Image_ target = k ? deduce_op.train_targets[i].second : deduce_op.train_targets[i].first;
-	matches += (vi[i] == target);
+	      Image_ target = k ? deduce_op.train_targets[i].second : deduce_op.train_targets[i].first;
+	      matches += (vi[i] == target);
       }
       if (matches > best_match) {
-	best_match = matches;
-	cand = vi;
+	      best_match = matches;
+	      cand = vi;
       }
     };
 
@@ -223,13 +223,13 @@ void addDeduceOuterProduct(Pieces&pieces, vector<pair<Image,Image>> train, vecto
       //TODO: Use hashes to compare instead of full images
       vImage imgs;
       for (int i = 0; i <= train.size(); i++) {
-	if (pieces.dag[i].tiny_node[ind[i]].isvec) continue;
-	Image_ img = pieces.dag[i].getImg(ind[i]);
-	imgs.push_back(img);
-	imgs.back().p = point{0,0};
+	      if (pieces.dag[i].tiny_node[ind[i]].isvec) continue;
+	      Image_ img = pieces.dag[i].getImg(ind[i]);
+	      imgs.push_back(img);
+	      imgs.back().p = point{0,0};
       }
       if (imgs.size() == train.size()+1)
-	add(imgs);
+	      add(imgs);
     }
     for (auto [x,y] : deduce_op.train_targets) {
       add(vImage(train.size()+1, (k ? y : x)));
