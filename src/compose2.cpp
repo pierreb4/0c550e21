@@ -115,26 +115,26 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
     for (int i = 0; i < n; i++) {
       int x = 0, y = 0;
       for (int j = 0; j < sz.size(); j++) {
-	int*ind = &pieces.mem[pieces.piece[i].memi];
-	Image_ img = pieces.dag[j].getImg(ind[j]);
-	const vector<char>&p = img.mask;
-	const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
-	assert(p.size() == sz[j]);
-	assert(t.size() == sz[j]);
-	for (int k = 0; k < sz[j]; k++) {
-	  badi.set  (x++, (p[k] != t[k]));
-	  blacki.set(y++, (p[k] == 0));
-	}
+	      int*ind = &pieces.mem[pieces.piece[i].memi];
+	      Image_ img = pieces.dag[j].getImg(ind[j]);
+	      const vector<char>&p = img.mask;
+	      const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
+	      assert(p.size() == sz[j]);
+	      assert(t.size() == sz[j]);
+	      for (int k = 0; k < sz[j]; k++) {
+	        badi.set  (x++, (p[k] != t[k]));
+	        blacki.set(y++, (p[k] == 0));
+	      }
       }
       img_ind.push_back(i);
 
       active_ind.push_back(active_mem.size());
       for (ull v : blacki.data)
-	active_mem.push_back(v);
+	      active_mem.push_back(v);
 
       bad_ind.push_back(bad_mem.size());
       for (ull v : badi.data)
-	bad_mem.push_back(v);
+	      bad_mem.push_back(v);
     }
   }
 
@@ -165,42 +165,42 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       if (pieces.piece[img_ind[i]].depth > piece_depth_thres) continue;
 
       for (int k : {0,1,2}) {
-	const ull*active_data = &active_mem[active_ind[i]];
+	      const ull*active_data = &active_mem[active_ind[i]];
 
-	ull flip = (k == 0 ? ~0 : 0);
-	ull full = (k == 2 ? ~0 : 0);
+	      ull flip = (k == 0 ? ~0 : 0);
+	      ull full = (k == 2 ? ~0 : 0);
 
-	const ull*bad_data = &bad_mem[bad_ind[i]];
-	int cnt = 0, covered = 0, ok = 1;
-	for (int j = 0; j < M64; j++) {
-	  ull active = ((active_data[j]^flip) | full);
-	  if (~cur.data[j] & bad_data[j] & active) {
-	    ok = 0;
-	    break;
-	  }
-	}
-	if (!ok) continue;
-	for (int j : sparsej) {
-	  ull active = ((active_data[j]^flip) | full);
-	  cnt += popcount64d(active & ~cur.data[j] & careMask.data[j]);
-	  //covered += popcount64d(bad.data[j] & cur.data[j] & careMask.data[j]);
-	}
-	if (ok && make_pair(cnt,-covered) > bestcnt) {
-	  bestcnt = make_pair(cnt,-covered);
-	  besti = i;
+	      const ull*bad_data = &bad_mem[bad_ind[i]];
+	      int cnt = 0, covered = 0, ok = 1;
+	      for (int j = 0; j < M64; j++) {
+	        ull active = ((active_data[j]^flip) | full);
+	        if (~cur.data[j] & bad_data[j] & active) {
+	          ok = 0;
+	          break;
+	        }
+	      }
+	      if (!ok) continue;
+	      for (int j : sparsej) {
+	        ull active = ((active_data[j]^flip) | full);
+	        cnt += popcount64d(active & ~cur.data[j] & careMask.data[j]);
+	        //covered += popcount64d(bad.data[j] & cur.data[j] & careMask.data[j]);
+	      }
+	      if (ok && make_pair(cnt,-covered) > bestcnt) {
+	        bestcnt = make_pair(cnt,-covered);
+	        besti = i;
 
-	  if (k == 0) {
-	    for (int j = 0; j < M64; j++)
-	      tmp_active[j] = ~active_data[j];
-	  } else if (k == 1) {
-	    for (int j = 0; j < M64; j++)
-	      tmp_active[j] = active_data[j];
-	  } else {
-	    for (int j = 0; j < M64; j++)
-	      tmp_active[j] = ~0;
-	  }
-	  best_active = tmp_active;
-	}
+	        if (k == 0) {
+	          for (int j = 0; j < M64; j++)
+	            tmp_active[j] = ~active_data[j];
+	        } else if (k == 1) {
+	          for (int j = 0; j < M64; j++)
+	            tmp_active[j] = active_data[j];
+	        } else {
+	          for (int j = 0; j < M64; j++)
+	            tmp_active[j] = ~0;
+	        }
+	        best_active = tmp_active;
+	      }
       }
     }
 
@@ -212,19 +212,19 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       int depth = pieces.piece[i].depth;
 
       for (int l = 0; l < ret.size(); l++) {
-	int*ind = &pieces.mem[pieces.piece[i].memi];
-	const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
-	for (int j = 0; j < sz[l]; j++) {
-	  if ((best_active[x>>6]>>(x&63)&1) && ret[l].mask[j] == 10) {
-	    //assert(cur[x-1] == 0);
-	    ret[l].mask[j] = mask[j];
-	  }
+	      int*ind = &pieces.mem[pieces.piece[i].memi];
+	      const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
+	      for (int j = 0; j < sz[l]; j++) {
+	        if ((best_active[x>>6]>>(x&63)&1) && ret[l].mask[j] == 10) {
+	          //assert(cur[x-1] == 0);
+	          ret[l].mask[j] = mask[j];
+	        }
 
-	  x++;
-	}
+	        x++;
+	      }
       }
       for (int j = 0; j < M; j++) {
-	if (best_active[j>>6]>>(j&63)&1) cur.set(j, 1);
+	      if (best_active[j>>6]>>(j&63)&1) cur.set(j, 1);
       }
 
       return depth;
@@ -393,7 +393,7 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
     if (answer.w > 30 || answer.h > 30 || answer.w*answer.h == 0) goods = 0;
     for (int i = 0; i < answer.h; i++)
       for (int j = 0; j < answer.w; j++)
-	if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
+	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
 
     if (goods)
       ret.emplace_back(imgs, score);
