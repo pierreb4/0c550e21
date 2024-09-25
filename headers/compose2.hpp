@@ -1,5 +1,5 @@
 struct Candidate {
-  Pieces pieces;
+  Pieces_ pieces;
   vImage imgs;
   double score;
   int cnt_pieces, sum_depth, max_depth;
