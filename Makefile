@@ -10,9 +10,7 @@ PREC = headers/precompiled_stl.hpp
 HEAD = utils.hpp read.hpp visu.hpp image_functions.hpp normalize.hpp core_functions.hpp brute2.hpp timer.hpp efficient.hpp
 HEAD_PATH = $(addprefix headers/,$(HEAD)) $(PREC).gch | obj
 
-
 OBJ = read.o core_functions.o image_functions.o image_functions2.o visu.o normalize.o tasks.o runner.o score.o load.o evals.o brute2.o deduce_op.o pieces.o compose2.o brute_size.o efficient.o
-
 OBJ_PATH = $(addprefix obj/,$(OBJ))
 
 obj:
@@ -20,11 +18,12 @@ obj:
 	mkdir -p output
 
 $(PREC).gch: $(PREC)
-	g++ -c $< $(FLAGS)
+	g++ -c $< $(FLAGS) -o $@
 
 obj/%.o: src/%.cpp $(HEAD_PATH)
 	g++ -c $< $(FLAGS) -o $@ -I headers
-all: $(OBJ)
+
+all: $(OBJ_PATH)
 
 run: src/main.cpp $(OBJ_PATH) $(HEAD_PATH) headers/tasks.hpp
 	g++ src/main.cpp $(OBJ_PATH) $(FLAGS) $(LIBS) -o run -I headers
