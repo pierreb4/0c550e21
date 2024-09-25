@@ -1,5 +1,5 @@
 struct Candidate {
-  vector<DAG> dag;
+  vector<DAG>& dag;
   vImage imgs;
   double score;
   int cnt_pieces, sum_depth, max_depth;
