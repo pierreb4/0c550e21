@@ -396,7 +396,7 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
 	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
 
     if (goods)
-      ret.emplace_back(cand.dag, imgs, score);
+      ret.emplace_back(&cand.dag, imgs, score);
   }
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);
