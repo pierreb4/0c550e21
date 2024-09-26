@@ -7,11 +7,17 @@
 // #include <experimental/filesystem>
 // #include <filesystem>
 
-#if __has_include(<filesystem>)
-  #include <filesystem>
-#else
-  #include <experimental/filesystem>
-#endif
+// One or the other of the following should be there
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-include-dirs"
+#include <experimental/filesystem>
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-include-dirs"
+#include <filesystem>
+#pragma GCC diagnostic pop
+
 
 using namespace std;
 #include "utils.hpp"
