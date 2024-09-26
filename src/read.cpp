@@ -3,8 +3,15 @@
 #include <cassert>
 #include <iostream>*/
 #include "precompiled_stl.hpp"
+
 // #include <experimental/filesystem>
-#include <filesystem>
+// #include <filesystem>
+
+#if __has_include(<filesystem>)
+  #include <filesystem>
+#else
+  #include <experimental/filesystem>
+#endif
 
 using namespace std;
 #include "utils.hpp"
