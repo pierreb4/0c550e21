@@ -100,6 +100,8 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   int n = pieces.piece.size();
 
+  cout << "greedyCompose2: " << n << endl;
+
   int M = 0;
   for (int s : sz) M += s;
 

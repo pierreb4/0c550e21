@@ -485,8 +485,8 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
       if (id <= parid[curi]) continue;
 
       if (applyFunc(curi, fi, state) == parid.size()) {
-	parid.push_back(id);
-	assert(parid.size() == tiny_node.size());
+	      parid.push_back(id);
+	      assert(parid.size() == tiny_node.size());
       }
     }
   }
@@ -521,7 +521,7 @@ void DAG::buildBinary() {
       nxt.isvec = false;
       binary[fa*fis+fb] = add(nxt);
       /*if (binary[fa*fis+fb] != memi[fa]) {
-	cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
+	      cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
       }
       assert(binary[fa*fis+fb] == memi[fa]);*/
     }
@@ -533,6 +533,7 @@ void DAG::buildBinary() {
 vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
   int print = 1;
 
+  // Add 1 for test_in
   vector<DAG> dag(train.size()+1);
 
   int all_train_out_mask = 0, and_train_out_mask = ~0;
@@ -567,8 +568,8 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
       vector<pair<string,int>> toapply;
       toapply.emplace_back("toOrigin",0);
       for (int c = 1; c <= 5; c++)
-	if (and_train_out_mask>>c&1)
-	  toapply.emplace_back("colShape "+to_string(c),1);
+	      if (and_train_out_mask>>c&1)
+	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
       dag[ti].applyFuncs(toapply, 0);
       /*
@@ -577,19 +578,19 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
 
       int mask;
       if (ti < train.size()) {
-	mask = core::colMask(train[ti].second);
-	all_train_out_mask |= mask;
+	      mask = core::colMask(train[ti].second);
+	      all_train_out_mask |= mask;
       } else {
-	mask = all_train_out_mask;
+	      mask = all_train_out_mask;
       }
 
       for (int c = 1; c <= 5; c++)
-	if (and_train_out_mask>>c&1)
-	dag[ti].applyFunc("colShape "+to_string(c), 0);
+	      if (and_train_out_mask>>c&1)
+	        dag[ti].applyFunc("colShape "+to_string(c), 0);
       if (print) cout << now()-start_time << endl;
 
       if (ti < train.size())
-	deducePositions(dag[ti], train[ti].second);
+	      deducePositions(dag[ti], train[ti].second);
       if (print) cout << now()-start_time << endl;
 
       dag[ti].applyFunc("embed 1", 0);
@@ -597,9 +598,9 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
       if (print) cout << now()-start_time << endl;
 
       /*if (ti < train.size())
-	deducePositions(dag[ti], train[ti].second);
+	      deducePositions(dag[ti], train[ti].second);
 
-	if (print) cout << now()-start_time << endl;*/
+	    if (print) cout << now()-start_time << endl;*/
 
       total_time.stop();
       total_time.print("Total time");
@@ -617,12 +618,12 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
       //exit(0);
       /*FILE*fp = fopen("images.txt", "w");
       for (Node&n : dag[ti].node) {
-	for (Image_ img : n.vimg) {
-	  fprintf(fp, "%d %d %d %d\n", img.x, img.y, img.w, img.h);
-	  for (char c : img.mask)
-	    fprintf(fp, "%c", '0'+c);
-	  fprintf(fp, "\n");
-	}
+	      for (Image_ img : n.vimg) {
+	        fprintf(fp, "%d %d %d %d\n", img.x, img.y, img.w, img.h);
+	        for (char c : img.mask)
+	          fprintf(fp, "%c", '0'+c);
+	        fprintf(fp, "\n");
+	      }
       }
       exit(0);*/
       //dag[ti].freeAll();
@@ -633,18 +634,18 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
     /*
     for (Node&n : dag[ti].node) {
       if (!n.isvec && n.pfi == dag[ti].embed1fi) {
-	n.vimg.clear();
-	n.vimg.shrink_to_fit();
+	      n.vimg.clear();
+	      n.vimg.shrink_to_fit();
       }
     }
     */
 
     /*if (ti < train.size()) {
       for (Node&n : dag[ti].node) {
-	if (n.par > -1 && (n.isvec || n.img[0].w > 30 || n.img[0].h > 30)) {// || n.img[0].p != point{0,0} || n.img[0].sz != given_sizes[ti][1])) {
-	  n.img.clear();
-	  n.img.shrink_to_fit();
-	}
+	      if (n.par > -1 && (n.isvec || n.img[0].w > 30 || n.img[0].h > 30)) {// || n.img[0].p != point{0,0} || n.img[0].sz != given_sizes[ti][1])) {
+	        n.img.clear();
+	        n.img.shrink_to_fit();
+	      }
       }
       dag[ti].hashi.clear();
       }*/
