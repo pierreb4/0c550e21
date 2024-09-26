@@ -100,7 +100,8 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   int n = pieces.piece.size();
 
-  cout << "greedyCompose2: " << n << endl;
+  cout << "greedyCompose2: " << pieces.dag.size() << endl;
+  cout << "Dag func 1: " << pieces.dag[0].tiny_node[0].child.get(1) << endl;
 
   int M = 0;
   for (int s : sz) M += s;
