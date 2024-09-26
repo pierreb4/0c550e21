@@ -5,18 +5,7 @@
 #include "precompiled_stl.hpp"
 
 // #include <experimental/filesystem>
-// #include <filesystem>
-
-// One or the other of the following should be there
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-include-dirs"
-#include <experimental/filesystem>
-#pragma GCC diagnostic pop
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-include-dirs"
 #include <filesystem>
-#pragma GCC diagnostic pop
 
 
 using namespace std;
