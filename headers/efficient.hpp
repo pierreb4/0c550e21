@@ -77,7 +77,7 @@ struct TinyBank {
 
     mem[i] |= v << j;
     if (j+len > 32)
-      mem[i+1] |= v >> 32-j;
+      mem[i+1] |= v >> (32-j);
   }
   inline int get(ll bi) {
     return mem[bi>>5]>>(bi&31)&1;
@@ -138,7 +138,7 @@ struct TinyNodeBank {
     v.isvec = state.isvec;
     v.ispiece = ispiece;
     v.depth = state.depth;
-    node.push_back(move(v));
+    node.push_back(std::move(v));
   }
   void addChild(int ni, int fi, int to) {
     node[ni].child.add(fi, to);

@@ -261,7 +261,7 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
     cout << "Nodes:  " << nodes << endl;
     cout << "Pieces: " << pieces.piece.size() << endl;
   }
-  pieces.dag = move(dag);
+  pieces.dag = std::move(dag);
   //pieces.seen = move(seen);
 
   for (Piece3&p : pieces.piece) {

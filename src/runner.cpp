@@ -267,7 +267,7 @@ void run(int only_sid = -1, int arg = -1) {
       }
       for (int i = 0; i < skips*3 && filtered.size(); i++)
 	      filtered.erase(filtered.begin());
-      answers = move(filtered);
+      answers = std::move(filtered);
     }
 
     //Reconstruct answers
@@ -470,7 +470,7 @@ void run(int only_sid = -1, int arg = -1) {
   //     }
   //     for (int i = 0; i < skips*3 && filtered.size(); i++)
 	//       filtered.erase(filtered.begin());
-  //     answers = move(filtered);
+  //     answers = std::move(filtered);
   //   }
 
   //   //Reconstruct answers

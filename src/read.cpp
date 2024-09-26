@@ -3,7 +3,8 @@
 #include <cassert>
 #include <iostream>*/
 #include "precompiled_stl.hpp"
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
+#include <filesystem>
 
 using namespace std;
 #include "utils.hpp"
@@ -143,16 +144,18 @@ Image Sample::readImage() {
 
 
 vector<Sample> readAll(string path, int maxn) { //maxn = -1
-  const string base_path[2] = {"/kaggle/working/abstraction-and-reasoning-challenge/", "./dataset/"};
+  const string base_path[2] = {"/kaggle/working/abstraction-and-reasoning-challenge/", "../abstraction-and-reasoning-challenge/"};
 
   int base_pathi = 0;
-  while (!experimental::filesystem::exists(base_path[base_pathi]+path)) {
+  //while (!experimental::filesystem::exists(base_path[base_pathi]+path)) {
+  while (!filesystem::exists(base_path[base_pathi]+path)) {
     base_pathi++;
     assert(base_pathi < 2);
   }
 
   vector<string> files;
-  for (auto magic_file_type : experimental::filesystem::directory_iterator(base_path[base_pathi]+path)) {
+  //for (auto magic_file_type : experimental::filesystem::directory_iterator(base_path[base_pathi]+path)) {
+  for (auto magic_file_type : filesystem::directory_iterator(base_path[base_pathi]+path)) {
     string name = magic_file_type.path().u8string();
     if (name.size() >= 5 && name.substr(name.size()-5,5) == ".json")
       files.push_back(name);

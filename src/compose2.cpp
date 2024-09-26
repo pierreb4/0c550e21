@@ -11,6 +11,7 @@ using namespace std;
 #include "compose2.hpp"
 
 #include "timer.hpp"
+#include <map>
 
 /*
 struct Candidate {

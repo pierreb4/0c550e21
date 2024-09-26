@@ -1,4 +1,6 @@
 
+#include <map>
+
 struct Sample {
   vector<pair<Image,Image>> train, test;
   Image test_in, test_out;
