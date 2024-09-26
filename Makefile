@@ -3,7 +3,7 @@ DEBUG = -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG 
 
 FLAGS = -std=c++17 -g -O2 #-fopenmp # $(DEBUG)
 
-ifeq ($(MAKE_HOST),mbp-2022)
+ifeq ($(shell hostname),mbp-2022.lan)
   FLAGS += -DMBP
 endif
 
