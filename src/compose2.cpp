@@ -389,6 +389,13 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
     }
     double score = goods-prior*0.01;
 
+    // Pierre 20240926
+    cout << "max_d: " << cand.max_depth;
+    cout << "\tpiece: " << cand.cnt_pieces;
+    cout << "\tprior: " << prior;
+    cout << "\tgoods: " << goods;
+    cout << "\tscore: " << score << endl;
+
     Image answer = imgs.back();
     if (answer.w > 30 || answer.h > 30 || answer.w*answer.h == 0) goods = 0;
     for (int i = 0; i < answer.h; i++)
