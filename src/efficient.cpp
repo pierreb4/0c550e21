@@ -66,8 +66,8 @@ void TinyChildren::add(int fi, int to) {
     {
       int p = sz++;
       while (p && sparse[p-1].first > fi) {
-	sparse[p] = sparse[p-1];
-	p--;
+	      sparse[p] = sparse[p-1];
+	      p--;
       }
       sparse[p] = {fi, to};
     }
@@ -101,6 +101,22 @@ int TinyChildren::get(int fi) {
   } else {
     if (fi >= cap) return None;
     return dense[fi];
+  }
+}
+int TinyChildren::fi(int fi) {
+  if (sz < dense_thres) {
+    int low = 0, high = sz-1;
+    while (low <= high) {
+      int mid = (low+high)>>1;
+      int cfi = sparse[mid].first;
+      if (cfi == fi) return fi;
+      else if (cfi > fi) high = mid-1;
+      else low = mid+1;
+    }
+    return None;
+  } else {
+    if (fi >= cap) return None;
+    return fi;
   }
 }
 void TinyChildren::legacy(vector<pair<int,int>>&ret) {

@@ -223,12 +223,12 @@ void run(int only_sid = -1, int arg = -1) {
 
     // Keep some of this around for second round
     // Unless this only clears mem and depth calculations
-    for (DAG&d : pieces.dag) {
-      d.hashi.clear();
-      for (TinyNode&n : d.tiny_node.node) {
-	      n.child.clear();
-      }
-    }
+    // for (DAG&d : pieces.dag) {
+    //   d.hashi.clear();
+    //   for (TinyNode&n : d.tiny_node.node) {
+	  //     n.child.clear();
+    //   }
+    // }
 
     int s1 = 0;
     if (!eval) s1 = (out_sizes.back() == test_out.sz);

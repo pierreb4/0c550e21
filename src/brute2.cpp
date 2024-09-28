@@ -427,6 +427,7 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   }
   //assert(it2 == -2);
 
+  //cout << "Applying " << funcs.getName(fi) << " to " << curi << endl;
 
   State nxt;
   nxt.depth = tiny_node[curi].depth+funcs.cost[fi];

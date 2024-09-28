@@ -36,6 +36,7 @@ struct TinyChildren {
   }
   void add(int fi, int to);
   int get(int fi);
+  int fi(int fi);
   ~TinyChildren() {
     delete[]dense;
     dense = NULL;
