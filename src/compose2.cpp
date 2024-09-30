@@ -107,15 +107,18 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
       for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
         for (int k = 0; k < pieces.dag[i].funcs.names.size(); k++)
-          if (pieces.dag[i].tiny_node.getChild(j, k) != TinyChildren::None)
+//          if (pieces.dag[i].tiny_node.getChild(j, k) != TinyChildren::None)
+//          {
+//            cout << "Child " << i << " " << j << " " << k << ": ";
+//            cout << pieces.dag[i].tiny_node.getChild(j, k) << endl;
+//          }
+//          else 
+          if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
           {
-            cout << "Child " << i << " " << j << " " << k << ": ";
-            cout << pieces.dag[i].tiny_node.getChild(j, k) << endl;
-          }
-          else if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
-          {
-            cout << "Child fi " << i << " " << j << " " << k << ": ";
-            cout << pieces.dag[i].tiny_node.node[j].child.fi(k) << endl;
+            cout << "Dag: " << i << " node: " << j;
+            cout << " num: " << pieces.dag[i].tiny_node.node[j].child.fi(k);
+            cout << " func: " << pieces.dag[i].funcs.getName(k); 
+            cout << endl;
           }
     }
   }
