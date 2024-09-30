@@ -242,7 +242,7 @@ void run(int only_sid = -1, int arg = -1) {
     }
     addDeduceOuterProduct(pieces, train, cands);
 
-    cands = evaluateCands(cands, train);
+    cands = evaluateCands(pieces, cands, train);
 
     int s2 = 0;
     if (!eval) s2 = scoreCands(cands, test_in, test_out);

@@ -242,9 +242,10 @@ void addDeduceOuterProduct(Pieces&pieces, vector<pair<Image,Image>> train, vecto
 
     // TODO: Use correct depths
     vImage imgs;
+    vector<int> fis;
     for (int i = 0; i <= train.size(); i++)
       imgs.push_back(deduce_op.reconstruct(a[i],b[i]));
-    cands.emplace_back(imgs, 2, MAXDEPTH, MAXDEPTH*2);
+    cands.emplace_back(imgs, fis, 2, MAXDEPTH, MAXDEPTH*2);
   }
 
   /*

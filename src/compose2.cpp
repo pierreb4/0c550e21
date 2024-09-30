@@ -107,12 +107,6 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
       for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
         for (int k = 0; k < pieces.dag[i].funcs.names.size(); k++)
-//          if (pieces.dag[i].tiny_node.getChild(j, k) != TinyChildren::None)
-//          {
-//            cout << "Child " << i << " " << j << " " << k << ": ";
-//            cout << pieces.dag[i].tiny_node.getChild(j, k) << endl;
-//          }
-//          else 
           if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
           {
             cout << "Dag: " << i << " node: " << j;
@@ -137,10 +131,15 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
     TinyHashMap seen;
     mybitset badi(M), blacki(M);
     for (int i = 0; i < n; i++) {
+//      cout << "Piece: " << i << endl;
       int x = 0, y = 0;
       for (int j = 0; j < sz.size(); j++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
+        // Add to corresponding func usage counter?
 	      Image_ img = pieces.dag[j].getImg(ind[j]);
+//        int fi = pieces.dag[j].tiny_node.node[ind[j]].child.fi(0);
+//        cout << "  Img: " << j << " fi: " << fi << endl;
+//        fis.push_back(fi);
 	      const vector<char>&p = img.mask;
 	      const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
 	      assert(p.size() == sz[j]);
@@ -174,7 +173,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
 
 
-  auto greedyComposeCore = [&](mybitset&cur, const mybitset&careMask, const int piece_depth_thres, vImage&ret) {
+  auto greedyComposeCore = [&](mybitset&cur, const mybitset&careMask, const int piece_depth_thres, vImage&ret, vector<int>&fis) {
     vector<int> sparsej;
     for (int j = 0; j < M64; j++) {
       if (~cur.data[j] & careMask.data[j]) sparsej.push_back(j);
@@ -235,13 +234,23 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
       int depth = pieces.piece[i].depth;
 
+      cout << "Piece: " << i << endl;
+
       for (int l = 0; l < ret.size(); l++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
+        // Add to corresponding func usage counter?
 	      const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
 	      for (int j = 0; j < sz[l]; j++) {
 	        if ((best_active[x>>6]>>(x&63)&1) && ret[l].mask[j] == 10) {
 	          //assert(cur[x-1] == 0);
 	          ret[l].mask[j] = mask[j];
+            int fi = pieces.dag[l].tiny_node.node[ind[l]].child.fi(j);
+            if (fi != TinyChildren::None) {
+              cout << "  Img index: " << l << " child: " << j;
+              cout << " fi: " << pieces.dag[l].funcs.getName(fi) << endl;
+              fis.push_back(fi);
+            }
+
 	        }
 
 	        x++;
@@ -266,7 +275,6 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
   map<ull,Image> greedy_fill_mem;
 
   int maxiters = 10;
-
 
   //vector<int> skip(img_ind.size());
   //vector<int> order;
@@ -312,9 +320,10 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	      int sum_depth = 0, max_depth = 0;
 
 	      vector<Image> ret = init;
+        vector<int> fis;
 	      for (int it = 0; it < maxiters; it++) {
 
-	        int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret);
+	        int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret, fis);
 	        if (depth == -1) break;
 	        piece_depths.push_back(depth);
 	        cnt_pieces++;
@@ -347,7 +356,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 		            if (img.w*img.h <= 0) ok = 0;
 	            }
 	            if (ok)
-		            rets.emplace_back(cp, cnt_pieces+1, sum_depth, max_depth);
+		            rets.emplace_back(cp, fis, cnt_pieces+1, sum_depth, max_depth);
 	          }
 	          greedy_fill_time.stop();
 	        }
@@ -358,7 +367,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	        if (c == 10) c = 0;
 	      */
 
-	      rets.emplace_back(ret, cnt_pieces, sum_depth, max_depth);
+	      rets.emplace_back(ret, fis, cnt_pieces, sum_depth, max_depth);
       }
     }
   }
@@ -398,10 +407,11 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
 }
 
 
-vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
+vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
   vector<Candidate> ret;
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
+    vector<int> fis = cand.fis;
     assert(cand.max_depth >= 0 && cand.max_depth < 100);
     assert(cand.cnt_pieces >= 0 && cand.cnt_pieces < 100);
     //cout << cand.max_depth << ' ' << cand.cnt_pieces << endl;
@@ -420,6 +430,10 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
     cout << "\tgoods: " << goods;
     cout << "\tscore: " << score << endl;
 
+    cout << "Fis: ";
+    for (int fi : fis) cout << pieces.dag[0].funcs.getName(fi) << ' ';
+    cout << endl;
+
     Image answer = imgs.back();
     if (answer.w > 30 || answer.h > 30 || answer.w*answer.h == 0) goods = 0;
     for (int i = 0; i < answer.h; i++)
@@ -427,7 +441,7 @@ vector<Candidate> evaluateCands(const vector<Candidate>&cands, vector<pair<Image
 	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
 
     if (goods)
-      ret.emplace_back(imgs, score);
+      ret.emplace_back(imgs, fis, score);
   }
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);
