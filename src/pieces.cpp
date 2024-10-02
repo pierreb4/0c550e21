@@ -258,11 +258,23 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
   if (out_sizes.size() && print_nodes) {
     int nodes = 0;
     for (DAG&d : dag) nodes += d.tiny_node.size();
-    cout << "Nodes:  " << nodes << endl;
-    cout << "Pieces: " << pieces.piece.size() << endl;
+    cout << "Nodes:      " << nodes << endl;
+    cout << "Pieces:     " << pieces.piece.size() << endl;
   }
   pieces.dag = std::move(dag);
   //pieces.seen = move(seen);
+
+  // Pierre 20241002
+  if (out_sizes.size() && print_nodes) {
+    cout << "Pieces DAG: " << pieces.dag.size() << endl;
+    for (Piece3&p : pieces.piece) {
+      for (int i = 0; i < pieces.dag.size(); i++) {
+        int*ind = &mem[p.memi];
+        cout << "- Pieces indices : " << ind[i] << endl;
+        cout << "- Pieces DAG size: " << pieces.dag[i].tiny_node.size() << endl;
+      } 
+    }
+  }
 
   for (Piece3&p : pieces.piece) {
     for (int i = 0; i < pieces.dag.size(); i++) {

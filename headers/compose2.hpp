@@ -1,6 +1,6 @@
 struct Candidate {
   vImage imgs;
-  vector<int> fis;
+  vector<int> fis; // Pierre 20241002
   double score;
   int cnt_pieces, sum_depth, max_depth;
   Candidate(vImage_ imgs_, vector<int> fis_, double score_) : imgs(imgs_), fis(fis_), score(score_) {

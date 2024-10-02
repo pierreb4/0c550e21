@@ -135,8 +135,8 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       int x = 0, y = 0;
       for (int j = 0; j < sz.size(); j++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
-        // Add to corresponding func usage counter?
 	      Image_ img = pieces.dag[j].getImg(ind[j]);
+//        // Add to corresponding func usage counter? No as this seems to be part of selecting the best piece - Pierre 20241002
 //        int fi = pieces.dag[j].tiny_node.node[ind[j]].child.fi(0);
 //        cout << "  Img: " << j << " fi: " << fi << endl;
 //        fis.push_back(fi);
@@ -234,23 +234,63 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
       int depth = pieces.piece[i].depth;
 
-      cout << "Best piece: " << i << endl;
+      cout << "Piece size: " << pieces.piece.size() << endl;
+      cout << "- Best piece: " << i << " depth: " << depth << endl;
+      
+      //cout << "- Node size: " << pieces.dag[0].tiny_node.size() << endl;
+
+      // {
+      //   int k_size = pieces.dag[0].funcs.names.size();
+      //   vector<int> fik;
+      //   for (int k = 0; k < k_size; k++) {
+      //     int j = pieces.dag[0].tiny_node.node[i].child.fi(k);
+      //     if ( j != TinyChildren::None)
+      //     {
+      //       // cout << "- Dag: " << 0;
+      //       // cout << " num: " << j;
+      //       // cout << " func: " << pieces.dag[0].funcs.getName(k); 
+      //       // cout << endl;
+      //       fik.push_back(j);
+      //     }
+      //   }
+      //   if (fik.size() != k_size) {
+      //     for (int k = 0; k < fik.size(); k++) {
+      //       cout << "- Dag: " << 0;
+      //       cout << " num: " << k;
+      //       cout << " func: " << pieces.dag[0].funcs.getName(k); 
+      //       cout << endl;
+      //       fis.push_back(fik[k]);
+      //     }
+      //   }
+      // }
 
       for (int l = 0; l < ret.size(); l++) {
-	      int*ind = &pieces.mem[pieces.piece[i].memi];
+        int*ind = &pieces.mem[pieces.piece[i].memi];
+        const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
         // Add to corresponding func usage counter
-	      const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
+        // for (TinyNode& node : pieces.dag[l].tiny_node.node) {
+          TinyNode&node = pieces.dag[l].tiny_node.node[ind[l]];
+          int k_size = pieces.dag[l].funcs.names.size();
+          for (int k = 0; k < k_size; k++) {
+            if (node.child.fi(k) != TinyChildren::None) {
+              cout << " Img index: " << l << " ind: " << ind[l] << " child: " << k;
+              cout << " fi: " << pieces.dag[l].funcs.getName(k) << endl;
+              fis.push_back(k);
+            }
+          }
+        // }
+
+        // int fi = pieces.dag[l].tiny_node[ind[l]].child.fi(ind[l]);
+        // if (fi != TinyChildren::None) {
+        //   cout << "  Img index: " << l << " ind: " << ind[l] << " child: " << fi;
+        //   cout << " fi: " << pieces.dag[l].funcs.getName(fi) << endl;
+        //   fis.push_back(fi);
+        // }
+        
 	      for (int j = 0; j < sz[l]; j++) {
 	        if ((best_active[x>>6]>>(x&63)&1) && ret[l].mask[j] == 10) {
 	          //assert(cur[x-1] == 0);
 	          ret[l].mask[j] = mask[j];
-            int fi = pieces.dag[l].tiny_node.node[ind[l]].child.fi(j);
-            if (fi != TinyChildren::None) {
-              cout << "  Img index: " << l << " child: " << j;
-              cout << " fi: " << pieces.dag[l].funcs.getName(fi) << endl;
-              fis.push_back(fi);
-            }
-
 	        }
 
 	        x++;
@@ -401,6 +441,10 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
   */
 
   for (const Candidate&cand : greedyCompose2(pieces, target, out_sizes)) {
+    cout << "Greedy pieces: " << cand.cnt_pieces << endl;
+    cout << " Fis: "; 
+    for (int fi : cand.fis) cout << fi << ' ';
+    cout << endl;
     cands.push_back(cand);
   }
   return cands;
@@ -430,7 +474,10 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     cout << "\tgoods: " << goods;
     cout << "\tscore: " << score << endl;
 
-    cout << "Fis: ";
+    cout << "- Funcs: ";
+    for (int fi : fis) cout << fi << ' ';
+    cout << endl;
+    cout << "- Names: ";
     for (int fi : fis) cout << pieces.dag[0].funcs.getName(fi) << ' ';
     cout << endl;
 
