@@ -210,9 +210,9 @@ void Writer::operator()(const Sample& s, vector<Image> imgs) {
     fprintf(fp, "|");
     for (int i = 0; i < img.h; i++) {
       for (int j = 0; j < img.w; j++) {
-	int c = img(i,j);
-	assert(c >= 0 && c <= 9);
-	fprintf(fp, "%d", c);
+	      int c = img(i,j);
+	      assert(c >= 0 && c <= 9);
+	      fprintf(fp, "%d", c);
       }
       fprintf(fp, "|");
     }
@@ -241,9 +241,9 @@ void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vecto
     fprintf(fp, "|");
     for (int i = 0; i < img.h; i++) {
       for (int j = 0; j < img.w; j++) {
-	int c = img(i,j);
-	assert(c >= 0 && c <= 9);
-	fprintf(fp, "%d", c);
+	      int c = img(i,j);
+	      assert(c >= 0 && c <= 9);
+	      fprintf(fp, "%d", c);
       }
       fprintf(fp, "|");
     }

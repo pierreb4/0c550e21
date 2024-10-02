@@ -59,7 +59,6 @@ struct Functions3 {
 };
 
 
-
 struct DAG {
   Functions3 funcs;
   //vector<Node> node;

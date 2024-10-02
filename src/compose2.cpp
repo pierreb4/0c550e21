@@ -234,11 +234,11 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
       int depth = pieces.piece[i].depth;
 
-      cout << "Piece: " << i << endl;
+      cout << "Best piece: " << i << endl;
 
       for (int l = 0; l < ret.size(); l++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
-        // Add to corresponding func usage counter?
+        // Add to corresponding func usage counter
 	      const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
 	      for (int j = 0; j < sz[l]; j++) {
 	        if ((best_active[x>>6]>>(x&63)&1) && ret[l].mask[j] == 10) {

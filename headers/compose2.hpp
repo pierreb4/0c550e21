@@ -18,3 +18,4 @@ inline bool operator<(const Candidate& a, const Candidate& b) {
 
 vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train, vector<point> out_sizes);
 vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train);
+Functions3 getFuncs(Pieces&pieces, const vector<Candidate>&cands);

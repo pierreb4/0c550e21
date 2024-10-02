@@ -242,7 +242,12 @@ void run(int only_sid = -1, int arg = -1) {
     }
     addDeduceOuterProduct(pieces, train, cands);
 
+    //Score candidates
     cands = evaluateCands(pieces, cands, train);
+    cout << "Cands size: " << cands.size() << endl;
+
+    // Get all fis from cands in top 10 scores and build a Functions3 struct
+    Functions3 funcs = getFuncs(pieces, cands);
 
     int s2 = 0;
     if (!eval) s2 = scoreCands(cands, test_in, test_out);

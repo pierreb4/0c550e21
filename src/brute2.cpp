@@ -12,6 +12,7 @@ using namespace std;
 
 #include "brute2.hpp"
 #include "pieces.hpp"
+#include "compose2.hpp"
 
 #include "timer.hpp"
 
@@ -290,6 +291,25 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   return funcs;
 }
 
+
+Functions3 getFuncs(Pieces&pieces, const vector<Candidate>&cands) {
+  Functions3 funcs;
+
+  for (const Candidate& cand : cands) {
+    for (int cfi : cand.fis) {
+      // Previous funcs
+      Functions3 pFuncs = pieces.dag[0].funcs;
+      for (int fi : pFuncs.listed) {
+        const std::string& name = pFuncs.names[fi];
+        funcs.add(name, pFuncs.cost[fi], pFuncs.f_list[fi], 1);
+      }
+    }
+  }
+
+  return funcs;
+}
+
+
 Image DAG::getImg(int ni) {
   return tiny_node.getImg(ni);
   //assert(tiny_node.getImg(ni) == node[ni].vimg[0]);
@@ -357,12 +377,12 @@ void DAG::build() {
       nxt.depth = depth+funcs.cost[fi];
       if (nxt.depth > MAXDEPTH) continue;
       if (funcs.f_list[fi](cur_state, nxt)) {
-	int newi = add(nxt);
-	//child.emplace_back(fi, newi);
-	tiny_node.addChild(curi, fi, newi);
+	      int newi = add(nxt);
+	      //child.emplace_back(fi, newi);
+	      tiny_node.addChild(curi, fi, newi);
       } else {
-	tiny_node.addChild(curi, fi, -1);
-	//child.emplace_back(fi, -1);
+	      tiny_node.addChild(curi, fi, -1);
+	      //child.emplace_back(fi, -1);
       }
 
     }
