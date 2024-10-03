@@ -216,15 +216,15 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
 	      int ret = d.tiny_node.getChild(p, fi);
 	      assert(ret >= 0);
 	      //auto [fi_, ret] = *it;
-	      if (0) {//fi != fi_) {
+	      if (0) { //fi != fi_) {
 	        cout << p << ' ' << di << " / " << train.size() << endl;
-	        /*for (auto [fi,nxti] : child) {
-	          string name = d.funcs.getName(fi);
-	          if (name.substr(0,4) == "Move") {
-	            cout << name << ' ';
-	          }
-	        }
-	        cout << endl;*/
+	        // for (auto [fi,nxti] : child) {
+	        //   string name = d.funcs.getName(fi);
+	        //   if (name.substr(0,4) == "Move") {
+	        //     cout << name << ' ';
+	        //   }
+	        // }
+	        // cout << endl;
 	      }
 	      //assert(fi == fi_);
 	      p = ret;
@@ -232,28 +232,28 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
       }
       look_v.push_back(p);
       look_imgs.push_back(d.getImg(p));
-      /*if (n.isvec || n.img[0].sz != given_sizes[di][1]) {
-	      cout << "Bad" << endl;
-	    }*/
+      // if (n.isvec || n.img[0].sz != given_sizes[di][1]) {
+	    //   cout << "Bad" << endl;
+	    // }
       di++;
     }
     if (!seen.insert(hashVec(look_v),0).second) cout << "Found indices" << endl;
     //exit(0);
   };
 
-  /*if (out_sizes.size()) {
-    lookFor({"compress", "toOrigin"});
-    }*/
-    /*
-    lookFor({"repeat 0 1", "colShape 2", "Move -1 -1", "embed 1"});
-    lookFor({"repeat 0 1", "colShape 2", "Move 1 1", "embed 1"});
-    lookFor({"repeat 0 1", "smear 4", "colShape 1"});
-    }*/
-  /*lookFor({"filterCol 1", "interior", "colShape 2"});
-    lookFor({"cut", "pickNotMaxes 11", "composeGrowing", "colShape 3", "embed 1"});
-    lookFor({"filterCol 5", "makeBorder", "colShape 1", "embed 1"});
-    lookFor({});
-  */
+  // if (out_sizes.size()) {
+  //   lookFor({"compress", "toOrigin"});
+  //   }
+  //   
+  //   lookFor({"repeat 0 1", "colShape 2", "Move -1 -1", "embed 1"});
+  //   lookFor({"repeat 0 1", "colShape 2", "Move 1 1", "embed 1"});
+  //   lookFor({"repeat 0 1", "smear 4", "colShape 1"});
+  //   }
+  // lookFor({"filterCol 1", "interior", "colShape 2"});
+  //   lookFor({"cut", "pickNotMaxes 11", "composeGrowing", "colShape 3", "embed 1"});
+  //   lookFor({"filterCol 5", "makeBorder", "colShape 1", "embed 1"});
+  //   lookFor({});
+  // 
 
   if (out_sizes.size() && print_nodes) {
     int nodes = 0;
@@ -265,16 +265,16 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
   //pieces.seen = move(seen);
 
   // Pierre 20241002
-  if (out_sizes.size() && print_nodes) {
-    cout << "Pieces DAG: " << pieces.dag.size() << endl;
-    for (Piece3&p : pieces.piece) {
-      for (int i = 0; i < pieces.dag.size(); i++) {
-        int*ind = &mem[p.memi];
-        cout << "- Pieces indices : " << ind[i] << endl;
-        cout << "- Pieces DAG size: " << pieces.dag[i].tiny_node.size() << endl;
-      } 
-    }
-  }
+  // if (out_sizes.size() && print_nodes) {
+  //   cout << "Pieces DAG: " << pieces.dag.size() << endl;
+  //   for (Piece3&p : pieces.piece) {
+  //     for (int i = 0; i < pieces.dag.size(); i++) {
+  //       int*ind = &mem[p.memi];
+  //       cout << "- Pieces indices : " << ind[i] << endl;
+  //       cout << "- Pieces DAG size: " << pieces.dag[i].tiny_node.size() << endl;
+  //     } 
+  //   }
+  // }
 
   for (Piece3&p : pieces.piece) {
     for (int i = 0; i < pieces.dag.size(); i++) {

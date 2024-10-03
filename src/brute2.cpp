@@ -292,22 +292,22 @@ Functions3 initFuncs3(const vector<point>&sizes) {
 }
 
 
-Functions3 getFuncs(Pieces&pieces, const vector<Candidate>&cands) {
-  Functions3 funcs;
+// Functions3 getFuncs(Pieces&pieces, const vector<Candidate>&cands) {
+//   Functions3 funcs;
 
-  for (const Candidate& cand : cands) {
-    for (int cfi : cand.fis) {
-      // Previous funcs
-      Functions3 pFuncs = pieces.dag[0].funcs;
-      for (int fi : pFuncs.listed) {
-        const std::string& name = pFuncs.names[fi];
-        funcs.add(name, pFuncs.cost[fi], pFuncs.f_list[fi], 1);
-      }
-    }
-  }
+//   for (const Candidate& cand : cands) {
+//     for (int cpi : cand.pis) {
+//       // Previous funcs
+//       Functions3 pFuncs = pieces.dag[0].funcs;
+//       for (int fi : pFuncs.listed) {
+//         const std::string& name = pFuncs.names[fi];
+//         funcs.add(name, pFuncs.cost[fi], pFuncs.f_list[fi], 1);
+//       }
+//     }
+//   }
 
-  return funcs;
-}
+//   return funcs;
+// }
 
 
 Image DAG::getImg(int ni) {

@@ -173,7 +173,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
 
 
-  auto greedyComposeCore = [&](mybitset&cur, const mybitset&careMask, const int piece_depth_thres, vImage&ret, vector<int>&fis) {
+  auto greedyComposeCore = [&](mybitset&cur, const mybitset&careMask, const int piece_depth_thres, vImage&ret, vector<int>&pis) {
     vector<int> sparsej;
     for (int j = 0; j < M64; j++) {
       if (~cur.data[j] & careMask.data[j]) sparsej.push_back(j);
@@ -234,9 +234,12 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
       int depth = pieces.piece[i].depth;
 
-      cout << "Piece size: " << pieces.piece.size() << endl;
-      cout << "- Best piece: " << i << " depth: " << depth << endl;
-      
+      // cout << "Piece size: " << pieces.piece.size() << endl;
+      cout << "Best piece: " << i << " depth: " << depth << endl;
+
+      // Add to corresponding func (well, piece) usage counter
+      pis.push_back(i);
+
       //cout << "- Node size: " << pieces.dag[0].tiny_node.size() << endl;
 
       // {
@@ -267,18 +270,18 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
       for (int l = 0; l < ret.size(); l++) {
         int*ind = &pieces.mem[pieces.piece[i].memi];
         const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
-        // Add to corresponding func usage counter
-        // for (TinyNode& node : pieces.dag[l].tiny_node.node) {
-          TinyNode&node = pieces.dag[l].tiny_node.node[ind[l]];
-          int k_size = pieces.dag[l].funcs.names.size();
-          for (int k = 0; k < k_size; k++) {
-            if (node.child.fi(k) != TinyChildren::None) {
-              cout << " Img index: " << l << " ind: " << ind[l] << " child: " << k;
-              cout << " fi: " << pieces.dag[l].funcs.getName(k) << endl;
-              fis.push_back(k);
-            }
-          }
-        // }
+        // // Add to corresponding func usage counter
+        // // for (TinyNode& node : pieces.dag[l].tiny_node.node) {
+        //   TinyNode&node = pieces.dag[l].tiny_node.node[ind[l]];
+        //   int k_size = pieces.dag[l].funcs.names.size();
+        //   for (int k = 0; k < k_size; k++) {
+        //     if (node.child.fi(k) != TinyChildren::None && ind[l] != 0) {
+        //       cout << " Img index: " << l << " ind: " << ind[l] << " child: " << k;
+        //       cout << " fi: " << pieces.dag[l].funcs.getName(k) << endl;
+        //       fis.push_back(k);
+        //     }
+        //   }
+        // // }
 
         // int fi = pieces.dag[l].tiny_node[ind[l]].child.fi(ind[l]);
         // if (fi != TinyChildren::None) {
@@ -360,10 +363,10 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	      int sum_depth = 0, max_depth = 0;
 
 	      vector<Image> ret = init;
-        vector<int> fis;
+        vector<int> pis;
 	      for (int it = 0; it < maxiters; it++) {
 
-	        int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret, fis);
+	        int depth = greedyComposeCore(cur, careMask, piece_depth_thres, ret, pis);
 	        if (depth == -1) break;
 	        piece_depths.push_back(depth);
 	        cnt_pieces++;
@@ -396,7 +399,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 		            if (img.w*img.h <= 0) ok = 0;
 	            }
 	            if (ok)
-		            rets.emplace_back(cp, fis, cnt_pieces+1, sum_depth, max_depth);
+		            rets.emplace_back(cp, pis, cnt_pieces+1, sum_depth, max_depth);
 	          }
 	          greedy_fill_time.stop();
 	        }
@@ -407,7 +410,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	        if (c == 10) c = 0;
 	      */
 
-	      rets.emplace_back(ret, fis, cnt_pieces, sum_depth, max_depth);
+	      rets.emplace_back(ret, pis, cnt_pieces, sum_depth, max_depth);
       }
     }
   }
@@ -442,9 +445,25 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
 
   for (const Candidate&cand : greedyCompose2(pieces, target, out_sizes)) {
     cout << "Greedy pieces: " << cand.cnt_pieces << endl;
-    cout << " Fis: "; 
-    for (int fi : cand.fis) cout << fi << ' ';
+    cout << " Piece: "; 
+    for (int pi : cand.pis) cout << pi << ' ';
     cout << endl;
+    for (int pi : cand.pis) {
+      cout << " Children: ";
+      // if (pi == 0) continue;
+      // Locate corresponding child - Pierre 20241003
+      int*ind = &pieces.mem[pieces.piece[pi].memi];
+      TinyChildren&child = pieces.dag[0].tiny_node.node[ind[0]].child;
+      // Figure what's in there - Pierre 20241003
+      for (int fi = 0; fi < pieces.dag[0].funcs.names.size(); fi++) {
+//        int fi = child.fi(fi);
+        int to = child.get(fi);
+        if (to != TinyChildren::None) {
+          cout << fi << "->" << to << ' ';
+        }
+      }
+      cout << endl;
+    }
     cands.push_back(cand);
   }
   return cands;
@@ -455,7 +474,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
   vector<Candidate> ret;
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
-    vector<int> fis = cand.fis;
+    vector<int> pis = cand.pis;
     assert(cand.max_depth >= 0 && cand.max_depth < 100);
     assert(cand.cnt_pieces >= 0 && cand.cnt_pieces < 100);
     //cout << cand.max_depth << ' ' << cand.cnt_pieces << endl;
@@ -474,12 +493,12 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     cout << "\tgoods: " << goods;
     cout << "\tscore: " << score << endl;
 
-    cout << "- Funcs: ";
-    for (int fi : fis) cout << fi << ' ';
+    cout << "- Pieces: ";
+    for (int pi : pis) cout << pi << ' ';
     cout << endl;
-    cout << "- Names: ";
-    for (int fi : fis) cout << pieces.dag[0].funcs.getName(fi) << ' ';
-    cout << endl;
+    // cout << "- Names: ";
+    // for (int fi : fis) cout << pieces.dag[0].funcs.getName(fi) << ' ';
+    // cout << endl;
 
     Image answer = imgs.back();
     if (answer.w > 30 || answer.h > 30 || answer.w*answer.h == 0) goods = 0;
@@ -488,7 +507,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
 
     if (goods)
-      ret.emplace_back(imgs, fis, score);
+      ret.emplace_back(imgs, pis, score);
   }
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);

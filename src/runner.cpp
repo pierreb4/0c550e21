@@ -221,6 +221,7 @@ void run(int only_sid = -1, int arg = -1) {
 
     // Keep some of this around for second round
     // Unless this only clears mem and depth calculations
+    // // Keep in place for now - Pierre 20241003
     // for (DAG&d : pieces.dag) {
     //   d.hashi.clear();
     //   for (TinyNode&n : d.tiny_node.node) {
@@ -245,7 +246,10 @@ void run(int only_sid = -1, int arg = -1) {
     cout << "Cands size: " << cands.size() << endl;
 
     // Get all fis from cands in top 10 scores and build a Functions3 struct
-    Functions3 funcs = getFuncs(pieces, cands);
+    //Functions3 funcs = getFuncs(pieces, cands);
+    // Replace with:
+    // Get all pis from cands in top 10 scores and build a Pieces struct - Pierre 20241003
+
 
     int s2 = 0;
     if (!eval) s2 = scoreCands(cands, test_in, test_out);
