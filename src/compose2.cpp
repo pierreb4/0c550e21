@@ -467,10 +467,19 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
       cout << "  Piece: " << pi;
       int*ind = &pieces.mem[pieces.piece[pi].memi];
       for (int i = 0; i < pieces.dag[0].getPfiSize(ind[0]); i++) {
-        cout << "\tPfi: " << pieces.dag[0].getPfi(ind[0], i);
-        if (pieces.dag[0].getPfi(ind[0], i) == -1) {
-          for (int j = 0; j < pieces.dag[0].funcs.names.size(); j++)
-            cout << "\tFi:" << pieces.dag[0].tiny_node.getChild(ind[0], j);
+        int pfi = pieces.dag[0].getPfi(ind[0], i);
+        cout << "\tPfi: " << pfi;
+        if (pfi == -1) {
+          for (int j = 0; j < pieces.dag[0].funcs.names.size(); j++) {
+            int fi = pieces.dag[0].tiny_node.getChild(ind[0], j);
+            // XXX Need to track where -1 comes from - Pierre 20241010
+            if (fi != TinyChildren::None && fi != -1) {
+              cout << "\tFi:" << fi;
+              cout << "\tFunc: " << pieces.dag[0].funcs.getName(fi);
+            }
+          }
+        } else {
+          cout << "\tFunc: " << pieces.dag[0].funcs.getName(pfi);
         }
       }
       cout << endl;

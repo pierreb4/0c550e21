@@ -84,7 +84,7 @@ struct DAG {
     return tiny_node.getPfi(nodei, i);
   }
   void build();
-  void buildBinary();
+//  void buildBinary();
   void initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> sizes, int ti);
   void benchmark();
   int applyFunc(int curi, int fi, const State&state);

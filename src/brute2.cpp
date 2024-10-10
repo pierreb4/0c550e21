@@ -154,6 +154,7 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   //invert is filterCol(img, 0)
   for (int c = 0; c < 10; c++)
     funcs.add("filterCol "+to_string(c), 10, [c](Image_ img) {return filterCol(img, c);});
+  // Pierre 20241010
   for (int c = 1; c < 10; c++)
     funcs.add("eraseCol "+to_string(c), 10,
 	      [c](Image_ img) {return eraseCol(img, c);});
@@ -162,13 +163,16 @@ Functions3 initFuncs3(const vector<point>&sizes) {
     funcs.add("colShape "+to_string(c), 10,
 	      [c](Image_ img) {return colShape(img, c);}, 0);
 
+  // Pierre 20241010
   funcs.add("compress", 10, [](Image_ img) {return compress(img);});
   funcs.add("getPos", 10, getPos);
   funcs.add("getSize0", 10, getSize0);
   funcs.add("getSize", 10, getSize);
   funcs.add("hull0", 10, hull0);
   funcs.add("hull", 10, hull);
+
   funcs.add("toOrigin", 10, toOrigin);
+
   funcs.add("Fill", 10, Fill);
   funcs.add("interior", 10, interior);
   funcs.add("interior2", 10, interior2);
@@ -179,6 +183,7 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   //funcs.add("greedyFillBlack", 10, [](Image_ img) {return greedyFillBlack(img);});
   //funcs.add("greedyFillBlack2", 10, [](Image_ img) {return greedyFillBlack2(img);});
 
+  // Pierre 20241010
   for (int i = 1; i < 9; i++)
     funcs.add("rigid "+to_string(i), 10,
 	      [i](Image_ img) {return rigid(img, i);});
@@ -186,11 +191,13 @@ Functions3 initFuncs3(const vector<point>&sizes) {
     for (int b = 0; b < 3; b++)
       funcs.add("count "+to_string(a)+" "+to_string(b), 10,
 		[a,b](Image_ img) {return count(img, a, b);});
+
   for (int i = 0; i < 15; i++)
     funcs.add("smear "+to_string(i), 10,
 	      [i](Image_ img) {return smear(img, i);});
 
 
+  // Pierre 20241010
   funcs.add("makeBorder", 10,
 	    [](Image_ img) {return makeBorder(img, 1);});
 
@@ -220,8 +227,10 @@ Functions3 initFuncs3(const vector<point>&sizes) {
     }
   }
 
+  // Pierre 20241010
   // Binary
   funcs.add(sizes, "embed", 10, embed);
+
   funcs.add(sizes, "wrap", 10, wrap);
   funcs.add(sizes, "broadcast", 10, [](Image_ a, Image_ b) {return broadcast(a,b);});
   funcs.add(sizes, "repeat 0",  10, [](Image_ a, Image_ b) {return repeat(a,b);});
@@ -251,6 +260,7 @@ Functions3 initFuncs3(const vector<point>&sizes) {
 	      [id](vImage_ v) {return pickUnique(v,id);});
 
   funcs.add("composeGrowing", 10, composeGrowing);
+
   funcs.add("stackLine", 10, stackLine);
   for (int id = 0; id < 2; id++) //consider going to 4
     funcs.add("myStack "+to_string(id), 10,
@@ -466,7 +476,9 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
 
   if (ok) {
     // Was commented out - Pierre 20241009
-    nxt.pfi = {fi};
+    // nxt.pfi = fi;
+    // Replaced with the following - Pierre 20241010
+    nxt.pfi.push_back(fi);
     newi = add(nxt);
   }
 
@@ -490,7 +502,9 @@ void DAG::applyFunc(string name, bool vec) {
 
   int start_nodes = tiny_node.size();
   for (int curi = 0; curi < start_nodes; curi++) {
-    if (tiny_node[curi].isvec == vec) applyFunc(curi, fi);
+    if (tiny_node[curi].isvec == vec) {
+      applyFunc(curi, fi);
+    }
   }
 }
 
@@ -523,38 +537,42 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
 
 
 
-void DAG::buildBinary() {
-  int fis = *max_element(funcs.listed.begin(), funcs.listed.end())+1;
-  binary.assign(fis*fis, -1);
-  vector<State> state(fis);
-  vector<int> active(fis), memi(fis);
-  for (int fi : funcs.listed) {
-    int curi = tiny_node.getChild(0, fi);
-    if (curi >= 0) {
-      active[fi] = 1;
-      state[fi] = tiny_node.getState(curi);
-      memi[fi] = curi;
-    }
-  }
-  for (int fa : funcs.listed) {
-    if (!active[fa]) continue;
-    for (int fb : funcs.listed) {
-      if (!active[fb]) continue;
+// void DAG::buildBinary() {
+//   int fis = *max_element(funcs.listed.begin(), funcs.listed.end())+1;
+//   binary.assign(fis*fis, -1);
+//   vector<State> state(fis);
+//   vector<int> active(fis), memi(fis);
+//   for (int fi : funcs.listed) {
+//     int curi = tiny_node.getChild(0, fi);
+//     if (curi >= 0) {
+//       active[fi] = 1;
+//       state[fi] = tiny_node.getState(curi);
+//       memi[fi] = curi;
+//     }
+//   }
+//   for (int fa : funcs.listed) {
+//     if (!active[fa]) continue;
+//     for (int fb : funcs.listed) {
+//       if (!active[fb]) continue;
 
-      if (state[fa].isvec || state[fb].isvec) continue;
-      State nxt;
-      nxt.vimg = {align(state[fa].vimg[0], state[fb].vimg[0])};
-      nxt.pfi = {-2};
-      nxt.depth = 2; //TODO
-      nxt.isvec = false;
-      binary[fa*fis+fb] = add(nxt);
-      /*if (binary[fa*fis+fb] != memi[fa]) {
-	      cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
-      }
-      assert(binary[fa*fis+fb] == memi[fa]);*/
-    }
-  }
-}
+//       if (state[fa].isvec || state[fb].isvec) continue;
+//       State nxt;
+//       nxt.vimg = {align(state[fa].vimg[0], state[fb].vimg[0])};
+
+//       // Show whether this ever happens - Pierre 20241010
+//       cout << " Pfi: " << fa*fis+fb << endl;
+
+//       nxt.pfi = {fa*fis+fb};
+//       nxt.depth = 2; //TODO
+//       nxt.isvec = false;
+//       binary[fa*fis+fb] = add(nxt);
+//       /*if (binary[fa*fis+fb] != memi[fa]) {
+// 	      cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
+//       }
+//       assert(binary[fa*fis+fb] == memi[fa]);*/
+//     }
+//   }
+// }
 
 
 
