@@ -254,8 +254,29 @@ void run(int only_sid = -1, int arg = -1) {
     int s2 = 0;
     if (!eval) s2 = scoreCands(cands, test_in, test_out);
 
+    // // Working block, to be commented out - Pierre 20241009
+    // cout << "Greedy pieces: " << cand.cnt_pieces << endl;
+    // cout << " Piece: "; 
+    // for (int pi : cand.pis) cout << pi << ' ';
+    // cout << endl;
+    // for (int pi : cand.pis) {
+    //   cout << " Children: ";
+    //   // if (pi == 0) continue;
+    //   // Locate corresponding child - Pierre 20241003
+    //   int*ind = &pieces.mem[pieces.piece[pi].memi];
+    //   TinyChildren&child = pieces.dag[0].tiny_node.node[ind[0]].child;
+    //   // Figure what's in there - Pierre 20241003
+    //   for (int fi = 0; fi < pieces.dag[0].funcs.names.size(); fi++) {
+    //     int to = child.get(fi);
+    //     if (to != TinyChildren::None) {
+    //       cout << fi << "->" << to << ' ';
+    //     }
+    //   }
+    //   cout << endl;
+    // }
+    // // End of working block
 
-    //Pick best candidates
+    //Pick top 3 best distinct candidates
     vector<Candidate> answers = cands;
 
     {

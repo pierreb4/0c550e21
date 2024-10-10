@@ -130,7 +130,7 @@ void TinyChildren::legacy(vector<pair<int,int>>&ret) {
     ret.resize(0);
     for (int i = 0; i < cap; i++) {
       if (dense[i] != None)
-	ret.emplace_back(i, dense[i]);
+	      ret.emplace_back(i, dense[i]);
     }
   }
 }

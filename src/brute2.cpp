@@ -48,6 +48,7 @@ void Functions3::add(string name, int cost, const function<Image(Image_)>&f, int
 
     nxt.vimg.resize(cur.vimg.size());
     nxt.isvec = cur.isvec;
+    nxt.pfi = cur.pfi;
 
     int area = 0;
     for (int i = 0; i < cur.vimg.size(); i++) {
@@ -69,6 +70,7 @@ void Functions3::add(string name, int cost, const function<vImage(Image_)>&f, in
     if (cur.isvec || cur.depth+cost+buffer > MAXDEPTH) return false;
     real_f_time.start();
     nxt.vimg = f(cur.vimg[0]);
+    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = true;
     return true;
@@ -82,6 +84,7 @@ void Functions3::add(string name, int cost, const function<Image(vImage_)>&f, in
     nxt.vimg.resize(1);
     real_f_time.start();
     nxt.vimg[0] = f(cur.vimg);
+    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = false;
     return true;
@@ -94,6 +97,7 @@ void Functions3::add(string name, int cost, const function<vImage(vImage_)>&f, i
     if (!cur.isvec) return false;
     real_f_time.start();
     nxt.vimg = f(cur.vimg);
+    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = true;
     return true;
@@ -113,13 +117,14 @@ void Functions3::add(const vector<point>&sizes, string name, int cost, const fun
 
       int area = 0;
       for (int i = 0; i < cur.vimg.size(); i++) {
-	real_f_time.start();
-	nxt.vimg[i] = f(cur.vimg[i], arg2);
-	real_f_time.stop();
+	      real_f_time.start();
+	      nxt.vimg[i] = f(cur.vimg[i], arg2);
+	      real_f_time.stop();
 
-	area += nxt.vimg[i].w*nxt.vimg[i].h;
-	if (area > MAXPIXELS) return false;
+	      area += nxt.vimg[i].w*nxt.vimg[i].h;
+	      if (area > MAXPIXELS) return false;
       }
+      nxt.pfi = cur.pfi;
       nxt.isvec = cur.isvec;
       return true;
     };
@@ -400,15 +405,15 @@ void DAG::initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<
 
   Image in = ti < train.size() ? train[ti].first : test_in;
 
-  add(State({in}, false, 0), true);
+  add(State({in}, -1, false, 0), true);
 
   //Output sizes
   for (point sz : sizes)
-    add(State({core::empty(sz)}, false, 10), true);
+    add(State({core::empty(sz)}, -1, false, 10), true);
 
   // Outputs of other trains
   for (int tj = 0; tj < train.size(); tj++)
-    add(State({ti != tj ? train[tj].second : core::empty(train[tj].second.sz)}, false, 10), true);
+    add(State({ti != tj ? train[tj].second : core::empty(train[tj].second.sz)}, -1, false, 10), true);
 
   //add(State({greedyFillBlack2(in)}, false, 10), true);
 
@@ -460,7 +465,8 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   apply_f_time.stop();
 
   if (ok) {
-    //nxt.pfi = fi;
+    // Was commented out - Pierre 20241009
+    nxt.pfi = {fi};
     newi = add(nxt);
   }
 
@@ -538,6 +544,7 @@ void DAG::buildBinary() {
       if (state[fa].isvec || state[fb].isvec) continue;
       State nxt;
       nxt.vimg = {align(state[fa].vimg[0], state[fb].vimg[0])};
+      nxt.pfi = {-2};
       nxt.depth = 2; //TODO
       nxt.isvec = false;
       binary[fa*fis+fb] = add(nxt);

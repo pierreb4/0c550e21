@@ -97,6 +97,7 @@ struct TinyImage {
 
 struct TinyNode {
   int*vimg = NULL;
+  vector <int> pfi;
   bool isvec, ispiece;
   short imgs; //TODO change to unsigned char
   char depth;
@@ -116,11 +117,20 @@ struct TinyNodeBank {
   Image getImg(int ni) {
     return imgs[node[ni].vimg[0]].decompress(bank);
   }
+  int getPfiSize(int ni) {
+    return node[ni].pfi.size();
+  }
+  int getPfi(int ni, int i) {
+    return node[ni].pfi[i];
+  }
   State getState(int ni) {
     State ret;
     ret.vimg.resize(node[ni].imgs);
-    for (int i = 0; i < node[ni].imgs; i++)
+    ret.pfi.resize(node[ni].imgs);
+    for (int i = 0; i < node[ni].imgs; i++) {
       ret.vimg[i] = imgs[node[ni].vimg[i]].decompress(bank);
+      ret.pfi[i]  = node[ni].pfi[i];
+    }
     ret.depth = node[ni].depth;
     ret.isvec = node[ni].isvec;
     return ret;
@@ -132,10 +142,18 @@ struct TinyNodeBank {
 
     v.imgs = min((int)state.vimg.size(),100000);
     v.vimg = new int[v.imgs];
+    v.pfi.resize(v.imgs);
     for (int i = 0; i < v.imgs; i++) {
       v.vimg[i] = imgs.size();
       imgs.emplace_back(state.vimg[i], bank);
+      v.pfi[i] = state.pfi[i];
     }
+    // int pfis = min((int)state.pfi.size(),100000);
+    // if(pfis > 0) {
+    //   v.pfi.resize(v.imgs+pfis);
+    //   for (int i = 0; i < pfis; i++)
+    //     v.pfi[v.imgs+i] = state.pfi[i];
+    // }
     v.isvec = state.isvec;
     v.ispiece = ispiece;
     v.depth = state.depth;
