@@ -97,7 +97,7 @@ struct TinyImage {
 
 struct TinyNode {
   int*vimg = NULL;
-  vector <int> pfi;
+  vector<int> pfi;
   bool isvec, ispiece;
   short imgs; //TODO change to unsigned char
   char depth;
@@ -126,10 +126,8 @@ struct TinyNodeBank {
   State getState(int ni) {
     State ret;
     ret.vimg.resize(node[ni].imgs);
-    ret.pfi.resize(node[ni].imgs);
     for (int i = 0; i < node[ni].imgs; i++) {
       ret.vimg[i] = imgs[node[ni].vimg[i]].decompress(bank);
-      ret.pfi[i]  = node[ni].pfi[i];
     }
     ret.depth = node[ni].depth;
     ret.isvec = node[ni].isvec;
@@ -142,18 +140,10 @@ struct TinyNodeBank {
 
     v.imgs = min((int)state.vimg.size(),100000);
     v.vimg = new int[v.imgs];
-    v.pfi.resize(v.imgs);
     for (int i = 0; i < v.imgs; i++) {
       v.vimg[i] = imgs.size();
       imgs.emplace_back(state.vimg[i], bank);
-      v.pfi[i] = state.pfi[i];
     }
-    // int pfis = min((int)state.pfi.size(),100000);
-    // if(pfis > 0) {
-    //   v.pfi.resize(v.imgs+pfis);
-    //   for (int i = 0; i < pfis; i++)
-    //     v.pfi[v.imgs+i] = state.pfi[i];
-    // }
     v.isvec = state.isvec;
     v.ispiece = ispiece;
     v.depth = state.depth;
@@ -161,9 +151,18 @@ struct TinyNodeBank {
   }
   void addChild(int ni, int fi, int to) {
     node[ni].child.add(fi, to);
+//    if (to != -1 && fi != TinyChildren::None && to != ni) {
+    if (to != -1 && to != ni) {
+      // if (fi == 27 || to == 19)
+      //   cout << "Ni: " << ni << " Fi: " << fi << " To: " << to << endl;
+      node[to].pfi.push_back(fi);
+    }
   }
   int getChild(int ni, int fi) {
     return node[ni].child.get(fi);
+  }
+  int getChildFi(int ni, int fi) {
+    return node[ni].child.fi(fi);
   }
   ~TinyNodeBank() {
     for (TinyNode&n : node)

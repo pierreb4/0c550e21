@@ -5,17 +5,10 @@ double now();
 
 struct State {
   vImage vimg;
-  vector <int> pfi;
   int depth;
   bool isvec;
   State() {}
-  State(vImage_ vimg_, int pfi_, bool isvec_, int depth_) : vimg(vimg_), isvec(isvec_), depth(depth_) {
-    int pfis = pfi.size();
-    if(pfis+1 > 0) {
-      pfi.resize(pfis+1);
-      pfi[pfis] = pfi_;
-    }
-  }
+  State(vImage_ vimg_, bool isvec_, int depth_) : vimg(vimg_), isvec(isvec_), depth(depth_) {}
   ull hash() const {
     ull r = isvec;
     for (Image_ img : vimg) {
@@ -76,13 +69,24 @@ struct DAG {
   TinyHashMap hashi;
   vector<int> binary;
   int add(const State&nxt, bool force = false);
-  Image getImg(int nodei);
+  Image getImg(int nodei) {
+    return tiny_node.getImg(nodei); 
+  }
+  int getChild(int nodei, int fi) {
+    return tiny_node.getChild(nodei, fi);
+  }
+  int getChildFi(int nodei, int fi) {
+    return tiny_node.getChildFi(nodei, fi);
+  }
   int getPfiSize(int nodei) {
     return tiny_node.getPfiSize(nodei);
   }
   int getPfi(int nodei, int i) {
     return tiny_node.getPfi(nodei, i);
   }
+  // int getPfi(int nodei) {
+  //   return tiny_node.getPfi(nodei);
+  // }
   void build();
 //  void buildBinary();
   void initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> sizes, int ti);
@@ -95,4 +99,4 @@ struct DAG {
 
 
 struct Pieces;
-vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes);
+vector<DAG> brutePieces2(set<string> fns, Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes);

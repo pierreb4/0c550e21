@@ -2,7 +2,9 @@
 DEBUG = -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG -g -Wno-sign-compare -Wno-shadow -Wno-char-subscripts -Wno-unused-variable
 FLAGS = -std=c++17 -g -O2 #-fopenmp # $(DEBUG)
 
-ifeq ($(shell hostname),mbp-2022.lan)
+ifeq ($(shell hostname),mbp-2022.local)
+  FLAGS += -DMBP
+else ifeq ($(shell hostname),mbp-2022.lan)
   FLAGS += -DMBP
 else
   LIBS = -lstdc++ -lstdc++fs

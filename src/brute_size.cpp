@@ -148,7 +148,8 @@ vector<point> bruteSize(Image_ test_in, vector<pair<Image,Image>> train) {
   MAXDEPTH = min(MAXDEPTH, 30);
   Pieces pieces;
   {
-    vector<DAG> dags = brutePieces2(test_in, train, {});
+    set <string> fns;
+    vector<DAG> dags = brutePieces2(fns, test_in, train, {});
     pieces = makePieces2(dags, train, {});
   }
   int dags = pieces.dag.size();
@@ -169,12 +170,12 @@ vector<point> bruteSize(Image_ test_in, vector<pair<Image,Image>> train) {
     for (int ti = 0; ti <= train.size(); ti++) {
       if (pieces.dag[ti].tiny_node[ind[ti]].isvec) ok = 0;
       else {
-	sz.push_back(pieces.dag[ti].getImg(ind[ti]).sz);
+	      sz.push_back(pieces.dag[ti].getImg(ind[ti]).sz);
       }
     }
     if (ok) {
       if (seen.insert(sz).second)
-	seeds.push_back(sz);
+	      seeds.push_back(sz);
     }
   }
 

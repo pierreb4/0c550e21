@@ -178,11 +178,13 @@ void run(int only_sid = -1, int arg = -1) {
     scores[verdict[si]]++;
     writeVerdict(si, s.id, verdict[si]);
     continue;*/
+    
     //Generate candidate pieces
+    set <string> fns;
     Pieces pieces;
     {
       double start_time = now();
-      vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
+      vector<DAG> dags = brutePieces2(fns, test_in, train, out_sizes);
 
       if (print_times) cout << "brutePieces time: " << now()-start_time << endl;
       start_time = now();
@@ -242,7 +244,11 @@ void run(int only_sid = -1, int arg = -1) {
     addDeduceOuterProduct(pieces, train, cands);
 
     //Score candidates
-    cands = evaluateCands(pieces, cands, train);
+    cands = evaluateCands(fns, pieces, cands, train);
+    // List functions - Pierre 20241015
+    for (const auto& fn : fns) {
+      cout << fn << endl;
+    }
     cout << "Cands size: " << cands.size() << endl;
 
     // Get all fis from cands in top 10 scores and build a Functions3 struct

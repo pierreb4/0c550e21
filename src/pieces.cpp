@@ -214,6 +214,7 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
 	      //auto it = lower_bound(child.begin(), child.end(), make_pair(fi,-1));
 	      //assert(it != child.end());
 	      int ret = d.tiny_node.getChild(p, fi);
+
 	      assert(ret >= 0);
 	      //auto [fi_, ret] = *it;
 	      if (0) { //fi != fi_) {

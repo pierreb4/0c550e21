@@ -48,7 +48,6 @@ void Functions3::add(string name, int cost, const function<Image(Image_)>&f, int
 
     nxt.vimg.resize(cur.vimg.size());
     nxt.isvec = cur.isvec;
-    nxt.pfi = cur.pfi;
 
     int area = 0;
     for (int i = 0; i < cur.vimg.size(); i++) {
@@ -70,7 +69,6 @@ void Functions3::add(string name, int cost, const function<vImage(Image_)>&f, in
     if (cur.isvec || cur.depth+cost+buffer > MAXDEPTH) return false;
     real_f_time.start();
     nxt.vimg = f(cur.vimg[0]);
-    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = true;
     return true;
@@ -84,7 +82,6 @@ void Functions3::add(string name, int cost, const function<Image(vImage_)>&f, in
     nxt.vimg.resize(1);
     real_f_time.start();
     nxt.vimg[0] = f(cur.vimg);
-    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = false;
     return true;
@@ -97,7 +94,6 @@ void Functions3::add(string name, int cost, const function<vImage(vImage_)>&f, i
     if (!cur.isvec) return false;
     real_f_time.start();
     nxt.vimg = f(cur.vimg);
-    nxt.pfi = cur.pfi;
     real_f_time.stop();
     nxt.isvec = true;
     return true;
@@ -124,7 +120,6 @@ void Functions3::add(const vector<point>&sizes, string name, int cost, const fun
 	      area += nxt.vimg[i].w*nxt.vimg[i].h;
 	      if (area > MAXPIXELS) return false;
       }
-      nxt.pfi = cur.pfi;
       nxt.isvec = cur.isvec;
       return true;
     };
@@ -133,9 +128,11 @@ void Functions3::add(const vector<point>&sizes, string name, int cost, const fun
 }
 
 string Functions3::getName(int fi) {
+//  cout << "fi: " << fi << endl;
   assert(fi >= 0 && fi < names.size());
   return names[fi];
 }
+
 int Functions3::findfi(string name) {
   int fi = find(names.begin(), names.end(), name)-names.begin();
   if (fi == names.size()) {
@@ -146,6 +143,26 @@ int Functions3::findfi(string name) {
 }
 
 
+// Mix for task 0 - Pierre 20241015
+Functions3 initFuncs0(const vector<point>&sizes) {
+  Functions3 funcs;
+
+  // Keep these, used for composing - Pierre 20241011
+  funcs.add("composeGrowing", 10, composeGrowing);
+  funcs.add("toOrigin", 10, toOrigin);
+  for (int c = 1; c < 10; c++)
+    funcs.add("colShape "+to_string(c), 10,
+	      [c](Image_ img) {return colShape(img, c);}, 0);
+  funcs.add(sizes, "embed", 10, embed);
+
+  // Add compress, as it seems to be pre for embed 1 - Pierre 20241015
+  funcs.add("compress", 10, [](Image_ img) {return compress(img);});
+
+  return funcs;
+}
+
+
+// Original function - Pierre 20241011
 Functions3 initFuncs3(const vector<point>&sizes) {
   Functions3 funcs;
 
@@ -157,11 +174,11 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   // Pierre 20241010
   for (int c = 1; c < 10; c++)
     funcs.add("eraseCol "+to_string(c), 10,
-	      [c](Image_ img) {return eraseCol(img, c);});
+        [c](Image_ img) {return eraseCol(img, c);});
 
   for (int c = 1; c < 10; c++)
     funcs.add("colShape "+to_string(c), 10,
-	      [c](Image_ img) {return colShape(img, c);}, 0);
+        [c](Image_ img) {return colShape(img, c);}, 0);
 
   // Pierre 20241010
   funcs.add("compress", 10, [](Image_ img) {return compress(img);});
@@ -170,9 +187,7 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   funcs.add("getSize", 10, getSize);
   funcs.add("hull0", 10, hull0);
   funcs.add("hull", 10, hull);
-
   funcs.add("toOrigin", 10, toOrigin);
-
   funcs.add("Fill", 10, Fill);
   funcs.add("interior", 10, interior);
   funcs.add("interior2", 10, interior2);
@@ -186,44 +201,44 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   // Pierre 20241010
   for (int i = 1; i < 9; i++)
     funcs.add("rigid "+to_string(i), 10,
-	      [i](Image_ img) {return rigid(img, i);});
+        [i](Image_ img) {return rigid(img, i);});
   for (int a = 0; a < 3; a++)
     for (int b = 0; b < 3; b++)
       funcs.add("count "+to_string(a)+" "+to_string(b), 10,
-		[a,b](Image_ img) {return count(img, a, b);});
+    [a,b](Image_ img) {return count(img, a, b);});
 
   for (int i = 0; i < 15; i++)
     funcs.add("smear "+to_string(i), 10,
-	      [i](Image_ img) {return smear(img, i);});
+        [i](Image_ img) {return smear(img, i);});
 
 
   // Pierre 20241010
   funcs.add("makeBorder", 10,
-	    [](Image_ img) {return makeBorder(img, 1);});
+      [](Image_ img) {return makeBorder(img, 1);});
 
   for (int id : {0,1})
     funcs.add("makeBorder2 "+to_string(id), 10,
-	      [id](Image_ img) {return makeBorder2(img, id);});
+        [id](Image_ img) {return makeBorder2(img, id);});
   funcs.add("compress2", 10, compress2);
   funcs.add("compress3", 10, compress3);
 
   for (int id = 0; id < 3; id++)
     funcs.add("connect "+to_string(id), 10,
-	      [id](Image_ img) {return connect(img,id);});
+        [id](Image_ img) {return connect(img,id);});
 
   for (int id : {0,1})
     funcs.add("spreadCols "+to_string(id), 10,
-	      [id](Image_ img) {return spreadCols(img, id);});
+        [id](Image_ img) {return spreadCols(img, id);});
 
   for (int id = 0; id < 4; id++)
     funcs.add("half "+to_string(id), 10,
-	      [id](Image_ img) {return half(img, id);});
+        [id](Image_ img) {return half(img, id);});
 
 
   for (int dy = -2; dy <= 2; dy++) {
     for (int dx = -2; dx <= 2; dx++) {
       funcs.add("Move "+to_string(dx)+" "+to_string(dy), 10,
-		[dx,dy](Image_ img) {return Move(img, Pos(dx,dy));}, 0);
+    [dx,dy](Image_ img) {return Move(img, Pos(dx,dy));}, 0);
     }
   }
 
@@ -248,34 +263,34 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   funcs.add("insideMarked", 10, insideMarked);
   for (int id = 0; id < 4; id++)
     funcs.add("gravity "+to_string(id), 10,
-	      [id](Image_ img) {return gravity(img,id);});
+        [id](Image_ img) {return gravity(img,id);});
 
 
   //Join
   for (int id = 0; id < 14; id++)
     funcs.add("pickMax "+to_string(id), 10,
-	      [id](vImage_ v) {return pickMax(v,id);});
+        [id](vImage_ v) {return pickMax(v,id);});
   for (int id = 0; id < 1; id++)
     funcs.add("pickUnique "+to_string(id), 10,
-	      [id](vImage_ v) {return pickUnique(v,id);});
+        [id](vImage_ v) {return pickUnique(v,id);});
 
   funcs.add("composeGrowing", 10, composeGrowing);
 
   funcs.add("stackLine", 10, stackLine);
   for (int id = 0; id < 2; id++) //consider going to 4
     funcs.add("myStack "+to_string(id), 10,
-	      [id](vImage_ v) {return myStack(v,id);}); //
+        [id](vImage_ v) {return myStack(v,id);}); //
 
 
   //Vector
   for (int id = 0; id < 14; id++)
     funcs.add("pickMaxes "+to_string(id), 10,
-	      [id](vImage_ v) {return pickMaxes(v,id);});
+        [id](vImage_ v) {return pickMaxes(v,id);});
   for (int id = 0; id < 14; id++)
     funcs.add("pickNotMaxes "+to_string(id), 10,
-	      [id](vImage_ v) {return pickNotMaxes(v,id);});
+        [id](vImage_ v) {return pickNotMaxes(v,id);});
 
-
+  
   static int said = 0;
   if (!said) {
     cout << "Function count: " << funcs.listed.size() << endl;
@@ -304,43 +319,6 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   // funcs.add("heuristicCut", heuristicCut);
 
   return funcs;
-}
-
-
-// Functions3 getFuncs(Pieces&pieces, const vector<Candidate>&cands) {
-//   Functions3 funcs;
-
-//   for (const Candidate& cand : cands) {
-//     for (int cpi : cand.pis) {
-//       // Previous funcs
-//       Functions3 pFuncs = pieces.dag[0].funcs;
-//       for (int fi : pFuncs.listed) {
-//         const std::string& name = pFuncs.names[fi];
-//         funcs.add(name, pFuncs.cost[fi], pFuncs.f_list[fi], 1);
-//       }
-//     }
-//   }
-
-//   return funcs;
-// }
-
-
-Image DAG::getImg(int ni) {
-  return tiny_node.getImg(ni);
-  //assert(tiny_node.getImg(ni) == node[ni].vimg[0]);
-  //return node[ni].state.vimg[0];
-  /*
-  //cout << nodei << endl;
-  assert(nodei >= 0 && nodei < (int)node.size());
-  assert(!node[nodei].isvec);
-  if (node[nodei].pfi == embed1fi) {
-    assert(funcs.f_list[embed1fi](node[nodei], tmp_node));
-    //assert(tmp_node.vimg == node[nodei].vimg);
-    return tmp_node.vimg[0];
-  } else {
-    assert(node[nodei].vimg.size());
-    return node[nodei].vimg[0];
-    }*/
 }
 
 
@@ -415,15 +393,15 @@ void DAG::initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<
 
   Image in = ti < train.size() ? train[ti].first : test_in;
 
-  add(State({in}, -1, false, 0), true);
+  add(State({in}, false, 0), true);
 
   //Output sizes
   for (point sz : sizes)
-    add(State({core::empty(sz)}, -1, false, 10), true);
+    add(State({core::empty(sz)}, false, 10), true);
 
-  // Outputs of other trains
+  //Outputs of other trains
   for (int tj = 0; tj < train.size(); tj++)
-    add(State({ti != tj ? train[tj].second : core::empty(train[tj].second.sz)}, -1, false, 10), true);
+    add(State({ti != tj ? train[tj].second : core::empty(train[tj].second.sz)}, false, 10), true);
 
   //add(State({greedyFillBlack2(in)}, false, 10), true);
 
@@ -455,14 +433,13 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   //auto it = lower_bound(node[curi].child.begin(), node[curi].child.end(), make_pair(fi,-1));
   int it2 = tiny_node.getChild(curi, fi);
   find_child_time.stop();
+
   if (it2 != TinyChildren::None) {//it != node[curi].child.end() && it->first == fi) {
     //if (it2 != it->second) cout << it2 << ' ' << it->second << endl;
     //assert(it2 == it->second);
     return it2;//it->second;
   }
   //assert(it2 == -2);
-
-  //cout << "Applying " << funcs.getName(fi) << " to " << curi << endl;
 
   State nxt;
   nxt.depth = tiny_node[curi].depth+funcs.cost[fi];
@@ -475,10 +452,7 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   apply_f_time.stop();
 
   if (ok) {
-    // Was commented out - Pierre 20241009
-    // nxt.pfi = fi;
-    // Replaced with the following - Pierre 20241010
-    nxt.pfi.push_back(fi);
+    //nxt.pfi = fi;
     newi = add(nxt);
   }
 
@@ -576,7 +550,7 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
 
 
 
-vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
+vector<DAG> brutePieces2(set<string> fns, Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
   int print = 1;
 
   // Add 1 for test_in
@@ -596,14 +570,19 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
     if (out_sizes.size())
       sizes.push_back(out_sizes[ti]);
 
+    if (print) cout << "InitFuncs3 with sizes size: " << sizes.size() << endl;
     dag[ti].funcs = initFuncs3(sizes);
+    if (print) cout << "InitFuncs3 done" << endl;
 
     dag[ti].initial(test_in, train, sizes, ti);
+    if (print) cout << "Initial done" << endl;
 
     total_time.start();
 
     double start_time = now();
     dag[ti].build();
+    if (print) cout << "Build done" << endl;
+
     if (print) cout << now()-start_time << endl;
     //dag[ti].buildBinary();
     //if (print) cout << now()-start_time << endl;

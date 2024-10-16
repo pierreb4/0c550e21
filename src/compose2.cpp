@@ -275,12 +275,25 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
         const vector<char>&mask = pieces.dag[l].getImg(ind[l]).mask;
 
         cout << " Piece: " << l;
-        
+        // int pfi = pieces.dag[l].getPfi(ind[l]);
+
+        // if (pfi != TinyChildren::None && pfi != -1) {
+        //     cout << "\tPfi:" << pfi;
+        //     cout << "\tPfunc: " << pieces.dag[l].funcs.getName(pfi);
+        // }
+
         for (int j = 0; j < pieces.dag[l].getPfiSize(ind[l]); j++) {
           int pfi = pieces.dag[l].getPfi(ind[l], j);
-          cout << "\tPfi: " << pfi;
+          if (pfi != TinyChildren::None)
+            cout << "\tFi: " << pfi;
+          // int to = pieces.dag[l].getChild(ind[l], j);
+          // if (to != TinyChildren::None) {
+          //     int pfi = pieces.dag[l].getPfi(ind[to], j);
+          //     cout << "\tFi: " << pfi;
+          // }
         }
         cout << endl;
+
         // // Add to corresponding func usage counter
         // // for (TinyNode& node : pieces.dag[l].tiny_node.node) {
         //   TinyNode&node = pieces.dag[l].tiny_node.node[ind[l]];
@@ -463,27 +476,16 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
   for (const Candidate&cand : greedyCompose2(pieces, target, out_sizes)) {
     cout << "Greedy pieces: " << cand.cnt_pieces << endl;
 
-    for (int pi : cand.pis) {
-      cout << "  Piece: " << pi;
-      int*ind = &pieces.mem[pieces.piece[pi].memi];
-      for (int i = 0; i < pieces.dag[0].getPfiSize(ind[0]); i++) {
-        int pfi = pieces.dag[0].getPfi(ind[0], i);
-        cout << "\tPfi: " << pfi;
-        if (pfi == -1) {
-          for (int j = 0; j < pieces.dag[0].funcs.names.size(); j++) {
-            int fi = pieces.dag[0].tiny_node.getChild(ind[0], j);
-            // XXX Need to track where -1 comes from - Pierre 20241010
-            if (fi != TinyChildren::None && fi != -1) {
-              cout << "\tFi:" << fi;
-              cout << "\tFunc: " << pieces.dag[0].funcs.getName(fi);
-            }
-          }
-        } else {
-          cout << "\tFunc: " << pieces.dag[0].funcs.getName(pfi);
-        }
-      }
-      cout << endl;
-    }
+    // for (int pi : cand.pis) {
+    //   cout << "  Piece: " << pi;
+    //   int*ind = &pieces.mem[pieces.piece[pi].memi];
+    //   int pfi = pieces.dag[0].getPfi(ind[0]);
+    //   if (pfi != TinyChildren::None) {
+    //     cout << "\tPfi: " << pfi;
+    //     cout << "\tPfunc: " << pieces.dag[0].funcs.getName(pfi);
+    //   }
+    //   cout << endl;
+    // }
 
 //     for (int pi : cand.pis) {
 //       cout << " Children: ";
@@ -507,7 +509,7 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
 }
 
 
-vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
+vector<Candidate> evaluateCands(set<string> fns, Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
   vector<Candidate> ret;
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
@@ -520,18 +522,37 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     for (int i = 0; i < pis.size(); i++) {
       // Display functions - Pierre 20241009
       int pi = pis[i];
-      cout << " pis[" << i << "]: " << pi << " ";
+      cout << "  pis[" << i << "]: " << pi << endl;
+      int*ind = &pieces.mem[pieces.piece[pi].memi];
+      for (int j = 0; j < pieces.dag.size(); j++) {
+        // int pfi = pieces.dag[j].getPfi(ind[j], 0);
+        // if (pfi != TinyChildren::None) {
+        //   cout << "\tpfi: " << pfi;
+        //   cout << "\tpfunc: " << pieces.dag[j].funcs.getName(pfi) << endl;
+        // }
+        int pfis = pieces.dag[j].getPfiSize(ind[j]);
+        for (int k = 0; k < pfis; k++) {
+          int pfi = pieces.dag[j].getPfi(ind[j], k);
+          if (pfi != TinyChildren::None) {
+            cout << "\tpfi[" << k << "]: " << pfi;
+            cout << "\tpfn: " << pieces.dag[j].funcs.getName(pfi);
+            fns.insert(pieces.dag[j].funcs.getName(pfi));
+          }
+        }
+        cout << endl;
+      }
+      // cout << endl;
     }
 
     int goods = 0;
     for (int i = 0; i < cands.size(); i++) {
       goods += (imgs[i] == train[i].second);
     }
-    cout << endl;
+
     double score = goods-prior*0.01;
 
     // Pierre 20240926
-    cout << "max_d: " << cand.max_depth;
+    cout << "  max_d: " << cand.max_depth;
     cout << "\tpiece: " << cand.cnt_pieces;
     cout << "\tprior: " << prior;
     cout << "\tgoods: " << goods;
@@ -552,6 +573,10 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
     if (goods)
       ret.emplace_back(imgs, pis, score);
+  }
+  // List functions - Pierre 20241015
+  for (const auto& fn : fns) {
+    cout << fn << endl;
   }
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);
