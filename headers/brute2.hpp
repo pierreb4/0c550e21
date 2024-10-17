@@ -61,6 +61,7 @@ struct Functions3 {
 
 struct DAG {
   Functions3 funcs;
+  vector<pair<string,double>> scores; 
   //vector<Node> node;
   TinyNodeBank tiny_node;
   int givens;
