@@ -28,3 +28,4 @@ struct Writer {
 };
 
 void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vector<double> scores);
+void writeJsonAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vector<double> scores);

@@ -252,3 +252,49 @@ void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vecto
   }
   fclose(fp);
 }
+
+
+void writeJsonAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vector<double> scores) {
+  FILE*fp = fopen(fn.c_str(), "w");
+  assert(fp);
+  fprintf(fp, "{\n");
+  fprintf(fp, "    \"%s\": [\n", s.id.c_str());
+  assert(imgs.size() == scores.size());
+  if (imgs.empty()) imgs = {dummyImg}, scores = {-1};
+  assert(imgs.size() <= 3);
+
+  fprintf(fp, "        {");
+  char img_sep = ' ';
+  for (int i = 0; i < imgs.size(); i++) {
+    Image_ img = imgs[i];
+    double score = scores[i];  
+    assert(img.p == point({0,0}));
+    assert(img.w >= 1 && img.w <= 30 && img.h >= 1 && img.h <= 30);
+//    if (i > 0) fprintf(fp, ",\n");
+    fprintf(fp, "%c\n", img_sep);
+    img_sep = ',';
+    fprintf(fp, "            \"score_%d\": %.20f,\n", i+1, score);
+    fprintf(fp, "            \"attempt_%d\": [", i+1);
+    char row_sep = ' ';
+    for (int i = 0; i < img.h; i++) {
+      fprintf(fp, "%c\n", row_sep);
+      row_sep = ',';
+      fprintf(fp, "                [");
+
+      char dig_sep = ' ';
+      for (int j = 0; j < img.w; j++) {
+        int c = img(i,j);
+        assert(c >= 0 && c <= 9);
+        fprintf(fp, "%c\n", dig_sep);
+        dig_sep = ',';
+        fprintf(fp, "                    %d", c);
+      }
+      fprintf(fp, "\n                ]");
+    }
+    fprintf(fp, "\n            ]");
+  }
+  fprintf(fp, "\n        }\n");
+  fprintf(fp, "    ]\n");
+  fprintf(fp, "}\n");
+  fclose(fp);
+}

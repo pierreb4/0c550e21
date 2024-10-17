@@ -351,6 +351,8 @@ void run(int only_sid = -1, int arg = -1) {
       //Writer writer(fn);
       //writer(s, rec_answers);
       writeAnswersWithScores(s, fn, rec_answers, answer_scores);
+      string fnj = "output/answer_"+to_string(only_sid)+"_"+to_string(arg)+"_.json";
+      writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
     }
   }
 
