@@ -153,10 +153,17 @@ else:
 #     depth1.append(Command("./run %d 1"%i, 10))
 # stats1 = runAll(depth1, 4)
 
-depth2 = []
-for i in range(ntasks):
-    depth2.append(Command("./run %d 2"%i, 10))
-stats2 = runAll(depth2, 4)
+# depth2 = []
+# for i in range(ntasks):
+#     depth2.append(Command("./run %d 2"%i, 10))
+# stats2 = runAll(depth2, 4)
+
+depth = []
+depth.append(Command(f"./run 0 23", 1200))
+depth.append(Command(f"./run 0 33", 1200))
+for d in range(1, 5):
+  depth.append(Command(f"./run 0 {d}", 1200))
+stats = runAll(depth, 2)
 
 # Original blocks - Pierre 20241002
 #TODO: change back to depth 3/4
@@ -179,8 +186,8 @@ stats2 = runAll(depth2, 4)
 
 # depth4 = []
 # for i in range(ntasks):
-#     status, t, m = stats3[depth3[i].cmd]
-#     depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+#    status, t, m = stats3[depth3[i].cmd]
+#    depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
 # stats4 = runAll(depth4, 2)
 
 def read(fn):

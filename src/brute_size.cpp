@@ -149,7 +149,7 @@ vector<point> bruteSize(Image_ test_in, vector<pair<Image,Image>> train) {
   Pieces pieces;
   {
     set <string> fns;
-    vector<DAG> dags = brutePieces2(fns, test_in, train, {});
+    vector<DAG> dags = brutePieces2(test_in, train, {});
     pieces = makePieces2(dags, train, {});
   }
   int dags = pieces.dag.size();

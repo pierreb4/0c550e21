@@ -184,7 +184,7 @@ void run(int only_sid = -1, int arg = -1) {
     Pieces pieces;
     {
       double start_time = now();
-      vector<DAG> dags = brutePieces2(fns, test_in, train, out_sizes);
+      vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
 
       if (print_times) cout << "brutePieces time: " << now()-start_time << endl;
       start_time = now();
@@ -290,12 +290,15 @@ void run(int only_sid = -1, int arg = -1) {
       vector<Candidate> filtered;
       set<ull> seen;
       for (const Candidate&cand : cands) {
-
+        vector<int> pis = cand.pis;
 	      //printf("%.20f\n", cand.score);
 
 	      ull h = hashImage(cand.imgs.back());
 	      if (seen.insert(h).second) {
 	        filtered.push_back(cand);
+          cout << "Answer: ";
+          for (int pi : cand.pis) cout << pi << ' ';
+          cout << endl;
 	        if (filtered.size() == 3+skips*3) break;
 	      }
       }
