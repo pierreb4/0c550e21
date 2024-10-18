@@ -420,7 +420,7 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
 
 vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
   vector<Candidate> ret;
-  unordered_map<string,double> score_map;
+  // unordered_map<string,double> score_map;
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
     vector<int> pis = cand.pis;
@@ -440,7 +440,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
     double score = goods-prior*0.01;
 
-    // Display and collect functions - Pierre 20241016
+    // Collect functions - Pierre 20241018
     for (int pi : cand.pis) {
       int*ind = &pieces.mem[pieces.piece[pi].memi];
       for (int j = 0; j < pieces.dag.size(); j++) {
@@ -451,31 +451,19 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
             // Pierre 20241017
             string fn = pieces.dag[j].funcs.getName(pfi);
 
-            // We need to store the scores in pieces.dag[j] - Pierre 20241017
-            auto it = score_map.find(fn);
-            if (it != score_map.end()) {
+            // Store scores in pieces.dag[j] - Pierre 20241018
+            auto it = pieces.dag[j].score_map.find(fn);
+            if (it != pieces.dag[j].score_map.end()) {
               // Update fn score if needed
               if (it->second < score) {
                 it->second = score;
               }
             } else {
               // Insert fn with score
-              score_map[fn] = score;
+              pieces.dag[j].score_map[fn] = score;
             }
           }
         }
-        // Store scores in pieces.dag[j] - Pierre 20241017
-        // Sort scores - Pierre 20241017
-        pieces.dag[j].scores.reserve(score_map.size());
-        copy(score_map.begin(), score_map.end(), back_inserter(pieces.dag[j].scores));
-        sort(pieces.dag[j].scores.begin(), pieces.dag[j].scores.end(), compareScore);
-
-        // List sorted scores - Pierre 20241015
-        for (const auto &s : pieces.dag[j].scores)
-        {
-          cout << "DAG[" << j << "]: " << s.first << " " << s.second << endl;
-        }
-        cout << endl;
       }
     }
 
@@ -494,6 +482,19 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
     if (goods)
       ret.emplace_back(imgs, pis, score);
+  }
+
+  // Store and sort scores in pieces.dag[j] - Pierre 20241018
+  for (int j = 0; j < pieces.dag.size(); j++) {
+    pieces.dag[j].scores.clear();
+    pieces.dag[j].scores.reserve(pieces.dag[j].score_map.size());
+    copy(pieces.dag[j].score_map.begin(), pieces.dag[j].score_map.end(), back_inserter(pieces.dag[j].scores));
+    sort(pieces.dag[j].scores.begin(), pieces.dag[j].scores.end(), compareScore);
+
+    // for (const auto& s : pieces.dag[j].scores) {
+    //   cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
+    // }
+    // cout << endl;
   }
 
   sort(ret.begin(), ret.end());

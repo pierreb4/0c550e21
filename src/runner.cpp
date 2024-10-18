@@ -120,6 +120,7 @@ void run(int only_sid = -1, int arg = -1) {
     }
 
     const Sample&s = sample[si];
+    Pieces pieces;
 
     // Iterate over MAXDEPTH values
     for(MAXDEPTH = INI_MAXDEPTH; MAXDEPTH < 20; MAXDEPTH+=10)
@@ -190,8 +191,8 @@ void run(int only_sid = -1, int arg = -1) {
       continue;*/
 
       // Generate candidate pieces
-      set<string> fns;
-      Pieces pieces;
+      // Moved pieces definition out of MAXDEPTH loop - Pierre 20241018
+      // Pieces pieces;
       {
         double start_time = now();
         vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
@@ -265,47 +266,18 @@ void run(int only_sid = -1, int arg = -1) {
       cands = evaluateCands(pieces, cands, train);
 
       // List functions - Pierre 20241015
-      // for (const Candidate &cand : cands) {
-        for (int j = 0; j < pieces.dag.size(); j++) {
-          for (const auto &s : pieces.dag[j].scores) {
-            cout << "DAG[" << j << "]: " << s.first << " " << s.second << endl;
-          }
-          cout << endl;
+      for (int j = 0; j < pieces.dag.size(); j++) {
+        for (const auto& s : pieces.dag[j].scores) {
+          cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
         }
-      // }
+        cout << endl;
+      }
 
       cout << "Cands size: " << cands.size() << endl;
-
-      // Get all fis from cands in top 10 scores and build a Functions3 struct
-      // Functions3 funcs = getFuncs(pieces, cands);
-      // Replace with:
-      // Get all pis from cands in top 10 scores and build a Pieces struct - Pierre 20241003
 
       int s2 = 0;
       if (!eval)
         s2 = scoreCands(cands, test_in, test_out);
-
-      // // Working block, to be commented out - Pierre 20241009
-      // cout << "Greedy pieces: " << cand.cnt_pieces << endl;
-      // cout << " Piece: ";
-      // for (int pi : cand.pis) cout << pi << ' ';
-      // cout << endl;
-      // for (int pi : cand.pis) {
-      //   cout << " Children: ";
-      //   // if (pi == 0) continue;
-      //   // Locate corresponding child - Pierre 20241003
-      //   int*ind = &pieces.mem[pieces.piece[pi].memi];
-      //   TinyChildren&child = pieces.dag[0].tiny_node.node[ind[0]].child;
-      //   // Figure what's in there - Pierre 20241003
-      //   for (int fi = 0; fi < pieces.dag[0].funcs.names.size(); fi++) {
-      //     int to = child.get(fi);
-      //     if (to != TinyChildren::None) {
-      //       cout << fi << "->" << to << ' ';
-      //     }
-      //   }
-      //   cout << endl;
-      // }
-      // // End of working block
 
       // Pick top 3 best distinct candidates
       vector<Candidate> answers = cands;
