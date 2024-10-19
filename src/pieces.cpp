@@ -36,15 +36,19 @@ ull hashVec(const vector<int>&vec) {
   return r;
 }
 
-Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes) {
+
+// Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes) {
+void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> out_sizes) {
   Timer set_time, piece_time, child_time;
 
-  Pieces pieces;
+  // Pieces pieces;
+  pieces.piece.clear();
+  pieces.mem.clear();
 
   vector<int>&mem = pieces.mem;
   vector<int> depth_mem;
 
-  int dags = dag.size();
+  int dags = pieces.dag.size();
 
   TinyHashMap seen;
   //set<vector<int>> seen;
@@ -70,9 +74,9 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
       q[d].push(memi);
     }
   };
-  for (int i = 0; i < dag[0].givens; i++) {
+  for (int i = 0; i < pieces.dag[0].givens; i++) {
     vector<int> v(dags,i);
-    add(dag[0].tiny_node[i].depth, v);
+    add(pieces.dag[0].tiny_node[i].depth, v);
   }
 
   /*
@@ -112,8 +116,8 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
       {
 	      int ok = 1, maxdepth = -1;
 	      for (int i = 0; i < dags; i++) {
-	        maxdepth = max(maxdepth, (int)dag[i].tiny_node[ind[i]].depth);
-	        ok &= dag[i].tiny_node[ind[i]].ispiece;
+	        maxdepth = max(maxdepth, (int)pieces.dag[i].tiny_node[ind[i]].depth);
+	        ok &= pieces.dag[i].tiny_node[ind[i]].ispiece;
 	      }
 	      if (ok && maxdepth >= depth) {
 	        Piece3 p;
@@ -129,7 +133,7 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
       child_time.start();
       {
 	      for (int i = 0; i <= train.size(); i++)
-	      dag[i].tiny_node[ind[i]].child.legacy(slow_child[i]);
+	        pieces.dag[i].tiny_node[ind[i]].child.legacy(slow_child[i]);
 	      vector<int> newi(dags), ci(dags); //current index into child[]
 	      int fi = 0;
 	      while (1) {
@@ -167,13 +171,13 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
 	        //auto&child = dag[i].node[ind[i]].child;
 	        //auto it = lower_bound(child.begin(), child.end(), make_pair(fi, -1));
 	        //if (it == child.end() || it->first != fi) {
-	        int to = dag[i].tiny_node.getChild(ind[i], fi);
+	        int to = pieces.dag[i].tiny_node.getChild(ind[i], fi);
 	        if (to == TinyChildren::None) {
-	          string name = dag[i].funcs.getName(fi);
+	          string name = pieces.dag[i].funcs.getName(fi);
 	          if (name.substr(0,4) == "Move") {
-	            newi[i] = dag[i].applyFunc(ind[i], fi);
+	            newi[i] = pieces.dag[i].applyFunc(ind[i], fi);
 	            if (newi[i] != -1 && out_sizes.size())
-		          dag[i].applyFunc(newi[i], dag[i].funcs.findfi("embed 1"));
+		            pieces.dag[i].applyFunc(newi[i], pieces.dag[i].funcs.findfi("embed 1"));
 	          } else continue;
 	        } else {
 	          newi[i] = to; //it->second
@@ -183,10 +187,10 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
 
 	      int new_depth = -1;
 	      for (int i = 0; i < dags; i++) {
-	        new_depth = max(new_depth, (int)dag[i].tiny_node[newi[i]].depth);
+	        new_depth = max(new_depth, (int)pieces.dag[i].tiny_node[newi[i]].depth);
 	      }
 
-	      int cost = dag[0].funcs.cost[fi];
+	      int cost = pieces.dag[0].funcs.cost[fi];
 
 	      if (new_depth >= depth+cost) {
 	        add(depth+cost, newi);
@@ -205,7 +209,7 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
     vector<int> look_v;
 
     int di = 0;
-    for (DAG&d : dag) {
+    for (DAG&d : pieces.dag) {
       int p = 0;
       for (string name : name_list) {
 	      int fi = d.funcs.findfi(name);
@@ -258,11 +262,11 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
 
   if (out_sizes.size() && print_nodes) {
     int nodes = 0;
-    for (DAG&d : dag) nodes += d.tiny_node.size();
+    for (DAG&d : pieces.dag) nodes += d.tiny_node.size();
     cout << "Nodes:      " << nodes << endl;
     cout << "Pieces:     " << pieces.piece.size() << endl;
   }
-  pieces.dag = std::move(dag);
+  // pieces.dag = std::move(dag);
   //pieces.seen = move(seen);
 
   // Pierre 20241002
@@ -284,5 +288,5 @@ Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<poin
     }
   }
 
-  return pieces;
+  // return pieces;
 }

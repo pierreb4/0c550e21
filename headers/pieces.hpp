@@ -14,4 +14,5 @@ struct Pieces {
 };
 
 
-Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes);
+// Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes);
+void makePieces2(Pieces& pieces, vector<pair<Image, Image>> train, vector<point> out_sizes);

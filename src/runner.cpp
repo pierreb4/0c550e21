@@ -119,7 +119,7 @@ void run(int only_sid = -1, int arg = -1) {
       cout << dones << " / " << sample.size() << endl;
     }
 
-    const Sample&s = sample[si];
+    const Sample& s = sample[si];
     Pieces pieces;
 
     // Iterate over MAXDEPTH values
@@ -174,7 +174,7 @@ void run(int only_sid = -1, int arg = -1) {
       // #warning Only 1 training example
       // train.resize(1);
 
-      vector<point> out_sizes = bruteSize(test_in, train);
+      vector<point> out_sizes = bruteSize(pieces, test_in, train);
       /*if (add_flips) {
         point predsz = out_sizes.back();
         out_sizes.clear();
@@ -195,12 +195,14 @@ void run(int only_sid = -1, int arg = -1) {
       // Pieces pieces;
       {
         double start_time = now();
-        vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
+        // vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
+        brutePieces2(pieces, test_in, train, out_sizes);
 
         if (print_times)
           cout << "brutePieces time: " << now() - start_time << endl;
         start_time = now();
-        pieces = makePieces2(dags, train, out_sizes);
+        // pieces = makePieces2(dags, train, out_sizes);
+        makePieces2(pieces, train, out_sizes);
         if (print_times)
           cout << "makePieces time: " << now() - start_time << endl;
       }

@@ -541,12 +541,13 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
 // }
 
 
-
-vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
+// vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
+void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
   int print = 1;
 
   // Add 1 for test_in
-  vector<DAG> dag(train.size()+1);
+  // vector<DAG> dag(train.size()+1);
+  pieces.dag = vector<DAG>(train.size()+1);
 
   int all_train_out_mask = 0, and_train_out_mask = ~0;
   for (int ti = 0; ti < train.size(); ti++)
@@ -563,23 +564,23 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
       sizes.push_back(out_sizes[ti]);
 
     if (print) cout << "InitFuncs3 with sizes.size: " << sizes.size() << endl;
-    dag[ti].funcs = initFuncs3(sizes);
+    pieces.dag[ti].funcs = initFuncs3(sizes);
     if (print) cout << "InitFuncs3 done" << endl;
 
-    dag[ti].initial(test_in, train, sizes, ti);
+    pieces.dag[ti].initial(test_in, train, sizes, ti);
     if (print) cout << "Initial done" << endl;
 
     total_time.start();
 
     // Above is initializations, below, build is running the functions - Pierre 20241016
     double start_time = now();
-    dag[ti].build();
+    pieces.dag[ti].build();
     if (print) cout << "Build done" << endl;
 
     if (print) cout << now()-start_time << endl;
     //dag[ti].buildBinary();
     //if (print) cout << now()-start_time << endl;
-    dag[ti].applyFunc("composeGrowing", 1);
+    pieces.dag[ti].applyFunc("composeGrowing", 1);
     if (print) cout << now()-start_time << endl;
 
     if (sizes.size() > 1) {
@@ -589,7 +590,7 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
 	      if (and_train_out_mask>>c&1)
 	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
-      dag[ti].applyFuncs(toapply, 0);
+      pieces.dag[ti].applyFuncs(toapply, 0);
       /*
       dag[ti].applyFunc("toOrigin", 0);
       if (print) cout << now()-start_time << endl;
@@ -672,10 +673,10 @@ vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, 
 
   if (out_sizes.size() && print_nodes) {
     cout << "Dag sizes: ";
-    for (int i = 0; i < dag.size(); i++)
-      cout << dag[i].tiny_node.size() << " ";
+    for (int i = 0; i < pieces.dag.size(); i++)
+      cout << pieces.dag[i].tiny_node.size() << " ";
     cout << endl;
   }
 
-  return dag;
+  // return dag;
 }

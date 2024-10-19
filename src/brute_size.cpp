@@ -17,56 +17,56 @@ bool operator<(const point a, const point b) {
   return a.y < b.y;
 }
 
-pair<vector<int>,double> solveSingle(vector<vector<int>>&seeds, const vector<int>& target) {
-  int n = target.size()+1;
-  vector<int> ans(n,1);
-  pair<int,double> best = {-1,1e9};
+pair<vector<int>, double> solveSingle(vector<vector<int>>& seeds, const vector<int>& target) {
+  int n = target.size() + 1;
+  vector<int> ans(n, 1);
+  pair<int, double> best = { -1,1e9 };
 
-  auto add = [&](const vector<int>&szs, double loss) {
+  auto add = [&](const vector<int>& szs, double loss) {
     int oks = 0;
     for (int ti = 0; ti < target.size(); ti++)
       oks += (szs[ti] == target[ti]);
-    pair<int,double> cand = {oks, -loss-10};
+    pair<int, double> cand = { oks, -loss - 10 };
     int sz = szs.back();
     if (sz >= 1 && sz <= 30 &&
-	cand > best) {
+      cand > best) {
       best = cand;
       ans = szs;
     }
-  };
+    };
 
   for (int w = 1; w <= 30; w++) {
-    add(vector<int>(n,w), w);
+    add(vector<int>(n, w), w);
   }
 
   vector<int> szs(n);
   for (int i = 0; i < seeds.size(); i++) {
-    double a = i+1;
+    double a = i + 1;
     for (int w = 1; w < 6; w++) {
       for (int x = -3; x <= 3; x++) {
-	for (int k = 0; k < n; k++)
-	  szs[k] = seeds[i][k]*w+x;
-	add(szs, a*w*(abs(x)+1));
+        for (int k = 0; k < n; k++)
+          szs[k] = seeds[i][k] * w + x;
+        add(szs, a * w * (abs(x) + 1));
       }
     }
   }
 
-  return {ans,best.second};
+  return { ans,best.second };
 }
 
 point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
   point ans = {1,1};
   pair<int,double> best = {-1,1e9};
 
-  auto add = [&](const vector<point>&szs, double loss) {
+  auto add = [&](const vector<point>& szs, double loss) {
     int oks = 0;
     for (int ti = 0; ti < target.size(); ti++)
       oks += (szs[ti] == target[ti]);
-    pair<int,double> cand = {oks, -loss};
+    pair<int, double> cand = { oks, -loss };
     point sz = szs.back();
     if (sz.x >= 1 && sz.x <= 30 &&
-	sz.y >= 1 && sz.y <= 30 &&
-	cand > best) {
+      sz.y >= 1 && sz.y <= 30 &&
+      cand > best) {
       best = cand;
       ans = sz;
     }
@@ -76,44 +76,44 @@ point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
   vector<point> szs(n);
 
   for (int i = 0; i < seeds.size(); i++) {
-    double a = i+1;
+    double a = i + 1;
     for (int h = 1; h < 6; h++) {
       for (int w = 1; w < 6; w++) {
-	for (int y = -3; y <= 3; y++) {
-	  for (int x = -3; x <= 3; x++) {
-	    for (int k = 0; k < n; k++)
-	      szs[k] = {seeds[i][k].x*w+x, seeds[i][k].y*h+y};
-	    add(szs, a*w*h*(abs(x)+1)*(abs(y)+1));
-	  }
-	}
+        for (int y = -3; y <= 3; y++) {
+          for (int x = -3; x <= 3; x++) {
+            for (int k = 0; k < n; k++)
+              szs[k] = { seeds[i][k].x * w + x, seeds[i][k].y * h + y };
+            add(szs, a * w * h * (abs(x) + 1) * (abs(y) + 1));
+          }
+        }
       }
     }
   }
 
   if (1) {//best.first < target.size()) {
     for (int i = 0; i < seeds.size(); i++) {
-      double a = i+1;
+      double a = i + 1;
       for (int j = 0; j < i; j++) {
-	double b = j+1;
-	for (int d = 0; d < 3; d++) {
-	  for (int k = 0; k < n; k++) {
-	    szs[k] = seeds[i][k];
-	    if (d == 0 || d == 2) szs[k].x = szs[k].x+seeds[j][k].x;
-	    if (d == 1 || d == 2) szs[k].y = szs[k].y+seeds[j][k].y;
-	  }
-	  add(szs, a*b);
-	}
+        double b = j + 1;
+        for (int d = 0; d < 3; d++) {
+          for (int k = 0; k < n; k++) {
+            szs[k] = seeds[i][k];
+            if (d == 0 || d == 2) szs[k].x = szs[k].x + seeds[j][k].x;
+            if (d == 1 || d == 2) szs[k].y = szs[k].y + seeds[j][k].y;
+          }
+          add(szs, a * b);
+        }
       }
     }
   }
 
   {
     vector<vector<int>> seedsx, seedsy;
-    for (vector<point>&seed : seeds) {
+    for (vector<point>& seed : seeds) {
       vector<int> seedx, seedy;
       for (point p : seed) {
-	seedx.push_back(p.x);
-	seedy.push_back(p.y);
+        seedx.push_back(p.x);
+        seedy.push_back(p.y);
       }
       seedsx.push_back(seedx);
       seedsy.push_back(seedy);
@@ -128,9 +128,9 @@ point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
 
     vector<point> combined;
     for (int i = 0; i < n; i++) {
-      combined.push_back({bestx[i], besty[i]});
+      combined.push_back({ bestx[i], besty[i] });
     }
-    double combloss = scorex*scorey;
+    double combloss = scorex * scorey;
     add(combined, combloss);
   }
 
@@ -139,18 +139,18 @@ point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
   return ans;
 }
 
-vector<point> bruteSize(Image_ test_in, vector<pair<Image,Image>> train) {
+vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>> train) {
   vector<point> out_sizes;
   for (auto [in,out] : train) {
     out_sizes.push_back(out.sz);
   }
   int cp = MAXDEPTH;
   MAXDEPTH = min(MAXDEPTH, 30);
-  Pieces pieces;
+  // Pieces pieces;
   {
-    set <string> fns;
-    vector<DAG> dags = brutePieces2(test_in, train, {});
-    pieces = makePieces2(dags, train, {});
+    // vector<DAG> dags = brutePieces2(test_in, train, {});
+    brutePieces2(pieces, test_in, train, {});
+    makePieces2(pieces, train, {});
   }
   int dags = pieces.dag.size();
 
