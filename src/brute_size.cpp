@@ -54,7 +54,7 @@ pair<vector<int>, double> solveSingle(vector<vector<int>>& seeds, const vector<i
   return { ans,best.second };
 }
 
-point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
+point solveSize(vector<vector<point>>& seeds, const vector<point>& target) {
   point ans = {1,1};
   pair<int,double> best = {-1,1e9};
 
@@ -141,9 +141,8 @@ point solveSize(vector<vector<point>>&seeds, const vector<point>& target) {
 
 vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>> train) {
   vector<point> out_sizes;
-  for (auto [in,out] : train) {
-    out_sizes.push_back(out.sz);
-  }
+  for (auto [in,out] : train) out_sizes.push_back(out.sz);
+
   int cp = MAXDEPTH;
   MAXDEPTH = min(MAXDEPTH, 30);
   {
@@ -175,6 +174,22 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
     for (int ti = 0; ti <= train.size(); ti++) {
       if (pieces.dag[ti].tiny_node[ind[ti]].isvec) ok = 0;
       else {
+        Image_ img = pieces.dag[ti].getImg(ind[ti]);
+        const vector<char>&p = img.mask;
+
+        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.x: " << img.x << " img.y: " << img.y << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.w: " << img.w << " img.h: " << img.h << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.mask.size: " << img.mask.size() << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.mask: " << endl;
+        // for (int i = 0; i < img.h; i++) {
+        //   for (int j = 0; j < img.w; j++) {
+        //     cout << img(i,j);
+        //   }
+        //   cout << endl;
+        // }
+        // cout << endl;
+
 	      sz.push_back(pieces.dag[ti].getImg(ind[ti]).sz);
       }
     }

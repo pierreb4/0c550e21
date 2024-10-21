@@ -374,8 +374,10 @@ void DAG::build(int DEPTH) {
 }
 
 void DAG::initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> sizes, int ti) {
-  if (sizes.size() > 1)
+  if (sizes.size() > 1) {
     target_size = sizes[1];
+    cout << __FILE_NAME__ << " ti: " << ti << " target_size: " << target_size.x << " " << target_size.y << endl;
+  }
   else
     target_size = point{-1,-1};
 
@@ -429,7 +431,7 @@ int DAG::applyFunc(int DEPTH, int curi, int fi, const State&state) {
   }
   //assert(it2 == -2);
 
-  cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
+  // cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
 
   State nxt;
   nxt.depth = tiny_node[curi].depth+depth[DEPTH/10-1].func.cost[fi];
@@ -542,9 +544,11 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
       // if (pieces.dag[ti].depth[DEPTH / 10 - 1].func.name.size() == 0) 
       {
         Functions func = initFuncs3(sizes);
+
         cout << __FILE_NAME__ << " ti: " << ti << endl;
         cout << " depth: " << DEPTH << endl;
         cout << " score.size: " << pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() << endl;
+
         if (pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() == 0) {
           cout << __FILE_NAME__ << " No score yet for " << DEPTH << endl;
           // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), funcs);

@@ -13,18 +13,7 @@ using namespace std;
 #include "brute2.hpp"
 #include "pieces.hpp"
 #include "timer.hpp"
-/*
-struct Piece2 {
-  vector<int> ind;
-  int depth;
-};
 
-struct Pieces {
-  vector<DAG> dag;
-  vector<Piece2> piece;
-  set<vector<int>> seen;
-};
-*/
 
 extern int MAXDEPTH, print_nodes;
 
@@ -50,7 +39,6 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
   int dags = pieces.dag.size();
 
   TinyHashMap seen;
-  //set<vector<int>> seen;
   vector<queue<int>> q;
 
   auto add = [&](int d, const vector<int>&v) {
@@ -73,8 +61,9 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
       q[d].push(memi);
     }
   };
+
   for (int i = 0; i < pieces.dag[0].givens; i++) {
-    vector<int> v(dags,i);
+    vector<int> v(dags, i);
     add(pieces.dag[0].tiny_node[i].depth, v);
   }
 
@@ -166,8 +155,10 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
 
       // cout << __FILE_NAME__ << " MAXDEPTH: " << MAXDEPTH << endl;
 
-      for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH+=10) {
+      // for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH+=10)
+      {
         for (auto& [fi, newi] : newi_list) {
+          // This doesn't run - Pierre 20241021
           if (0) {
             int i = train.size();
             //auto&child = dag[i].node[ind[i]].child;
@@ -175,13 +166,13 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
             //if (it == child.end() || it->first != fi) {
             int to = pieces.dag[i].tiny_node.getChild(ind[i], fi);
             if (to == TinyChildren::None) {
-              string name = pieces.dag[i].depth[DEPTH/10-1].getName(fi);
+              string name = pieces.dag[i].depth[MAXDEPTH/10-1].getName(fi);
               if (name.substr(0, 4) == "Move") {
                 // XXX Fix depth if needed - Pierre 20241020
-                newi[i] = pieces.dag[i].applyFunc(DEPTH, ind[i], fi);
+                newi[i] = pieces.dag[i].applyFunc(MAXDEPTH, ind[i], fi);
                 if (newi[i] != -1 && out_sizes.size())
                   // XXX Fix depth if needed - Pierre 20241020
-                  pieces.dag[i].applyFunc(DEPTH, newi[i], pieces.dag[i].depth[DEPTH/10-1].findfi("embed 1"));
+                  pieces.dag[i].applyFunc(MAXDEPTH, newi[i], pieces.dag[i].depth[MAXDEPTH/10-1].findfi("embed 1"));
               }
               else continue;
             }
@@ -196,7 +187,7 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
             new_depth = max(new_depth, (int)pieces.dag[i].tiny_node[newi[i]].depth);
           }
 
-          int cost = pieces.dag[0].depth[DEPTH/10-1].func.cost[fi];
+          int cost = pieces.dag[0].depth[MAXDEPTH/10-1].func.cost[fi];
 
           if (new_depth >= depth + cost) {
             add(depth + cost, newi);
@@ -267,7 +258,8 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
   //   lookFor({});
   // 
 
-  if (out_sizes.size() && print_nodes) {
+  // if (out_sizes.size() && print_nodes) {
+  if (print_nodes) {
     int nodes = 0;
     for (DAG&d : pieces.dag) nodes += d.tiny_node.size();
     cout << "Nodes:      " << nodes << endl;

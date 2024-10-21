@@ -100,22 +100,23 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   int n = pieces.piece.size();
 
-  {
-    cout << __FILE_NAME__ << " pieces.dag.size: " << pieces.dag.size() << endl;
-    for (int i = 0; i < pieces.dag.size(); i++)
-    {
-      cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
-      for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
-        for (int k = 0; k < pieces.dag[i].depth[MAXDEPTH/10-1].func.name.size(); k++)
-          if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
-          {
-            cout << "Dag: " << i << " node: " << j;
-            cout << " num: " << pieces.dag[i].tiny_node.node[j].child.fi(k);
-            cout << " func: " << pieces.dag[i].depth[MAXDEPTH/10-1].getName(k); 
-            cout << endl;
-          }
-    }
-  }
+  // // Display DAGs, nodes and children - Pierre 20241021
+  // {
+  //   cout << __FILE_NAME__ << " pieces.dag.size: " << pieces.dag.size() << endl;
+  //   for (int i = 0; i < pieces.dag.size(); i++)
+  //   {
+  //     cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
+  //     for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
+  //       for (int k = 0; k < pieces.dag[i].depth[MAXDEPTH/10-1].func.name.size(); k++)
+  //         if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
+  //         {
+  //           cout << "Dag: " << i << " node: " << j;
+  //           cout << " num: " << pieces.dag[i].tiny_node.node[j].child.fi(k);
+  //           cout << " func: " << pieces.dag[i].depth[MAXDEPTH/10-1].getName(k); 
+  //           cout << endl;
+  //         }
+  //   }
+  // }
 
   int M = 0;
   for (int s : sz) M += s;
@@ -131,7 +132,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
     TinyHashMap seen;
     mybitset badi(M), blacki(M);
     for (int i = 0; i < n; i++) {
-//      cout << "Piece: " << i << endl;
+      // cout << __FILE_NAME__ << " Piece: " << i << " MAXDEPTH: " << MAXDEPTH << endl;
       int x = 0, y = 0;
       for (int j = 0; j < sz.size(); j++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
@@ -142,6 +143,22 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 //        fis.push_back(fi);
 	      const vector<char>&p = img.mask;
 	      const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
+
+        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.x: " << img.x << " img.y: " << img.y << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.w: " << img.w << " img.h: " << img.h << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.mask.size: " << img.mask.size() << endl;
+        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.mask: " << endl;
+        // for (int i = 0; i < img.h; i++) {
+        //   for (int j = 0; j < img.w; j++) {
+        //     cout << img(i,j);
+        //   }
+        //   cout << endl;
+        // }
+        // cout << endl;
+
+        // cout << __FILE_NAME__ << "  j: " << j << " sz[j]: " << sz[j] << " p.size: " << p.size() << endl;
+
 	      assert(p.size() == sz[j]);
 	      assert(t.size() == sz[j]);
 	      for (int k = 0; k < sz[j]; k++) {

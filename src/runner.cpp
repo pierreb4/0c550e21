@@ -50,7 +50,7 @@ void writeVerdict(int si, string sid, int verdict) {
 }
 
 
-int INI_MAXDEPTH = -1; //Argument
+int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
@@ -71,7 +71,7 @@ void run(int only_sid = -1, int arg = -1) {
   int add_flip_id = (arg >= 30 && arg < 40 ? 7 : 6);
 
   if (arg == -1) arg = 2;
-  INI_MAXDEPTH = arg % 10 * 10;
+  ARG_MAXDEPTH = arg % 10 * 10;
 
   // Make this 1 before submission - Pierre 20240924
   int eval = 1;
@@ -120,69 +120,70 @@ void run(int only_sid = -1, int arg = -1) {
     }
 
     const Sample& s = sample[si];
-    Pieces pieces;
 
-    // Iterate over MAXDEPTH values
-    for(MAXDEPTH = 10; MAXDEPTH <= INI_MAXDEPTH; MAXDEPTH+=10) {
-      // Normalize sample
-      Simplifier sim = normalizeCols(s.train);
-      if (no_norm)
-        sim = normalizeDummy(s.train);
+    // Normalize sample
+    Simplifier sim = normalizeCols(s.train);
+    if (no_norm)
+      sim = normalizeDummy(s.train);
 
-      vector<pair<Image, Image>> train;
+    vector<pair<Image, Image>> train;
+    for (auto& [in, out] : s.train)
+    {
+      train.push_back(sim(in, out));
+    }
+    // auto base_train = train;
+    if (add_flips)
+    {
       for (auto& [in, out] : s.train)
       {
-        train.push_back(sim(in, out));
+        auto [rin, rout] = sim(in, out);
+        train.push_back({ rigid(rin, add_flip_id), rigid(rout, add_flip_id) });
       }
-      // auto base_train = train;
-      if (add_flips)
+    }
+    auto [test_in, test_out] = sim(s.test_in, s.test_out);
+
+    {
+      int insumsz = 0, outsumsz = 0, macols = 0;
+      int maxside = 0, maxarea = 0;
+      for (auto& [in, out] : s.train)
       {
-        for (auto &[in, out] : s.train)
-        {
-          auto [rin, rout] = sim(in, out);
-          train.push_back({rigid(rin, add_flip_id), rigid(rout, add_flip_id)});
-        }
+        maxside = max({ maxside, in.w, in.h, out.w, out.h });
+        maxarea = max({ maxarea, in.w * in.h, out.w * out.h });
+        insumsz += in.w * in.h;
+        outsumsz += out.w * out.h;
+        macols = max(macols, __builtin_popcount(core::colMask(in)));
       }
-      auto [test_in, test_out] = sim(s.test_in, s.test_out);
+      int sumsz = max(insumsz, outsumsz);
+      cerr << "Features: " << insumsz << ' ' << outsumsz << ' ' << macols << endl;
 
-      {
-        int insumsz = 0, outsumsz = 0, macols = 0;
-        int maxside = 0, maxarea = 0;
-        for (auto &[in, out] : s.train)
-        {
-          maxside = max({maxside, in.w, in.h, out.w, out.h});
-          maxarea = max({maxarea, in.w * in.h, out.w * out.h});
-          insumsz += in.w * in.h;
-          outsumsz += out.w * out.h;
-          macols = max(macols, __builtin_popcount(core::colMask(in)));
-        }
-        int sumsz = max(insumsz, outsumsz);
-        cerr << "Features: " << insumsz << ' ' << outsumsz << ' ' << macols << endl;
+      double w[4] = { 1.2772523019346949, 0.00655104, 0.70820414, 0.00194519 };
+      double expect_time3 = w[0] + w[1] * sumsz + w[2] * macols + w[1] * w[2] * sumsz * macols;
+      // MAXDEPTH = 2;//(expect_time3 < 30 ? 4 : 3);//sumsz < 20*20*3 ? 3 : 2;
+      cerr << __FILE_NAME__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
 
-        double w[4] = {1.2772523019346949, 0.00655104, 0.70820414, 0.00194519};
-        double expect_time3 = w[0] + w[1] * sumsz + w[2] * macols + w[1] * w[2] * sumsz * macols;
-        // MAXDEPTH = 2;//(expect_time3 < 30 ? 4 : 3);//sumsz < 20*20*3 ? 3 : 2;
-        cerr << __FILE_NAME__ << " MAXDEPTH: " << MAXDEPTH << endl;
+      MAXSIDE = 100;
+      MAXAREA = maxarea * 2;
+      MAXPIXELS = MAXAREA * 5;
+    }
+    // #warning Only 1 training example
+    // train.resize(1);
 
-        MAXSIDE = 100;
-        MAXAREA = maxarea * 2;
-        MAXPIXELS = MAXAREA * 5;
-      }
-      // #warning Only 1 training example
-      // train.resize(1);
+    Pieces pieces;
+    // Add 1 for test_in  
+    pieces.dag = vector<DAG>(train.size() + 1);
 
-      // Add 1 for test_in  
-      pieces.dag = vector<DAG>(train.size() + 1);
+    // Initialize depth (only for train?) - Pierre 20241021
+    for (int i = 0; i < pieces.dag.size(); i++) {
+      pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
+      cout << __FILE_NAME__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
+    }
 
-      // Initialize depth - Pierre 20241021
-      for (int pi = 0; pi < pieces.dag.size(); pi++) {
-        pieces.dag[pi].depth.resize(MAXDEPTH / 10);
-      }
+    vector<point> out_sizes = bruteSize(pieces, test_in, train);
 
-      vector<point> out_sizes = bruteSize(pieces, test_in, train);
+    cout << __FILE_NAME__ << " Done with bruteSize" << endl;
 
-      cout << __FILE_NAME__ << " Done with bruteSize" << endl;
-
+    // Iterate over MAXDEPTH values
+    for(MAXDEPTH = 10; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
       /*if (add_flips) {
         point predsz = out_sizes.back();
         out_sizes.clear();
