@@ -102,7 +102,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   // // Display DAGs, nodes and children - Pierre 20241021
   // {
-  //   cout << __FILE_NAME__ << " pieces.dag.size: " << pieces.dag.size() << endl;
+  //   cout << __FILE__ << " pieces.dag.size: " << pieces.dag.size() << endl;
   //   for (int i = 0; i < pieces.dag.size(); i++)
   //   {
   //     cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
@@ -132,7 +132,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
     TinyHashMap seen;
     mybitset badi(M), blacki(M);
     for (int i = 0; i < n; i++) {
-      // cout << __FILE_NAME__ << " Piece: " << i << " MAXDEPTH: " << MAXDEPTH << endl;
+      // cout << __FILE__ << " Piece: " << i << " MAXDEPTH: " << MAXDEPTH << endl;
       int x = 0, y = 0;
       for (int j = 0; j < sz.size(); j++) {
 	      int*ind = &pieces.mem[pieces.piece[i].memi];
@@ -144,11 +144,11 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	      const vector<char>&p = img.mask;
 	      const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
 
-        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.x: " << img.x << " img.y: " << img.y << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.w: " << img.w << " img.h: " << img.h << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.mask.size: " << img.mask.size() << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << j << " img.mask: " << endl;
+        // cout << __FILE__ << " pieces.dag: " << j << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
+        // cout << __FILE__ << " pieces.dag: " << j << " img.x: " << img.x << " img.y: " << img.y << endl;
+        // cout << __FILE__ << " pieces.dag: " << j << " img.w: " << img.w << " img.h: " << img.h << endl;
+        // cout << __FILE__ << " pieces.dag: " << j << " img.mask.size: " << img.mask.size() << endl;
+        // cout << __FILE__ << " pieces.dag: " << j << " img.mask: " << endl;
         // for (int i = 0; i < img.h; i++) {
         //   for (int j = 0; j < img.w; j++) {
         //     cout << img(i,j);
@@ -157,7 +157,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
         // }
         // cout << endl;
 
-        // cout << __FILE_NAME__ << "  j: " << j << " sz[j]: " << sz[j] << " p.size: " << p.size() << endl;
+        // cout << __FILE__ << "  j: " << j << " sz[j]: " << sz[j] << " p.size: " << p.size() << endl;
 
 	      assert(p.size() == sz[j]);
 	      assert(t.size() == sz[j]);
@@ -430,7 +430,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     assert(cand.max_depth >= 0 && cand.max_depth < 100);
     assert(cand.cnt_pieces >= 0 && cand.cnt_pieces < 100);
     
-    // cout << __FILE_NAME__ << " Max_depth: " << cand.max_depth << " Cnt_pieces: " << cand.cnt_pieces << endl;
+    // cout << __FILE__ << " Max_depth: " << cand.max_depth << " Cnt_pieces: " << cand.cnt_pieces << endl;
     
     double prior = cand.max_depth + cand.cnt_pieces * 1e-3; //cnt_pieces;
 
@@ -438,8 +438,8 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     for (int pi : pis) cout << pi << ' ';
     cout << endl;
 
-    // cout << "  - " << __FILE_NAME__ << " Cands.size: " << cands.size() << endl;
-    // cout << "  - " << __FILE_NAME__ << " Train.size: " << train.size() << endl;
+    // cout << "  - " << __FILE__ << " Cands.size: " << cands.size() << endl;
+    // cout << "  - " << __FILE__ << " Train.size: " << train.size() << endl;
 
     int goods = 0;
     for (int i = 0; i < train.size(); i++) {
@@ -498,7 +498,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     sort(depth.score.begin(), depth.score.end(), compareScore);
 
     // for (const auto& s : pieces.dag[j].scores) {
-    //   cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
+    //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
     // }
     // cout << endl;
   }

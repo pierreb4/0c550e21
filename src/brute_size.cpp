@@ -150,11 +150,11 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
 
     brutePieces2(pieces, test_in, train, {});
     if (print_times)
-      cout << __FILE_NAME__ << " brutePieces time: " << now() - start_time << endl;
+      cout << __FILE__ << " brutePieces time: " << now() - start_time << endl;
     start_time = now();
     makePieces2(pieces, train, {});
     if (print_times)
-      cout << __FILE_NAME__ << " makePieces time: " << now() - start_time << endl;
+      cout << __FILE__ << " makePieces time: " << now() - start_time << endl;
   }
   int dags = pieces.dag.size();
 
@@ -177,11 +177,11 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
         Image_ img = pieces.dag[ti].getImg(ind[ti]);
         const vector<char>&p = img.mask;
 
-        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.x: " << img.x << " img.y: " << img.y << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.w: " << img.w << " img.h: " << img.h << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.mask.size: " << img.mask.size() << endl;
-        // cout << __FILE_NAME__ << " pieces.dag: " << ti << " img.mask: " << endl;
+        // cout << __FILE__ << " pieces.dag: " << ti << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
+        // cout << __FILE__ << " pieces.dag: " << ti << " img.x: " << img.x << " img.y: " << img.y << endl;
+        // cout << __FILE__ << " pieces.dag: " << ti << " img.w: " << img.w << " img.h: " << img.h << endl;
+        // cout << __FILE__ << " pieces.dag: " << ti << " img.mask.size: " << img.mask.size() << endl;
+        // cout << __FILE__ << " pieces.dag: " << ti << " img.mask: " << endl;
         // for (int i = 0; i < img.h; i++) {
         //   for (int j = 0; j < img.w; j++) {
         //     cout << img(i,j);

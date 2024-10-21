@@ -159,7 +159,7 @@ void run(int only_sid = -1, int arg = -1) {
       double w[4] = { 1.2772523019346949, 0.00655104, 0.70820414, 0.00194519 };
       double expect_time3 = w[0] + w[1] * sumsz + w[2] * macols + w[1] * w[2] * sumsz * macols;
       // MAXDEPTH = 2;//(expect_time3 < 30 ? 4 : 3);//sumsz < 20*20*3 ? 3 : 2;
-      cerr << __FILE_NAME__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
+      cerr << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
 
       MAXSIDE = 100;
       MAXAREA = maxarea * 2;
@@ -176,12 +176,12 @@ void run(int only_sid = -1, int arg = -1) {
     // Initialize depth (only for train?) - Pierre 20241021
     for (int i = 0; i < pieces.dag.size(); i++) {
       pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
-      cout << __FILE_NAME__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
+      cout << __FILE__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
     }
 
     vector<point> out_sizes = bruteSize(pieces, test_in, train);
 
-    cout << __FILE_NAME__ << " Done with bruteSize" << endl;
+    cout << __FILE__ << " Done with bruteSize" << endl;
 
     // Iterate over MAXDEPTH values
     for(MAXDEPTH = 10; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
@@ -205,11 +205,11 @@ void run(int only_sid = -1, int arg = -1) {
         brutePieces2(pieces, test_in, train, out_sizes);
 
         if (print_times)
-          cout << __FILE_NAME__ << " brutePieces time: " << now() - start_time << endl;
+          cout << __FILE__ << " brutePieces time: " << now() - start_time << endl;
         start_time = now();
         makePieces2(pieces, train, out_sizes);
         if (print_times)
-          cout << __FILE_NAME__ << " makePieces time: " << now() - start_time << endl;
+          cout << __FILE__ << " makePieces time: " << now() - start_time << endl;
       }
 
       if (print_mem)
@@ -275,7 +275,7 @@ void run(int only_sid = -1, int arg = -1) {
       // List functions - Pierre 20241015
       for (int j = 0; j < pieces.dag.size(); j++) {
         for (const auto& s : pieces.dag[j].depth[MAXDEPTH/10-1].score) {
-          cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
+          cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
         }
         cout << endl;
       }

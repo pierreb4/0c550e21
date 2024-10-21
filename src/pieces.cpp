@@ -153,7 +153,7 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
       }
       child_time.stop();
 
-      // cout << __FILE_NAME__ << " MAXDEPTH: " << MAXDEPTH << endl;
+      // cout << __FILE__ << " MAXDEPTH: " << MAXDEPTH << endl;
 
       // for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH+=10)
       {

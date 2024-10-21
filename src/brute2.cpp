@@ -346,7 +346,7 @@ int DAG::add(const State&nxt, bool force) { //force = false
 void DAG::build(int DEPTH) {
   build_f_time.start();
 
-  cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
+  cout << __FILE__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
 
   for (int curi = 0; curi < tiny_node.size(); curi++) {
     int ndepth = tiny_node[curi].depth;
@@ -357,7 +357,7 @@ void DAG::build(int DEPTH) {
     State cur_state = tiny_node.getState(curi);
     state_time.stop();
     for (int fi : depth[DEPTH / 10 - 1].func.list) {
-      // cout << __FILE_NAME__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
+      // cout << __FILE__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
       nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
       if (nxt.depth > DEPTH) continue;
       if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
@@ -376,7 +376,7 @@ void DAG::build(int DEPTH) {
 void DAG::initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> sizes, int ti) {
   if (sizes.size() > 1) {
     target_size = sizes[1];
-    cout << __FILE_NAME__ << " ti: " << ti << " target_size: " << target_size.x << " " << target_size.y << endl;
+    cout << __FILE__ << " ti: " << ti << " target_size: " << target_size.x << " " << target_size.y << endl;
   }
   else
     target_size = point{-1,-1};
@@ -431,7 +431,7 @@ int DAG::applyFunc(int DEPTH, int curi, int fi, const State&state) {
   }
   //assert(it2 == -2);
 
-  // cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
+  // cout << __FILE__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
 
   State nxt;
   nxt.depth = tiny_node[curi].depth+depth[DEPTH/10-1].func.cost[fi];
@@ -503,7 +503,7 @@ void DAG::applyFuncs(int DEPTH, vector<pair<string,int>> names, bool vec) {
 void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
   int print = 1;
 
-  cout << __FILE_NAME__ << " In brutePieces2" << endl;
+  cout << __FILE__ << " In brutePieces2" << endl;
 
   // // Save the DAGs - Pierre 20241020
   // vector<DAG> dag = std::move(pieces.dag);
@@ -514,12 +514,12 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
   //   // dag[i].depth.resize(MAXDEPTH / 10);
   //   for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
 
-  //     cout << __FILE_NAME__ << " scores.size at " << DEPTH << " before: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
+  //     cout << __FILE__ << " scores.size at " << DEPTH << " before: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
 
   //     // Move scores from dag to pieces.dag - Pierre 20241020
   //     pieces.dag[i].depth[DEPTH / 10 - 1].score = std::move(dag[i].depth[DEPTH / 10 - 1].score);
 
-  //     cout << __FILE_NAME__ << " scores.size " << DEPTH << " after: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
+  //     cout << __FILE__ << " scores.size " << DEPTH << " after: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
   //   }
   // }
 
@@ -545,17 +545,17 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
       {
         Functions func = initFuncs3(sizes);
 
-        cout << __FILE_NAME__ << " ti: " << ti << endl;
+        cout << __FILE__ << " ti: " << ti << endl;
         cout << " depth: " << DEPTH << endl;
         cout << " score.size: " << pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() << endl;
 
         if (pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() == 0) {
-          cout << __FILE_NAME__ << " No score yet for " << DEPTH << endl;
+          cout << __FILE__ << " No score yet for " << DEPTH << endl;
           // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), funcs);
           pieces.dag[ti].depth[DEPTH / 10 - 1].func = std::move(func);
         }
         else {
-          cout << __FILE_NAME__ << " Got scores for " << DEPTH << endl;
+          cout << __FILE__ << " Got scores for " << DEPTH << endl;
           // Add functions with scores - Pierre 20241019
           Functions s_func = func;
           set<int> list;
