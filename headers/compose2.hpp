@@ -16,7 +16,7 @@ inline bool operator<(const Candidate& a, const Candidate& b) {
   return a.score > b.score;
 }
 
-inline bool compareScore(const pair<string, double>& a, const pair<string,double>& b) {
+inline bool compareScore(const pair<int, double>& a, const pair<int,double>& b) {
   return a.second > b.second;
 }
 

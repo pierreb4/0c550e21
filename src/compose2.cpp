@@ -21,7 +21,7 @@ struct Candidate {
 */
 
 
-extern int print_times;
+extern int MAXDEPTH, print_times;
 
 
 struct mybitset {
@@ -100,22 +100,22 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   int n = pieces.piece.size();
 
-  // {
-  //   cout << "greedyCompose2: " << pieces.dag.size() << endl;
-  //   for (int i = 0; i < pieces.dag.size(); i++)
-  //   {
-  //     cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
-  //     for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
-  //       for (int k = 0; k < pieces.dag[i].funcs.names.size(); k++)
-  //         if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
-  //         {
-  //           cout << "Dag: " << i << " node: " << j;
-  //           cout << " num: " << pieces.dag[i].tiny_node.node[j].child.fi(k);
-  //           cout << " func: " << pieces.dag[i].funcs.getName(k); 
-  //           cout << endl;
-  //         }
-  //   }
-  // }
+  {
+    cout << __FILE_NAME__ << " pieces.dag.size: " << pieces.dag.size() << endl;
+    for (int i = 0; i < pieces.dag.size(); i++)
+    {
+      cout << "Node size: " << pieces.dag[i].tiny_node.size() << endl;
+      for (int j = 0; j < pieces.dag[i].tiny_node.size(); j++)
+        for (int k = 0; k < pieces.dag[i].depth[MAXDEPTH/10-1].func.name.size(); k++)
+          if (pieces.dag[i].tiny_node.node[j].child.fi(k) != TinyChildren::None)
+          {
+            cout << "Dag: " << i << " node: " << j;
+            cout << " num: " << pieces.dag[i].tiny_node.node[j].child.fi(k);
+            cout << " func: " << pieces.dag[i].depth[MAXDEPTH/10-1].getName(k); 
+            cout << endl;
+          }
+    }
+  }
 
   int M = 0;
   for (int s : sz) M += s;
@@ -398,19 +398,6 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
   for (auto [in,out] : train)
     target.push_back(out);
 
-  /*
-  for (Piece3&p : pieces.piece) {
-    vector<Image> imgs;
-    //assert(p.ind.size() == pieces.dag.size());
-    int*ind = &pieces.mem[p.memi];
-    for (int i = 0; i < pieces.dag.size(); i++) {
-      //assert(p.ind[i] >= 0 && p.ind[i] < (int)pieces.dag[i].node.size());
-      imgs.push_back(pieces.dag[i].getImg(ind[i]));
-    }
-    cands.emplace_back(imgs, 1, p.depth, p.depth);
-  }
-  */
-
   for (const Candidate&cand : greedyCompose2(pieces, target, out_sizes)) {
     cands.push_back(cand);
   }
@@ -420,7 +407,6 @@ vector<Candidate> composePieces2(Pieces&pieces, vector<pair<Image, Image>> train
 
 vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, vector<pair<Image,Image>> train) {
   vector<Candidate> ret;
-  // unordered_map<string,double> score_map;
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
     vector<int> pis = cand.pis;
@@ -448,19 +434,16 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
         for (int k = 0; k < pfis; k++) {
           int pfi = pieces.dag[j].getPfi(ind[j], k);
           if (pfi != TinyChildren::None) {
-            // Pierre 20241017
-            string fn = pieces.dag[j].funcs.getName(pfi);
-
             // Store scores in pieces.dag[j] - Pierre 20241018
-            auto it = pieces.dag[j].score_map.find(fn);
-            if (it != pieces.dag[j].score_map.end()) {
+            auto it = pieces.dag[j].depth[MAXDEPTH/10-1].score_map.find(pfi);
+            if (it != pieces.dag[j].depth[MAXDEPTH/10-1].score_map.end()) {
               // Update fn score if needed
               if (it->second < score) {
                 it->second = score;
               }
             } else {
               // Insert fn with score
-              pieces.dag[j].score_map[fn] = score;
+              pieces.dag[j].depth[MAXDEPTH/10-1].score_map[pfi] = score;
             }
           }
         }
@@ -486,10 +469,11 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
   // Store and sort scores in pieces.dag[j] - Pierre 20241018
   for (int j = 0; j < pieces.dag.size(); j++) {
-    pieces.dag[j].scores.clear();
-    pieces.dag[j].scores.reserve(pieces.dag[j].score_map.size());
-    copy(pieces.dag[j].score_map.begin(), pieces.dag[j].score_map.end(), back_inserter(pieces.dag[j].scores));
-    sort(pieces.dag[j].scores.begin(), pieces.dag[j].scores.end(), compareScore);
+    Depth & depth = pieces.dag[j].depth[MAXDEPTH/10-1];
+    depth.score.clear();
+    depth.score.reserve(depth.score_map.size());
+    copy(depth.score_map.begin(), depth.score_map.end(), back_inserter(depth.score));
+    sort(depth.score.begin(), depth.score.end(), compareScore);
 
     // for (const auto& s : pieces.dag[j].scores) {
     //   cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;

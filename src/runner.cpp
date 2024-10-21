@@ -123,17 +123,14 @@ void run(int only_sid = -1, int arg = -1) {
     Pieces pieces;
 
     // Iterate over MAXDEPTH values
-    for(MAXDEPTH = INI_MAXDEPTH; MAXDEPTH < 20; MAXDEPTH+=10)
-    {
-      cout << "MAXDEPTH: " << MAXDEPTH << endl;
-
+    for(MAXDEPTH = 10; MAXDEPTH <= INI_MAXDEPTH; MAXDEPTH+=10) {
       // Normalize sample
       Simplifier sim = normalizeCols(s.train);
       if (no_norm)
         sim = normalizeDummy(s.train);
 
       vector<pair<Image, Image>> train;
-      for (auto &[in, out] : s.train)
+      for (auto& [in, out] : s.train)
       {
         train.push_back(sim(in, out));
       }
@@ -165,7 +162,7 @@ void run(int only_sid = -1, int arg = -1) {
         double w[4] = {1.2772523019346949, 0.00655104, 0.70820414, 0.00194519};
         double expect_time3 = w[0] + w[1] * sumsz + w[2] * macols + w[1] * w[2] * sumsz * macols;
         // MAXDEPTH = 2;//(expect_time3 < 30 ? 4 : 3);//sumsz < 20*20*3 ? 3 : 2;
-        cerr << "MAXDEPTH: " << MAXDEPTH << endl;
+        cerr << __FILE_NAME__ << " MAXDEPTH: " << MAXDEPTH << endl;
 
         MAXSIDE = 100;
         MAXAREA = maxarea * 2;
@@ -174,7 +171,18 @@ void run(int only_sid = -1, int arg = -1) {
       // #warning Only 1 training example
       // train.resize(1);
 
+      // Add 1 for test_in  
+      pieces.dag = vector<DAG>(train.size() + 1);
+
+      // Initialize depth - Pierre 20241021
+      for (int pi = 0; pi < pieces.dag.size(); pi++) {
+        pieces.dag[pi].depth.resize(MAXDEPTH / 10);
+      }
+
       vector<point> out_sizes = bruteSize(pieces, test_in, train);
+
+      cout << __FILE_NAME__ << " Done with bruteSize" << endl;
+
       /*if (add_flips) {
         point predsz = out_sizes.back();
         out_sizes.clear();
@@ -190,21 +198,16 @@ void run(int only_sid = -1, int arg = -1) {
       writeVerdict(si, s.id, verdict[si]);
       continue;*/
 
-      // Generate candidate pieces
-      // Moved pieces definition out of MAXDEPTH loop - Pierre 20241018
-      // Pieces pieces;
       {
         double start_time = now();
-        // vector<DAG> dags = brutePieces2(test_in, train, out_sizes);
         brutePieces2(pieces, test_in, train, out_sizes);
 
         if (print_times)
-          cout << "brutePieces time: " << now() - start_time << endl;
+          cout << __FILE_NAME__ << " brutePieces time: " << now() - start_time << endl;
         start_time = now();
-        // pieces = makePieces2(dags, train, out_sizes);
         makePieces2(pieces, train, out_sizes);
         if (print_times)
-          cout << "makePieces time: " << now() - start_time << endl;
+          cout << __FILE_NAME__ << " makePieces time: " << now() - start_time << endl;
       }
 
       if (print_mem)
@@ -269,7 +272,7 @@ void run(int only_sid = -1, int arg = -1) {
 
       // List functions - Pierre 20241015
       for (int j = 0; j < pieces.dag.size(); j++) {
-        for (const auto& s : pieces.dag[j].scores) {
+        for (const auto& s : pieces.dag[j].depth[MAXDEPTH/10-1].score) {
           cout << __FILE_NAME__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
         }
         cout << endl;

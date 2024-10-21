@@ -32,20 +32,17 @@ double now() {
 Timer build_f_time, apply_f_time, real_f_time, add_time, find_child_time, add_child_time, hash_time, map_time, total_time;
 Timer state_time;
 
-void Functions3::add(const string& name, int cost_, const function<bool(const State&,State&)>&func, int list) {
+void Functions::add(const string& name_, int cost_, const function<bool(const State&,State&)>&func, int list_it) {
   //if (cost_ != 10) cout << name << endl;
   //assert(cost_ == 10);
-  if (list) listed.push_back(names.size());
-  names.push_back(name);
+  if (list_it) list.insert(name.size());
+  name.push_back(name_);
   f_list.push_back(func);
   cost.push_back(cost_);
 }
 
-void Functions3::add(string name, int cost, const function<Image(Image_)>&f, int list) { //list = 1
+void Functions::add(string name, int cost, const function<Image(Image_)>&f, int list_it) { //list_it = 1
   auto func = [f](const State& cur, State& nxt) {
-
-    //if (cur.isvec) return false;
-
     nxt.vimg.resize(cur.vimg.size());
     nxt.isvec = cur.isvec;
 
@@ -60,10 +57,10 @@ void Functions3::add(string name, int cost, const function<Image(Image_)>&f, int
     }
     return true;
   };
-  add(name, cost, func, list);
+  add(name, cost, func, list_it);
 }
 
-void Functions3::add(string name, int cost, const function<vImage(Image_)>&f, int list) { //list = 1
+void Functions::add(string name, int cost, const function<vImage(Image_)>&f, int list_it) { //list_it = 1
   const int buffer = 5;
   auto func = [f,cost](const State& cur, State& nxt) {
     if (cur.isvec || cur.depth+cost+buffer > MAXDEPTH) return false;
@@ -73,10 +70,10 @@ void Functions3::add(string name, int cost, const function<vImage(Image_)>&f, in
     nxt.isvec = true;
     return true;
   };
-  add(name, cost, func, list);
+  add(name, cost, func, list_it);
 }
 
-void Functions3::add(string name, int cost, const function<Image(vImage_)>&f, int list) { //list = 1
+void Functions::add(string name, int cost, const function<Image(vImage_)>&f, int list_it) { //list_it = 1
   auto func = [f](const State& cur, State& nxt) {
     if (!cur.isvec) return false;
     nxt.vimg.resize(1);
@@ -86,10 +83,10 @@ void Functions3::add(string name, int cost, const function<Image(vImage_)>&f, in
     nxt.isvec = false;
     return true;
   };
-  add(name, cost, func, list);
+  add(name, cost, func, list_it);
 }
 
-void Functions3::add(string name, int cost, const function<vImage(vImage_)>&f, int list) { //list = 1
+void Functions::add(string name, int cost, const function<vImage(vImage_)>&f, int list_it) { //list_it = 1
   auto func = [f](const State& cur, State& nxt) {
     if (!cur.isvec) return false;
     real_f_time.start();
@@ -98,10 +95,10 @@ void Functions3::add(string name, int cost, const function<vImage(vImage_)>&f, i
     nxt.isvec = true;
     return true;
   };
-  add(name, cost, func, list);
+  add(name, cost, func, list_it);
 }
 
-void Functions3::add(const vector<point>&sizes, string name, int cost, const function<Image(Image_,Image_)>&f, int list) { //list = 1
+void Functions::add(const vector<point>&sizes, string name, int cost, const function<Image(Image_,Image_)>&f, int list_it) { //list_it = 1
   int szi = 0;
   for (point sz : sizes) {
     Image arg2 = core::empty(sz);
@@ -123,20 +120,20 @@ void Functions3::add(const vector<point>&sizes, string name, int cost, const fun
       nxt.isvec = cur.isvec;
       return true;
     };
-    add(name+" "+to_string(szi++), cost, func, list);
+    add(name+" "+to_string(szi++), cost, func, list_it);
   }
 }
 
-string Functions3::getName(int fi) {
+string Functions::getName(int fi) {
 //  cout << "fi: " << fi << endl;
-  assert(fi >= 0 && fi < names.size());
-  return names[fi];
+  assert(fi >= 0 && fi < name.size());
+  return name[fi];
 }
 
-int Functions3::findfi(string name) {
-  int fi = find(names.begin(), names.end(), name)-names.begin();
-  if (fi == names.size()) {
-    cerr << name << " is not a known function" << endl;
+int Functions::findfi(string name_) {
+  int fi = find(name.begin(), name.end(), name_) - name.begin();
+  if (fi == name.size()) {
+    cerr << name_ << " is not a known function" << endl;
     assert(0);
   }
   return fi;
@@ -144,8 +141,8 @@ int Functions3::findfi(string name) {
 
 
 // Mix for task 0 - Pierre 20241015
-Functions3 initFuncs0(const vector<point>&sizes) {
-  Functions3 funcs;
+Functions initFuncs0(const vector<point>&sizes) {
+  Functions funcs;
 
   // Keep these, used for composing - Pierre 20241011
   funcs.add("composeGrowing", 10, composeGrowing);
@@ -163,8 +160,8 @@ Functions3 initFuncs0(const vector<point>&sizes) {
 
 
 // Original function - Pierre 20241011
-Functions3 initFuncs3(const vector<point>&sizes) {
-  Functions3 funcs;
+Functions initFuncs3(const vector<point>&sizes) {
+  Functions funcs;
 
   // Unary
 
@@ -285,7 +282,7 @@ Functions3 initFuncs3(const vector<point>&sizes) {
   
   static int said = 0;
   if (!said) {
-    cout << "Function count: " << funcs.listed.size() << endl;
+    cout << "Function count: " << funcs.list.size() << endl;
     said = 1;
   }
 
@@ -346,32 +343,31 @@ int DAG::add(const State&nxt, bool force) { //force = false
 }
 
 
-void DAG::build() {
+void DAG::build(int DEPTH) {
   build_f_time.start();
 
-  for (int curi = 0; curi < tiny_node.size(); curi++) {
-    int depth = tiny_node[curi].depth;
-    if (depth+1 > MAXDEPTH) continue;
+  cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
 
-    //vector<pair<int,int>> child;
+  for (int curi = 0; curi < tiny_node.size(); curi++) {
+    int ndepth = tiny_node[curi].depth;
+    if (ndepth+1 > DEPTH) continue;
+
     State nxt;
     state_time.start();
     State cur_state = tiny_node.getState(curi);
     state_time.stop();
-    for (int fi : funcs.listed) {
-      nxt.depth = depth+funcs.cost[fi];
-      if (nxt.depth > MAXDEPTH) continue;
-      if (funcs.f_list[fi](cur_state, nxt)) {
-	      int newi = add(nxt);
-	      //child.emplace_back(fi, newi);
-	      tiny_node.addChild(curi, fi, newi);
-      } else {
-	      tiny_node.addChild(curi, fi, -1);
-	      //child.emplace_back(fi, -1);
+    for (int fi : depth[DEPTH / 10 - 1].func.list) {
+      // cout << __FILE_NAME__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
+      nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
+      if (nxt.depth > DEPTH) continue;
+      if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
+        int newi = add(nxt);
+        tiny_node.addChild(curi, fi, newi);
       }
-
+      else {
+        tiny_node.addChild(curi, fi, -1);
+      }
     }
-    //node[curi].child = child;
   }
 
   build_f_time.stop();
@@ -403,23 +399,23 @@ void DAG::initial(Image_ test_in, const vector<pair<Image,Image>>&train, vector<
 }
 
 //time each function
-void DAG::benchmark() {
+void DAG::benchmark(int DEPTH) {
   vector<pair<double,int>> v;
-  for (int fi : funcs.listed) {
+  for (int fi : depth[DEPTH/10-1].func.list) {
     double start_time = now();
     State nxt;
     for (int i = 0; i < tiny_node.size(); i++) {
-      funcs.f_list[fi](tiny_node.getState(i), nxt);
+      depth[DEPTH/10-1].func.f_list[fi](tiny_node.getState(i), nxt);
     }
     double elapsed = now()-start_time;
     v.emplace_back(elapsed, fi);
   }
   sort(v.begin(), v.end());
   for (auto [t,fi] : v)
-    printf("%.1f ms - %s\n", t*1e3, funcs.getName(fi).c_str());
+    printf("%.1f ms - %s\n", t*1e3, depth[DEPTH/10-1].getName(fi).c_str());
 }
 
-int DAG::applyFunc(int curi, int fi, const State&state) {
+int DAG::applyFunc(int DEPTH, int curi, int fi, const State&state) {
 
   find_child_time.start();
   //auto it = lower_bound(node[curi].child.begin(), node[curi].child.end(), make_pair(fi,-1));
@@ -433,14 +429,16 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   }
   //assert(it2 == -2);
 
+  cout << __FILE_NAME__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
+
   State nxt;
-  nxt.depth = tiny_node[curi].depth+funcs.cost[fi];
+  nxt.depth = tiny_node[curi].depth+depth[DEPTH/10-1].func.cost[fi];
   //nxt.par = curi;
 
   int newi = -1;
 
   apply_f_time.start();
-  bool ok = funcs.f_list[fi](state, nxt);
+  bool ok = depth[DEPTH/10-1].func.f_list[fi](state, nxt);
   apply_f_time.stop();
 
   if (ok) {
@@ -456,28 +454,28 @@ int DAG::applyFunc(int curi, int fi, const State&state) {
   return newi;
 }
 
-int DAG::applyFunc(int curi, int fi) {
+int DAG::applyFunc(int DEPTH, int curi, int fi) {
   state_time.start();
   State state = tiny_node.getState(curi);
   state_time.stop();
-  return applyFunc(curi, fi, state);
+  return applyFunc(DEPTH, curi, fi, state);
 }
 
-void DAG::applyFunc(string name, bool vec) {
-  int fi = funcs.findfi(name);
+void DAG::applyFunc(int DEPTH, string name, bool vec) {
+  int fi = depth[DEPTH/10-1].findfi(name);
 
   int start_nodes = tiny_node.size();
   for (int curi = 0; curi < start_nodes; curi++) {
     if (tiny_node[curi].isvec == vec) {
-      applyFunc(curi, fi);
+      applyFunc(DEPTH, curi, fi);
     }
   }
 }
 
-void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
+void DAG::applyFuncs(int DEPTH, vector<pair<string,int>> names, bool vec) {
   vector<pair<int,int>> fis;
   for (auto [name,id] : names) {
-    fis.emplace_back(funcs.findfi(name), id);
+    fis.emplace_back(depth[DEPTH/10-1].findfi(name), id);
   }
 
   vector<int> parid(tiny_node.size(),-1);
@@ -491,7 +489,7 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
       auto [fi,id] = fis[i];
       if (id <= parid[curi]) continue;
 
-      if (applyFunc(curi, fi, state) == parid.size()) {
+      if (applyFunc(DEPTH, curi, fi, state) == parid.size()) {
 	      parid.push_back(id);
 	      assert(parid.size() == tiny_node.size());
       }
@@ -500,54 +498,29 @@ void DAG::applyFuncs(vector<pair<string,int>> names, bool vec) {
 }
 
 
-
-
-
-// void DAG::buildBinary() {
-//   int fis = *max_element(funcs.listed.begin(), funcs.listed.end())+1;
-//   binary.assign(fis*fis, -1);
-//   vector<State> state(fis);
-//   vector<int> active(fis), memi(fis);
-//   for (int fi : funcs.listed) {
-//     int curi = tiny_node.getChild(0, fi);
-//     if (curi >= 0) {
-//       active[fi] = 1;
-//       state[fi] = tiny_node.getState(curi);
-//       memi[fi] = curi;
-//     }
-//   }
-//   for (int fa : funcs.listed) {
-//     if (!active[fa]) continue;
-//     for (int fb : funcs.listed) {
-//       if (!active[fb]) continue;
-
-//       if (state[fa].isvec || state[fb].isvec) continue;
-//       State nxt;
-//       nxt.vimg = {align(state[fa].vimg[0], state[fb].vimg[0])};
-
-//       // Show whether this ever happens - Pierre 20241010
-//       cout << " Pfi: " << fa*fis+fb << endl;
-
-//       nxt.pfi = {fa*fis+fb};
-//       nxt.depth = 2; //TODO
-//       nxt.isvec = false;
-//       binary[fa*fis+fb] = add(nxt);
-//       /*if (binary[fa*fis+fb] != memi[fa]) {
-// 	      cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
-//       }
-//       assert(binary[fa*fis+fb] == memi[fa]);*/
-//     }
-//   }
-// }
-
-
-// vector<DAG> brutePieces2(Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
 void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>>&train, vector<point> out_sizes) {
   int print = 1;
 
-  // Add 1 for test_in
-  // vector<DAG> dag(train.size()+1);
-  pieces.dag = vector<DAG>(train.size()+1);
+  cout << __FILE_NAME__ << " In brutePieces2" << endl;
+
+  // // Save the DAGs - Pierre 20241020
+  // vector<DAG> dag = std::move(pieces.dag);
+  // // Add 1 for test_in  
+  // pieces.dag = vector<DAG>(train.size() + 1);
+
+  // for (int i = 0; i < dag.size(); i++) {
+  //   // dag[i].depth.resize(MAXDEPTH / 10);
+  //   for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+
+  //     cout << __FILE_NAME__ << " scores.size at " << DEPTH << " before: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
+
+  //     // Move scores from dag to pieces.dag - Pierre 20241020
+  //     pieces.dag[i].depth[DEPTH / 10 - 1].score = std::move(dag[i].depth[DEPTH / 10 - 1].score);
+
+  //     cout << __FILE_NAME__ << " scores.size " << DEPTH << " after: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
+  //   }
+  // }
+
 
   int all_train_out_mask = 0, and_train_out_mask = ~0;
   for (int ti = 0; ti < train.size(); ti++)
@@ -564,7 +537,35 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
       sizes.push_back(out_sizes[ti]);
 
     if (print) cout << "InitFuncs3 with sizes.size: " << sizes.size() << endl;
-    pieces.dag[ti].funcs = initFuncs3(sizes);
+
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+      // if (pieces.dag[ti].depth[DEPTH / 10 - 1].func.name.size() == 0) 
+      {
+        Functions func = initFuncs3(sizes);
+        cout << __FILE_NAME__ << " ti: " << ti << endl;
+        cout << " depth: " << DEPTH << endl;
+        cout << " score.size: " << pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() << endl;
+        if (pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() == 0) {
+          cout << __FILE_NAME__ << " No score yet for " << DEPTH << endl;
+          // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), funcs);
+          pieces.dag[ti].depth[DEPTH / 10 - 1].func = std::move(func);
+        }
+        else {
+          cout << __FILE_NAME__ << " Got scores for " << DEPTH << endl;
+          // Add functions with scores - Pierre 20241019
+          Functions s_func = func;
+          set<int> list;
+          for (pair<int, double> score : pieces.dag[ti].depth[DEPTH / 10 - 1].score) {
+            // Limit to a number of functions, possibly, later - Pierre 20241020
+            list.insert(score.first);
+          }
+          s_func.list = list;
+          // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), s_funcs);
+          pieces.dag[ti].depth[DEPTH / 10 - 1].func = std::move(s_func);
+        }
+      }
+    }
+
     if (print) cout << "InitFuncs3 done" << endl;
 
     pieces.dag[ti].initial(test_in, train, sizes, ti);
@@ -574,13 +575,14 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
     // Above is initializations, below, build is running the functions - Pierre 20241016
     double start_time = now();
-    pieces.dag[ti].build();
-    if (print) cout << "Build done" << endl;
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+      pieces.dag[ti].build(DEPTH);
+      if (print) cout << "Build " << DEPTH << " done" << endl;
+    }
 
     if (print) cout << now()-start_time << endl;
-    //dag[ti].buildBinary();
-    //if (print) cout << now()-start_time << endl;
-    pieces.dag[ti].applyFunc("composeGrowing", 1);
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
+      pieces.dag[ti].applyFunc(DEPTH, "composeGrowing", 1);
     if (print) cout << now()-start_time << endl;
 
     if (sizes.size() > 1) {
@@ -590,7 +592,8 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 	      if (and_train_out_mask>>c&1)
 	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
-      pieces.dag[ti].applyFuncs(toapply, 0);
+      for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
+        pieces.dag[ti].applyFuncs(DEPTH, toapply, 0);
       /*
       dag[ti].applyFunc("toOrigin", 0);
       if (print) cout << now()-start_time << endl;

@@ -26,7 +26,7 @@ struct Pieces {
 };
 */
 
-extern int print_nodes;
+extern int MAXDEPTH, print_nodes;
 
 ull hashVec(const vector<int>&vec) {
   ull r = 1;
@@ -37,7 +37,6 @@ ull hashVec(const vector<int>&vec) {
 }
 
 
-// Pieces makePieces2(vector<DAG>&dag, vector<pair<Image,Image>> train, vector<point> out_sizes) {
 void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> out_sizes) {
   Timer set_time, piece_time, child_time;
 
@@ -165,36 +164,44 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
       }
       child_time.stop();
 
-      for (auto&[fi, newi] : newi_list) {
-	      if (0) {
-	        int i = train.size();
-	        //auto&child = dag[i].node[ind[i]].child;
-	        //auto it = lower_bound(child.begin(), child.end(), make_pair(fi, -1));
-	        //if (it == child.end() || it->first != fi) {
-	        int to = pieces.dag[i].tiny_node.getChild(ind[i], fi);
-	        if (to == TinyChildren::None) {
-	          string name = pieces.dag[i].funcs.getName(fi);
-	          if (name.substr(0,4) == "Move") {
-	            newi[i] = pieces.dag[i].applyFunc(ind[i], fi);
-	            if (newi[i] != -1 && out_sizes.size())
-		            pieces.dag[i].applyFunc(newi[i], pieces.dag[i].funcs.findfi("embed 1"));
-	          } else continue;
-	        } else {
-	          newi[i] = to; //it->second
-	        }
-	        if (newi[i] == -1) continue;
-	      }
+      // cout << __FILE_NAME__ << " MAXDEPTH: " << MAXDEPTH << endl;
 
-	      int new_depth = -1;
-	      for (int i = 0; i < dags; i++) {
-	        new_depth = max(new_depth, (int)pieces.dag[i].tiny_node[newi[i]].depth);
-	      }
+      for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH+=10) {
+        for (auto& [fi, newi] : newi_list) {
+          if (0) {
+            int i = train.size();
+            //auto&child = dag[i].node[ind[i]].child;
+            //auto it = lower_bound(child.begin(), child.end(), make_pair(fi, -1));
+            //if (it == child.end() || it->first != fi) {
+            int to = pieces.dag[i].tiny_node.getChild(ind[i], fi);
+            if (to == TinyChildren::None) {
+              string name = pieces.dag[i].depth[DEPTH/10-1].getName(fi);
+              if (name.substr(0, 4) == "Move") {
+                // XXX Fix depth if needed - Pierre 20241020
+                newi[i] = pieces.dag[i].applyFunc(DEPTH, ind[i], fi);
+                if (newi[i] != -1 && out_sizes.size())
+                  // XXX Fix depth if needed - Pierre 20241020
+                  pieces.dag[i].applyFunc(DEPTH, newi[i], pieces.dag[i].depth[DEPTH/10-1].findfi("embed 1"));
+              }
+              else continue;
+            }
+            else {
+              newi[i] = to; //it->second
+            }
+            if (newi[i] == -1) continue;
+          }
 
-	      int cost = pieces.dag[0].funcs.cost[fi];
+          int new_depth = -1;
+          for (int i = 0; i < dags; i++) {
+            new_depth = max(new_depth, (int)pieces.dag[i].tiny_node[newi[i]].depth);
+          }
 
-	      if (new_depth >= depth+cost) {
-	        add(depth+cost, newi);
-	      }
+          int cost = pieces.dag[0].depth[DEPTH/10-1].func.cost[fi];
+
+          if (new_depth >= depth + cost) {
+            add(depth + cost, newi);
+          }
+        }
       }
     }
   }
@@ -212,7 +219,7 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
     for (DAG&d : pieces.dag) {
       int p = 0;
       for (string name : name_list) {
-	      int fi = d.funcs.findfi(name);
+	      int fi = d.depth[MAXDEPTH/10-1].findfi(name);
 
 	      //auto&child = d.node[p].child;
 	      //auto it = lower_bound(child.begin(), child.end(), make_pair(fi,-1));
