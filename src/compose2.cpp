@@ -429,15 +429,20 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     vector<int> pis = cand.pis;
     assert(cand.max_depth >= 0 && cand.max_depth < 100);
     assert(cand.cnt_pieces >= 0 && cand.cnt_pieces < 100);
-    //cout << cand.max_depth << ' ' << cand.cnt_pieces << endl;
-    double prior = cand.max_depth+cand.cnt_pieces*1e-3;//cnt_pieces;
+    
+    // cout << __FILE_NAME__ << " Max_depth: " << cand.max_depth << " Cnt_pieces: " << cand.cnt_pieces << endl;
+    
+    double prior = cand.max_depth + cand.cnt_pieces * 1e-3; //cnt_pieces;
 
     cout << "- Piece numbers: ";
     for (int pi : pis) cout << pi << ' ';
     cout << endl;
 
+    // cout << "  - " << __FILE_NAME__ << " Cands.size: " << cands.size() << endl;
+    // cout << "  - " << __FILE_NAME__ << " Train.size: " << train.size() << endl;
+
     int goods = 0;
-    for (int i = 0; i < cands.size(); i++) {
+    for (int i = 0; i < train.size(); i++) {
       goods += (imgs[i] == train[i].second);
     }
 

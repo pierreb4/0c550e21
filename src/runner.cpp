@@ -165,6 +165,7 @@ void run(int only_sid = -1, int arg = -1) {
       MAXAREA = maxarea * 2;
       MAXPIXELS = MAXAREA * 5;
     }
+
     // #warning Only 1 training example
     // train.resize(1);
 
@@ -301,11 +302,12 @@ void run(int only_sid = -1, int arg = -1) {
           if (seen.insert(h).second)
           {
             filtered.push_back(cand);
-            cout << "Answer: ";
+            cout << "Score: " << cand.score << " Answer: ";
             for (int pi : cand.pis)
               cout << pi << ' ';
             cout << endl;
             if (filtered.size() == 3 + skips * 3)
+            // if (filtered.size() == 10 + skips * 3)
               break;
           }
         }
@@ -365,7 +367,7 @@ void run(int only_sid = -1, int arg = -1) {
         writeVerdict(si, s.id, verdict[si]);
       }
       {
-        string fn = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + ".csv";
+        string fn = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".csv";
         // Writer writer(fn);
         // writer(s, rec_answers);
         writeAnswersWithScores(s, fn, rec_answers, answer_scores);

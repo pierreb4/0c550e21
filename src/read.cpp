@@ -232,6 +232,7 @@ void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vecto
   assert(imgs.size() == scores.size());
   if (imgs.empty()) imgs = {dummyImg}, scores = {-1};
   assert(imgs.size() <= 3);
+  // assert(imgs.size() <= 10);
 
   for (int i = 0; i < imgs.size(); i++) {
     Image_ img = imgs[i];
@@ -262,6 +263,7 @@ void writeJsonAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, v
   assert(imgs.size() == scores.size());
   if (imgs.empty()) imgs = {dummyImg}, scores = {-1};
   assert(imgs.size() <= 3);
+  // assert(imgs.size() <= 10);
 
   fprintf(fp, "        {");
   char img_sep = ' ';

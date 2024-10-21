@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/../../working/absres-c-files/run",
-            "args": [0 3],
+            "args": [0 23],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/../../working/absres-c-files",
             "environment": [],
