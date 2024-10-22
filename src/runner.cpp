@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-
+int MINDEPTH = 10;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
@@ -184,7 +184,7 @@ void run(int only_sid = -1, int arg = -1) {
     cout << __FILE__ << " Done with bruteSize" << endl;
 
     // Iterate over MAXDEPTH values
-    for(MAXDEPTH = 10; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
+    for(MAXDEPTH = MINDEPTH; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
       /*if (add_flips) {
         point predsz = out_sizes.back();
         out_sizes.clear();

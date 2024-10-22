@@ -168,25 +168,29 @@ else:
 #TODO: change back to depth 3/4
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 3"%i))
+    depth3.append(Command("./run %d 3"%i, 30))
 stats3 = runAll(depth3, 4)
 
-flip3 = []
+depth23 = []
 for i in range(ntasks):
-    status, t, m = stats3[depth3[i].cmd]
-    flip3.append(Command("./run %d 23"%i, t*2, m*2, 100))
-stats3_flip = runAll(flip3, 4)
+    # Fix this, as stats3 doesn't get population correctly when commands above fail
+    # status, t, m = stats3[depth3[i].cmd]
+    # depth23.append(Command("./run %d 23"%i, t*2, m*2, 100))
+    depth23.append(Command("./run %d 23"%i, 30))
+stats23 = runAll(depth23, 4)
 
-flip3 = []
+depth33 = []
 for i in range(ntasks):
-    status, t, m = stats3[depth3[i].cmd]
-    flip3.append(Command("./run %d 33"%i, t*2, m*2, 100))
-runAll(flip3, 4)
+    # status, t, m = stats3[depth3[i].cmd]
+    # depth33.append(Command("./run %d 33"%i, t*2, m*2, 100))
+    depth33.append(Command("./run %d 33"%i, 30))
+stats33 = runAll(depth33, 4)
 
 depth4 = []
 for i in range(ntasks):
-   status, t, m = stats3[depth3[i].cmd]
-   depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+    # status, t, m = stats3[depth3[i].cmd]
+    # depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+    depth4.append(Command("./run %d 4"%i, 30))
 stats4 = runAll(depth4, 2)
 
 def read(fn):
@@ -206,19 +210,22 @@ for taski in task_list:
             img, score = cand.split()
             cands.append((float(score), img))
 
-    assert(len(ids) == 1)
-    id = ids.pop()
+    # assert(len(ids) == 1)
+    if len(ids) == 1:
+        id = ids.pop()
 
-    cands.sort(reverse=True)
-    best = []
-    for cand in cands:
-        score, img = cand
-        if not img in best:
-            best.append(img)
-            if len(best) == 3:
-                break
-    if not best: best.append('|0|')
-    combined.append(id+','+' '.join(best))
+        cands.sort(reverse=True)
+        best = []
+        for cand in cands:
+            score, img = cand
+            if not img in best:
+                best.append(img)
+                if len(best) == 3:
+                    break
+        if not best: best.append('|0|')
+        combined.append(id+','+' '.join(best))
+    else:
+        print(f"Error: wrong number of ids for task {taski}: {len(ids)}")
 
 outf = open('submission_part.csv', 'w')
 for line in combined:

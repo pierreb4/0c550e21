@@ -16,7 +16,7 @@ using namespace std;
 
 #include "timer.hpp"
 
-extern int MAXDEPTH, print_nodes;
+extern int MINDEPTH, MAXDEPTH, print_nodes;
 
 //double build_f_time = 0, apply_f_time = 0;
 //double real_f_time = 0;
@@ -512,7 +512,7 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
   // for (int i = 0; i < dag.size(); i++) {
   //   // dag[i].depth.resize(MAXDEPTH / 10);
-  //   for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+  //   for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
 
   //     cout << __FILE__ << " scores.size at " << DEPTH << " before: " << pieces.dag[i].depth[DEPTH / 10 - 1].score.size() << endl;
 
@@ -540,7 +540,7 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
     if (print) cout << "InitFuncs3 with sizes.size: " << sizes.size() << endl;
 
-    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
       // if (pieces.dag[ti].depth[DEPTH / 10 - 1].func.name.size() == 0) 
       {
         Functions func = initFuncs3(sizes);
@@ -579,13 +579,13 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
     // Above is initializations, below, build is running the functions - Pierre 20241016
     double start_time = now();
-    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
       pieces.dag[ti].build(DEPTH);
       if (print) cout << "Build " << DEPTH << " done" << endl;
     }
 
     if (print) cout << now()-start_time << endl;
-    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
+    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
       pieces.dag[ti].applyFunc(DEPTH, "composeGrowing", 1);
     if (print) cout << now()-start_time << endl;
 
@@ -596,7 +596,7 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 	      if (and_train_out_mask>>c&1)
 	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
-      for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
+      for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
         pieces.dag[ti].applyFuncs(DEPTH, toapply, 0);
       /*
       dag[ti].applyFunc("toOrigin", 0);

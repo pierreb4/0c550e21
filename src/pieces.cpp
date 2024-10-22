@@ -15,7 +15,7 @@ using namespace std;
 #include "timer.hpp"
 
 
-extern int MAXDEPTH, print_nodes;
+extern int MINDEPTH, MAXDEPTH, print_nodes;
 
 ull hashVec(const vector<int>&vec) {
   ull r = 1;
@@ -155,7 +155,7 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
 
       // cout << __FILE__ << " MAXDEPTH: " << MAXDEPTH << endl;
 
-      // for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH+=10)
+      // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH+=10)
       {
         for (auto& [fi, newi] : newi_list) {
           // This doesn't run - Pierre 20241021
