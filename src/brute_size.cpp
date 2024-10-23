@@ -134,8 +134,13 @@ point solveSize(vector<vector<point>>& seeds, const vector<point>& target) {
     add(combined, combloss);
   }
 
-  //cout << best.first << ' ' << target.size() << ' ' << best.second << endl;
-  //assert(best.first == target.size());
+  // cout << __FILE__ << " Ans.x: " << ans.x << " Ans.y: " << ans.y << " Target.size: " << target.size() << endl;
+  // for (int ti = 0; ti < target.size(); ti++) {
+  //   cout << __FILE__ << "  Target: " << target[ti].x << " " << target[ti].y << endl;
+  //   cout << __FILE__ << "  Szs:    " << szs[ti].x << " " << szs[ti].y << endl;
+  // }
+  // cout << __FILE__ << " Best.first: " << best.first << " Target.size: " << target.size() << " Best.second: " << best.second << endl;
+  // assert(best.first == target.size());
   return ans;
 }
 
@@ -174,9 +179,9 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
     for (int ti = 0; ti <= train.size(); ti++) {
       if (pieces.dag[ti].tiny_node[ind[ti]].isvec) ok = 0;
       else {
-        Image_ img = pieces.dag[ti].getImg(ind[ti]);
-        const vector<char>&p = img.mask;
-
+        // Image_ img = pieces.dag[ti].getImg(ind[ti]);
+        // const vector<char>&p = img.mask;
+        //
         // cout << __FILE__ << " pieces.dag: " << ti << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
         // cout << __FILE__ << " pieces.dag: " << ti << " img.x: " << img.x << " img.y: " << img.y << endl;
         // cout << __FILE__ << " pieces.dag: " << ti << " img.w: " << img.w << " img.h: " << img.h << endl;

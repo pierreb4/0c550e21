@@ -183,6 +183,9 @@ void run(int only_sid = -1, int arg = -1) {
 
     cout << __FILE__ << " Done with bruteSize" << endl;
 
+    for (point sz : out_sizes)
+      cout << __FILE__ << " Outsize: " << sz.x << ' ' << sz.y << endl;
+
     // Iterate over MAXDEPTH values
     for(MAXDEPTH = MINDEPTH; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
       /*if (add_flips) {
@@ -371,8 +374,8 @@ void run(int only_sid = -1, int arg = -1) {
         // Writer writer(fn);
         // writer(s, rec_answers);
         writeAnswersWithScores(s, fn, rec_answers, answer_scores);
-        string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(int(arg / 10)) + "_" + to_string(MAXDEPTH) + ".json";
-        writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
+        // string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(int(arg / 10)) + "_" + to_string(MAXDEPTH) + ".json";
+        // writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
       }
     }
   }

@@ -123,7 +123,6 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   const int M64 = (M+63)/64;
   vector<ull> bad_mem, active_mem;
-  //vector<mybitset> bad_mem, active_mem;
   vector<int> img_ind, bad_ind, active_ind;
 
   {
@@ -144,22 +143,22 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 	      const vector<char>&p = img.mask;
 	      const vector<char>&t = j < target.size() ? target[j].mask : init[j].mask;
 
-        // if (p.size() != sz[j]) {
-        //   cout << __FILE__ << " piece: " << i << " dag: " << j << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
-        //   cout << __FILE__ << " piece: " << i << " dag: " << j << " img.x: " << img.x << " img.y: " << img.y << endl;
-        //   cout << __FILE__ << " piece: " << i << " dag: " << j << " img.w: " << img.w << " img.h: " << img.h << endl;
-        //   cout << __FILE__ << " piece: " << i << " dag: " << j << " img.mask.size: " << img.mask.size() << endl;
-        //   cout << __FILE__ << " piece: " << i << " dag: " << j << " img.mask: " << endl;
-        //   // for (int i = 0; i < img.h; i++) {
-        //   //   for (int j = 0; j < img.w; j++) {
-        //   //     cout << img(i,j);
-        //   //   }
-        //   //   cout << endl;
-        //   // }
-        //   // cout << endl;
+        if (p.size() != sz[j]) {
+          cout << __FILE__ << " piece: " << i << " dag: " << j << " img.sz: " << img.sz.x << " " << img.sz.y << endl;
+          cout << __FILE__ << " piece: " << i << " dag: " << j << " img.x: " << img.x << " img.y: " << img.y << endl;
+          cout << __FILE__ << " piece: " << i << " dag: " << j << " img.w: " << img.w << " img.h: " << img.h << endl;
+          cout << __FILE__ << " piece: " << i << " dag: " << j << " img.mask.size: " << img.mask.size() << endl;
+          cout << __FILE__ << " piece: " << i << " dag: " << j << " img.mask: " << endl;
+          // for (int i = 0; i < img.h; i++) {
+          //   for (int j = 0; j < img.w; j++) {
+          //     cout << img(i,j);
+          //   }
+          //   cout << endl;
+          // }
+          // cout << endl;
 
-        //   cout << __FILE__ << "  j: " << j << " sz[j]: " << sz[j] << " p.size: " << p.size() << endl;
-        // }
+          cout << __FILE__ << "  j: " << j << " sz[j]: " << sz[j] << " p.size: " << p.size() << " t.size: " << t.size() << endl;
+        }
 
 	      assert(p.size() == sz[j]);
 	      assert(t.size() == sz[j]);

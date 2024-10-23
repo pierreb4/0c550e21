@@ -88,6 +88,7 @@ def runAll(cmd_list, threads):
     cmdi = 0
 
     def callback(process, status, timeused, memused):
+        assert(status != RTE)
         print(exit_names[status], process.cmd, " %.1fs"%timeused, "%.0fMB"%memused)
         # assert(status != RTE)
         sys.stdout.flush()
@@ -224,6 +225,8 @@ for taski in task_list:
                     break
         if not best: best.append('|0|')
         combined.append(id+','+' '.join(best))
+    else if len(ids) == 0:
+        combined.append(taski+"_0,|0|")
     else:
         print(f"Error: wrong number of ids for task {taski}: {len(ids)}")
 
