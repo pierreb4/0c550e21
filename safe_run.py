@@ -224,8 +224,8 @@ for taski in task_list:
                     break
         if not best: best.append('|0|')
         combined.append(id+','+' '.join(best))
-    elif len(ids) == 0:
-        combined.append(taski+"_0,|0|")
+    # elif len(ids) == 0:
+    #     combined.append(taski+"_0,|0|")
     else:
         print(f"Error: wrong number of ids for task {taski}: {len(ids)}")
 
