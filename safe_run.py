@@ -168,7 +168,7 @@ else:
 #TODO: change back to depth 3/4
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 3"%i, 40))
+    depth3.append(Command("./run %d 3"%i, 60))
 stats3 = runAll(depth3, 4)
 
 depth23 = []
@@ -176,21 +176,21 @@ for i in range(ntasks):
     # Fix this, as stats3 doesn't get population correctly when commands above fail
     # status, t, m = stats3[depth3[i].cmd]
     # depth23.append(Command("./run %d 23"%i, t*2, m*2, 100))
-    depth23.append(Command("./run %d 23"%i, 40))
+    depth23.append(Command("./run %d 23"%i, 120))
 stats23 = runAll(depth23, 4)
 
 depth33 = []
 for i in range(ntasks):
     # status, t, m = stats3[depth3[i].cmd]
     # depth33.append(Command("./run %d 33"%i, t*2, m*2, 100))
-    depth33.append(Command("./run %d 33"%i, 40))
+    depth33.append(Command("./run %d 33"%i, 120))
 stats33 = runAll(depth33, 4)
 
 depth4 = []
 for i in range(ntasks):
     # status, t, m = stats3[depth3[i].cmd]
     # depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
-    depth4.append(Command("./run %d 4"%i, 40))
+    depth4.append(Command("./run %d 4"%i, 1200))
 stats4 = runAll(depth4, 4)
 
 def read(fn):
