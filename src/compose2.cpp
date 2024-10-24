@@ -481,11 +481,16 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     cout << "\tscore: " << score << endl;
 
     Image answer = imgs.back();
-    if (answer.w > 30 || answer.h > 30 || answer.w*answer.h == 0) goods = 0;
+    if (answer.w > 30 || answer.h > 30 || answer.w * answer.h == 0) {
+      goods = 0;
+      // cout << __FILE__ << " bad size" << endl;
+    }
     for (int i = 0; i < answer.h; i++)
       for (int j = 0; j < answer.w; j++)
-	      if (answer(i,j) < 0 || answer(i,j) >= 10) goods = 0;
-
+        if (answer(i, j) < 0 || answer(i, j) >= 10) {
+          goods = 0;
+          // cout << __FILE__ << " bad value" << endl;
+        }
     if (goods)
       ret.emplace_back(imgs, pis, score);
   }

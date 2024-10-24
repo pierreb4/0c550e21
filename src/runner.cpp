@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int MINDEPTH = 20;
+int MINDEPTH = 10;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
@@ -169,6 +169,26 @@ void run(int only_sid = -1, int arg = -1) {
     // #warning Only 1 training example
     // train.resize(1);
 
+    // Keep pieces local to preserve original code structure - Pierre 20241024
+    vector<point> out_sizes;
+    {
+      Pieces pieces;
+      // Add 1 for test_in  
+      pieces.dag = vector<DAG>(train.size() + 1);
+
+      // Initialize depth (only for train?) - Pierre 20241021
+      for (int i = 0; i < pieces.dag.size(); i++) {
+        pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
+        cout << __FILE__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
+      }
+
+      out_sizes = bruteSize(pieces, test_in, train);
+      cout << __FILE__ << " Done with bruteSize" << endl;
+
+      for (point sz : out_sizes)
+        cout << __FILE__ << " Outsize: " << sz.x << ' ' << sz.y << endl;
+    }
+
     Pieces pieces;
     // Add 1 for test_in  
     pieces.dag = vector<DAG>(train.size() + 1);
@@ -178,13 +198,6 @@ void run(int only_sid = -1, int arg = -1) {
       pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
       cout << __FILE__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
     }
-
-    vector<point> out_sizes = bruteSize(pieces, test_in, train);
-
-    cout << __FILE__ << " Done with bruteSize" << endl;
-
-    for (point sz : out_sizes)
-      cout << __FILE__ << " Outsize: " << sz.x << ' ' << sz.y << endl;
 
     // Iterate over MAXDEPTH values
     for(MAXDEPTH = MINDEPTH; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
@@ -289,7 +302,7 @@ void run(int only_sid = -1, int arg = -1) {
       if (!eval)
         s2 = scoreCands(cands, test_in, test_out);
 
-      // Pick top 3 best distinct candidates
+      // Pick top 3 best distinct candidates (filter duplicate images) - Pierre 20241024
       vector<Candidate> answers = cands;
 
       {
@@ -300,6 +313,7 @@ void run(int only_sid = -1, int arg = -1) {
         {
           vector<int> pis = cand.pis;
           // printf("%.20f\n", cand.score);
+          // cout << __FILE__ << " Cand.score: " << cand.score << endl;
 
           ull h = hashImage(cand.imgs.back());
           if (seen.insert(h).second)
