@@ -177,7 +177,10 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
     int ok = 1;
     int*ind = &pieces.mem[p.memi];
     for (int ti = 0; ti <= train.size(); ti++) {
-      if (pieces.dag[ti].tiny_node[ind[ti]].isvec) ok = 0;
+      if (pieces.dag[ti].tiny_node[ind[ti]].isvec) {
+         ok = 0;
+         cout << __FILE__ << " Not ok" << endl;
+      }
       else {
         // Image_ img = pieces.dag[ti].getImg(ind[ti]);
         // const vector<char>&p = img.mask;

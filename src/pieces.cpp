@@ -33,7 +33,7 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
   pieces.piece.clear();
   pieces.mem.clear();
 
-  vector<int>&mem = pieces.mem;
+  vector<int>& mem = pieces.mem;
   vector<int> depth_mem;
 
   int dags = pieces.dag.size();

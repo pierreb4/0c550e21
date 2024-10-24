@@ -521,7 +521,7 @@ void DAG::buildBinary() {
       nxt.isvec = false;
       binary[fa*fis+fb] = add(nxt);
       /*if (binary[fa*fis+fb] != memi[fa]) {
-	cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
+	      cout << binary[fa*fis+fb] << ' ' << memi[fa] << ' ' << tiny_node.size() << endl;
       }
       assert(binary[fa*fis+fb] == memi[fa]);*/
     }

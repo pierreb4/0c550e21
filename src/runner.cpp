@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int MINDEPTH = 10;
+int MINDEPTH = 20;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
@@ -276,12 +276,12 @@ void run(int only_sid = -1, int arg = -1) {
       cands = evaluateCands(pieces, cands, train);
 
       // List functions - Pierre 20241015
-      for (int j = 0; j < pieces.dag.size(); j++) {
-        for (const auto& s : pieces.dag[j].depth[MAXDEPTH/10-1].score) {
-          cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
-        }
-        cout << endl;
-      }
+      // for (int j = 0; j < pieces.dag.size(); j++) {
+      //   for (const auto& s : pieces.dag[j].depth[MAXDEPTH/10-1].score) {
+      //     cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
+      //   }
+      //   cout << endl;
+      // }
 
       cout << "Cands size: " << cands.size() << endl;
 
