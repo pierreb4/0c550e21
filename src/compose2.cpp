@@ -435,9 +435,9 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     
     double prior = cand.max_depth + cand.cnt_pieces * 1e-3; //cnt_pieces;
 
-    cout << "- Piece numbers: ";
-    for (int pi : pis) cout << pi << ' ';
-    cout << endl;
+    // cout << "- Piece numbers: ";
+    // for (int pi : pis) cout << pi << ' ';
+    // cout << endl;
 
     // cout << "  - " << __FILE__ << " Cands.size: " << cands.size() << endl;
     // cout << "  - " << __FILE__ << " Train.size: " << train.size() << endl;
