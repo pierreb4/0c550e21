@@ -30,4 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Various
 src/fit-and-start-input.code-workspace
+.vscode/launch.json
