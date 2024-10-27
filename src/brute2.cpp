@@ -560,7 +560,7 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
           Functions s_func = func;
           set<int> list;
           for (pair<int, double> score : pieces.dag[ti].depth[DEPTH / 10 - 1].score) {
-            // Limit to a number of functions, possibly, later - Pierre 20241020
+            // Limit to a number of functions, in evaluateCands - Pierre 20241027
             list.insert(score.first);
           }
           s_func.list = list;

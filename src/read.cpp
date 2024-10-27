@@ -66,7 +66,8 @@ Sample::Sample(string filename) {
       test.emplace_back(test_input[i], test_output[i]);
     }
   } else {
-    assert(test_output.empty());
+    // Looks like a challenge is missing a solution - Pierre 20241025
+    // assert(test_output.empty());
     for (int i = 0; i < (int)test_input.size(); i++) {
       test.emplace_back(test_input[i], badImg);
     }

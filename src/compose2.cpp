@@ -503,6 +503,10 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     copy(depth.score_map.begin(), depth.score_map.end(), back_inserter(depth.score));
     sort(depth.score.begin(), depth.score.end(), compareScore);
 
+    // Keep only a number of best scores - Pierre 20241027
+    depth.score.resize(std::min(depth.score.size(), static_cast<size_t>(8)));
+    // depth.score.shrink_to_fit()
+
     // for (const auto& s : pieces.dag[j].scores) {
     //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
     // }

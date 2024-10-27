@@ -20,12 +20,12 @@ void Visu::next(string s) {
 }
 void Visu::add(Image in, Image out) {
   fprintf(fp, "Pair\n");
-  for (Image_ img : {in,out}) {
+  for (Image_ img : {in, out}) {
     fprintf(fp, "Image %d %d\n", img.w, img.h);
     for (int i = 0; i < img.h; i++) {
       for (int j = 0; j < img.w; j++) {
-	int col = img(i,j);
-	fprintf(fp, "%d", col);
+        int col = img(i, j);
+        fprintf(fp, "%d", col);
       }
       fprintf(fp, "\n");
     }
@@ -66,9 +66,9 @@ void print(Image img) {
   printf("[%d %d %d %d]\n", img.p.x, img.p.y, img.w, img.h);
   for (int i = 0; i < img.h; i++) {
     for (int j = 0; j < img.w; j++) {
-      int col = img(i,j);
+      int col = img(i, j);
       if (col)
-	printf("%d", col);
+        printf("%d", col);
       else printf(".");
     }
     printf("\n");

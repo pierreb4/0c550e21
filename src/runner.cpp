@@ -78,7 +78,9 @@ void run(int only_sid = -1, int arg = -1) {
 
   int skips = 0;
 
-  string sample_dir = "evaluation";
+  // Reactivate training and evaluation - Pierre 20241025
+  // string sample_dir = "evaluation";
+  string sample_dir = "test";
   int samples = -1;
   if (eval) {
     sample_dir = "test";
@@ -159,7 +161,8 @@ void run(int only_sid = -1, int arg = -1) {
       double w[4] = { 1.2772523019346949, 0.00655104, 0.70820414, 0.00194519 };
       double expect_time3 = w[0] + w[1] * sumsz + w[2] * macols + w[1] * w[2] * sumsz * macols;
       // MAXDEPTH = 2;//(expect_time3 < 30 ? 4 : 3);//sumsz < 20*20*3 ? 3 : 2;
-      cerr << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
+//      cerr << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
+      cout << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
 
       MAXSIDE = 100;
       MAXAREA = maxarea * 2;
@@ -354,14 +357,25 @@ void run(int only_sid = -1, int arg = -1) {
       if (!eval)
       { //! eval && s1 && !s2) {
         visu.next(to_string(si) + " - test");
-        for (auto &[in, out] : train)
+        for (auto &[in, out] : train) {
           visu.add(in, out);
+          // cout << "[in, out]" << endl;
+          // print(in);
+          // print(out);
+        }
         visu.next(to_string(si) + " - test");
         visu.add(test_in, test_out);
+        //   cout << "[test_in, test_out]" << endl;
+        // print(test_in);
+        // print(test_out);
         visu.next(to_string(si) + " - cands");
         for (int i = 0; i < min((int)answers.size(), 5); i++)
         {
-          visu.add(test_in, answers[i].imgs.back());
+          Image answer_out = answers[i].imgs.back();
+          visu.add(test_in, test_out);
+          // cout << "[test_in, answer_out]" << endl;
+          // print(test_in);
+          // print(answer_out);
         }
       }
 
@@ -391,6 +405,11 @@ void run(int only_sid = -1, int arg = -1) {
         // string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(int(arg / 10)) + "_" + to_string(MAXDEPTH) + ".json";
         // writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
       }
+
+      // If correct, go to next sample - Pierre 20241026
+      if (verdict[si] == 3) {
+        break;
+      } 
     }
   }
 
