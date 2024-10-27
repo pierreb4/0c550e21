@@ -102,8 +102,8 @@ struct Piece {
   int keepi, knowi;
 };
 
-const Image badImg = {{0,0},{0,0},{}};
-const Image dummyImg = {{0,0},{1,1},{0}};
+const Image badImg = {{{0,0}},{{0,0}},{}};
+const Image dummyImg = {{{0,0}},{{1,1}},{0}};
 
 using Piece_ = const Piece&;
 

@@ -944,7 +944,7 @@ Image heuristicCut(Image_ img) {
       }
     }
 
-    if (!(top && bot || left && right)) continue;
+    if (!((top && bot) || (left && right))) continue;
 
     int score = 1e9, components = 0, nocontained = 1;
     for (int i = 0; i < img.h; i++) {

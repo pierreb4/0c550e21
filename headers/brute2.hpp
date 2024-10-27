@@ -5,7 +5,7 @@ struct State {
   int depth;
   bool isvec;
   State() {}
-  State(vImage_ vimg_, bool isvec_, int depth_) : vimg(vimg_), isvec(isvec_), depth(depth_) {}
+  State(vImage_ vimg_, bool isvec_, int depth_) : vimg(vimg_), depth(depth_), isvec(isvec_) {}
   ull hash() const {
     ull r = isvec;
     for (Image_ img : vimg) {

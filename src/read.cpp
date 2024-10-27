@@ -190,7 +190,7 @@ vector<Sample> readAll(string path, int maxn) { //maxn = -1
 
 
 Writer::Writer(string filename) { //filename = "submission_part.csv"
-  filename = filename;
+  // filename = filename;
   fp = fopen(filename.c_str(), "w");
   assert(fp);
   fprintf(fp, "output_id,output\n");

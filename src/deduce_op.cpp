@@ -124,11 +124,11 @@ deduceOuterProduct::deduceOuterProduct(vector<pair<Image,Image>> train) {
 	      for (int k : {0,1}) {
 	        auto f = k ? iOuterProductSI : iOuterProductIS;
 	        vector<pair<Image,Image>> is;
-	        int bad = 0;
+	        // int bad = 0;
 	        for (auto [in,out] : train) {
 	          int sw = w, sh = h;
 	          if (l) {
-	            if (out.w%w || out.h%h) bad = 1;
+	            // if (out.w%w || out.h%h) bad = 1;
 	            sw = out.w/w;
 	            sh = out.h/h;
 	          }
