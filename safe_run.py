@@ -169,7 +169,7 @@ depth3 = []
 for i in range(ntasks):
     depth3.append(Command("./run %d 3"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
-stats3 = runAll(depth3, 1)
+stats3 = runAll(depth3, 4)
 
 # depth23 = []
 # for i in range(ntasks):
