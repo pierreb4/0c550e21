@@ -74,7 +74,12 @@ void run(int only_sid = -1, int arg = -1) {
   ARG_MAXDEPTH = arg % 10 * 10;
 
   // Make this 1 before submission - Pierre 20240924
+#ifdef MBP
+  int eval = 0;
+#else // KAGGLE
   int eval = 1;
+#endif
+
 
   int skips = 0;
 
