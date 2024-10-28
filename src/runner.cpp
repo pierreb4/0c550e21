@@ -67,14 +67,14 @@ void run(int only_sid = -1, int arg = -1) {
   //deduceEvals();
 
   int no_norm   = (arg >= 10 && arg < 20);
-  int add_flips = (arg >= 20 && arg < 40);
-  int add_flip_id = (arg >= 30 && arg < 40 ? 7 : 6);
+  int add_flips = (arg >= 60 && arg < 80);
+  int add_flip_id = (arg >= 60 && arg < 70 ? 6 : 7);
 
   if (arg == -1) arg = 2;
   ARG_MAXDEPTH = arg % 10 * 10;
 
   // Make this 1 before submission - Pierre 20240924
-  int eval = 0;
+  int eval = 1;
 
   int skips = 0;
 
