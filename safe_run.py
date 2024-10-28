@@ -22,8 +22,8 @@ exit_names = ["SUCCESS", "TLE", "MLE", "RTE", "RUNNING"]
 start_time = time.time()
 
 
-MEMORY_LIMIT = 30*1024 * 0.95 # 30 GB
-TIME_LIMIT   = 12*3600 * 0.95 # 12 hours
+MEMORY_LIMIT = 30*1024 * 0.9 # 30 GB
+TIME_LIMIT   = 12*3600 * 0.9 # 12 hours
 
 
 class Process:
@@ -167,7 +167,7 @@ else:
 #TODO: change back to depth 3/4
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 3"%i))
+    depth3.append(Command("./run %d 5"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
 
@@ -186,12 +186,12 @@ stats3 = runAll(depth3, 4)
 #     # depth33.append(Command("./run %d 33"%i, 120))
 # stats33 = runAll(depth33, 4)
 
-depth4 = []
-for i in range(ntasks):
-    status, t, m = stats3[depth3[i].cmd]
-    depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
-    # depth4.append(Command("./run %d 4"%i, 1200))
-stats4 = runAll(depth4, 2)
+# depth4 = []
+# for i in range(ntasks):
+#     status, t, m = stats3[depth3[i].cmd]
+#     depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+#     # depth4.append(Command("./run %d 4"%i, 1200))
+# stats4 = runAll(depth4, 2)
 
 def read(fn):
     f = open(fn)

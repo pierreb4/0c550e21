@@ -29,9 +29,13 @@ ull hashVec(const vector<int>&vec) {
 void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> out_sizes) {
   Timer set_time, piece_time, child_time;
 
-  // Pieces pieces;
-  pieces.piece.clear();
-  pieces.mem.clear();
+  // cout << __FILE__ << " pieces.piece.size before clear: " << pieces.piece.size() << endl;
+
+  // // Pieces pieces;
+  // pieces.piece.clear();
+  // pieces.mem.clear();
+
+  // cout << __FILE__ << " pieces.piece.size after clear: " << pieces.piece.size() << endl;
 
   vector<int>& mem = pieces.mem;
   vector<int> depth_mem;
@@ -75,8 +79,8 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
     for (DAG&d : dag) {
       int ni = d.binary[fi2];
       if (ni == -1) {
-	ok = 0;
-	break;
+	      ok = 0;
+	      break;
       }
       assert(ni >= 0 && ni < d.tiny_node.size());
       depth = max(depth, (int)d.tiny_node[ni].depth);
@@ -260,10 +264,12 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
 
   // if (out_sizes.size() && print_nodes) {
   if (print_nodes) {
+    cout << "Pieces:     " << pieces.piece.size() << endl;
+
     int nodes = 0;
+
     for (DAG&d : pieces.dag) nodes += d.tiny_node.size();
     cout << "Nodes:      " << nodes << endl;
-    cout << "Pieces:     " << pieces.piece.size() << endl;
   }
   // pieces.dag = std::move(dag);
   //pieces.seen = move(seen);

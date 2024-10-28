@@ -428,7 +428,13 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
   for (const Candidate& cand : cands) {
     vImage_ imgs = cand.imgs;
     vector<int> pis = cand.pis;
-    assert(cand.max_depth >= 0 && cand.max_depth < 100);
+
+    if (cand.max_depth >= 200) {
+      cout << __FILE__ << " cand.max_depth: " << cand.max_depth << endl;
+    }
+    
+    assert(cand.max_depth >= 0 && cand.max_depth < 200);
+    // assert(cand.max_depth >= 0 && cand.max_depth < 100);
     assert(cand.cnt_pieces >= 0 && cand.cnt_pieces < 100);
     
     // cout << __FILE__ << " Max_depth: " << cand.max_depth << " Cnt_pieces: " << cand.cnt_pieces << endl;

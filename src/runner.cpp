@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int MINDEPTH = 20;
+int MINDEPTH = 10;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
@@ -74,7 +74,7 @@ void run(int only_sid = -1, int arg = -1) {
   ARG_MAXDEPTH = arg % 10 * 10;
 
   // Make this 1 before submission - Pierre 20240924
-  int eval = 1;
+  int eval = 0;
 
   int skips = 0;
 
@@ -192,18 +192,22 @@ void run(int only_sid = -1, int arg = -1) {
         cout << __FILE__ << " Outsize: " << sz.x << ' ' << sz.y << endl;
     }
 
-    Pieces pieces;
-    // Add 1 for test_in  
-    pieces.dag = vector<DAG>(train.size() + 1);
+    vector<DAG> ini_dag = vector<DAG>(train.size() + 1);
 
-    // Initialize depth (only for train?) - Pierre 20241021
-    for (int i = 0; i < pieces.dag.size(); i++) {
-      pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
-      cout << __FILE__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
+    for (int i = 0; i < train.size() + 1; i++) {
+      ini_dag[i].depth.resize(ARG_MAXDEPTH / 10);
     }
 
     // Iterate over MAXDEPTH values
     for(MAXDEPTH = MINDEPTH; MAXDEPTH <= ARG_MAXDEPTH; MAXDEPTH+=10) {
+      Pieces pieces;
+      // Add 1 for test_in  
+      pieces.dag = vector<DAG>(train.size() + 1);
+
+      for (int i = 0; i < train.size() + 1; i++) {
+        pieces.dag[i].depth = std::move(ini_dag[i].depth);
+      }
+
       /*if (add_flips) {
         point predsz = out_sizes.back();
         out_sizes.clear();
@@ -286,6 +290,7 @@ void run(int only_sid = -1, int arg = -1) {
         if (print_times)
           cout << "composePieces time: " << now() - start_time << endl;
       }
+
       addDeduceOuterProduct(pieces, train, cands);
 
       // Score candidates
@@ -410,6 +415,12 @@ void run(int only_sid = -1, int arg = -1) {
       if (verdict[si] == 3) {
         break;
       } 
+
+      // Save depth vector for next round - Pierre 20241028
+      for (int i = 0; i < train.size() + 1; i++) {
+        ini_dag[i].depth = std::move(pieces.dag[i].depth);
+      }
+
     }
   }
 

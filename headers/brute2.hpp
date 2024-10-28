@@ -53,7 +53,7 @@ struct DAG {
   int givens;
   point target_size;
   TinyHashMap hashi;
-  vector<int> binary;
+//  vector<int> binary;
   int add(const State&nxt, bool force = false);
   Image getImg(int nodei) {
     return tiny_node.getImg(nodei); 

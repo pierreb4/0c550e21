@@ -346,7 +346,7 @@ int DAG::add(const State&nxt, bool force) { //force = false
 void DAG::build(int DEPTH) {
   build_f_time.start();
 
-  cout << __FILE__ << " DEPTH: " << DEPTH << " Func size: " << depth[DEPTH/10-1].func.list.size() << endl;
+  cout << __FILE__ << " DEPTH: " << DEPTH << " func.size: " << depth[DEPTH/10-1].func.list.size() << endl;
 
   for (int curi = 0; curi < tiny_node.size(); curi++) {
     int ndepth = tiny_node[curi].depth;
@@ -359,7 +359,9 @@ void DAG::build(int DEPTH) {
     for (int fi : depth[DEPTH / 10 - 1].func.list) {
       // cout << __FILE__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
       nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
-      if (nxt.depth > DEPTH) continue;
+      // Tighten this a bit - Pierre 20241028
+      // if (nxt.depth > DEPTH) continue;
+      if (nxt.depth+1 > DEPTH) continue;
       if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
         int newi = add(nxt);
         tiny_node.addChild(curi, fi, newi);
@@ -581,6 +583,8 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
     double start_time = now();
     for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
       pieces.dag[ti].build(DEPTH);
+      cout << __FILE__ << " piece.size: " << pieces.piece.size() << endl;
+      cout << __FILE__ << ":" << __LINE__ << " ti: " << ti << " node.size: " << pieces.dag[ti].tiny_node.size() << endl;
       if (print) cout << "Build " << DEPTH << " done" << endl;
     }
 
@@ -596,8 +600,9 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 	      if (and_train_out_mask>>c&1)
 	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
-      for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
-        pieces.dag[ti].applyFuncs(DEPTH, toapply, 0);
+      // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
+      //   pieces.dag[ti].applyFuncs(DEPTH, toapply, 0);
+        pieces.dag[ti].applyFuncs(MAXDEPTH, toapply, 0);
       /*
       dag[ti].applyFunc("toOrigin", 0);
       if (print) cout << now()-start_time << endl;
