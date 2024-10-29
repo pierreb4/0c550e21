@@ -49,10 +49,12 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int MINDEPTH = 10;
+int MINDEPTH = 20;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
+int keep_best = 4;
 
+// Need to check/update - Pierre 20241028
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
 
 int print_times = 1, print_mem = 1, print_nodes = 1;
@@ -336,8 +338,8 @@ void run(int only_sid = -1, int arg = -1) {
             for (int pi : cand.pis)
               cout << pi << ' ';
             cout << endl;
-            if (filtered.size() == 3 + skips * 3)
-            // if (filtered.size() == 10 + skips * 3)
+            // Keep best 2 scores - Pierre 20241029
+            if (filtered.size() == 2 + skips * 3)
               break;
           }
         }
@@ -412,8 +414,8 @@ void run(int only_sid = -1, int arg = -1) {
         // Writer writer(fn);
         // writer(s, rec_answers);
         writeAnswersWithScores(s, fn, rec_answers, answer_scores);
-        // string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(int(arg / 10)) + "_" + to_string(MAXDEPTH) + ".json";
-        // writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
+        string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".json";
+        writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
       }
 
       // If correct, go to next sample - Pierre 20241026

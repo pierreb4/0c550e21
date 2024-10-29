@@ -157,9 +157,6 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
       }
       child_time.stop();
 
-      // cout << __FILE__ << " MAXDEPTH: " << MAXDEPTH << endl;
-
-      // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH+=10)
       {
         for (auto& [fi, newi] : newi_list) {
           // This doesn't run - Pierre 20241021
@@ -172,10 +169,8 @@ void makePieces2(Pieces& pieces, vector<pair<Image,Image>> train, vector<point> 
             if (to == TinyChildren::None) {
               string name = pieces.dag[i].depth[MAXDEPTH/10-1].getName(fi);
               if (name.substr(0, 4) == "Move") {
-                // XXX Fix depth if needed - Pierre 20241020
                 newi[i] = pieces.dag[i].applyFunc(MAXDEPTH, ind[i], fi);
                 if (newi[i] != -1 && out_sizes.size())
-                  // XXX Fix depth if needed - Pierre 20241020
                   pieces.dag[i].applyFunc(MAXDEPTH, newi[i], pieces.dag[i].depth[MAXDEPTH/10-1].findfi("embed 1"));
               }
               else continue;

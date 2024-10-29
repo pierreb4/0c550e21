@@ -232,8 +232,7 @@ void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vecto
   fprintf(fp, "%s_%d\n", s.id.c_str(), s.id_ind);
   assert(imgs.size() == scores.size());
   if (imgs.empty()) imgs = {dummyImg}, scores = {-1};
-  assert(imgs.size() <= 3);
-  // assert(imgs.size() <= 10);
+  assert(imgs.size() <= 2);
 
   for (int i = 0; i < imgs.size(); i++) {
     Image_ img = imgs[i];
@@ -260,7 +259,7 @@ void writeJsonAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, v
   FILE*fp = fopen(fn.c_str(), "w");
   assert(fp);
   fprintf(fp, "{\n");
-  fprintf(fp, "    \"%s\": [\n", s.id.c_str());
+  fprintf(fp, "    \"%s_%d\": [\n", s.id.c_str(), s.id_ind);
   assert(imgs.size() == scores.size());
   if (imgs.empty()) imgs = {dummyImg}, scores = {-1};
   assert(imgs.size() <= 3);

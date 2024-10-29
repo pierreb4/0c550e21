@@ -9,6 +9,7 @@ import psutil
 from random import *
 import time
 import math
+import json
 
 from os import system
 from glob import glob
@@ -143,60 +144,30 @@ if len(sys.argv) == 3:
 else:
     ntasks = int(check_output('./count_tasks'))
     task_list = range(0, ntasks)
-    #print("Usage: python %s <start_task> <#tasks>"%sys.argv[0])
+    print("Usage: python %s <start_task> <#tasks>"%sys.argv[0])
 
-# Testing with next 2 blocks - Pierre 20241002
-# depth1 = []
-# for i in range(ntasks):
-#     depth1.append(Command("./run %d 1"%i, 10))
-# stats1 = runAll(depth1, 4)
-
-# depth2 = []
-# for i in range(ntasks):
-#     depth2.append(Command("./run %d 2"%i, 10))
-# stats2 = runAll(depth2, 4)
-
-# depth = []
-# depth.append(Command(f"./run 0 23", 1200))
-# depth.append(Command(f"./run 0 33", 1200))
-# for d in range(1, 5):
-#   depth.append(Command(f"./run 0 {d}", 1200))
-# stats = runAll(depth, 2)
-
-# Original blocks - Pierre 20241002
-#TODO: change back to depth 3/4
 depth3 = []
 for i in range(ntasks):
     depth3.append(Command("./run %d 64"%i))
-    # depth3.append(Command("./run %d 3"%i, 4*60))
-stats3 = runAll(depth3, 4)
-
-depth3 = []
-for i in range(ntasks):
     depth3.append(Command("./run %d 74"%i))
+    depth3.append(Command("./run %d  4"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
 
-depth3 = []
-for i in range(ntasks):
-    depth3.append(Command("./run %d 5"%i))
-    # depth3.append(Command("./run %d 3"%i, 4*60))
-stats3 = runAll(depth3, 4)
-
-# depth23 = []
+# depth63 = []
 # for i in range(ntasks):
 #     # Watch this, as stats3 doesn't get populated correctly when commands above fail
 #     status, t, m = stats3[depth3[i].cmd]
-#     depth23.append(Command("./run %d 23"%i, t*2, m*2, 100))
-#     # depth23.append(Command("./run %d 23"%i, 120))
-# stats23 = runAll(depth23, 4)
+#     depth63.append(Command("./run %d 63"%i, t*2, m*2, 100))
+#     # depth63.append(Command("./run %d 63"%i, 120))
+# stats63 = runAll(depth63, 4)
 
-# depth33 = []
+# depth73 = []
 # for i in range(ntasks):
 #     status, t, m = stats3[depth3[i].cmd]
-#     depth33.append(Command("./run %d 33"%i, t*2, m*2, 100))
-#     # depth33.append(Command("./run %d 33"%i, 120))
-# stats33 = runAll(depth33, 4)
+#     depth73.append(Command("./run %d 73"%i, t*2, m*2, 100))
+#     # depth73.append(Command("./run %d 73"%i, 120))
+# stats73 = runAll(depth73, 4)
 
 # depth4 = []
 # for i in range(ntasks):
@@ -213,13 +184,16 @@ def read(fn):
 
 combined = ["output_id,output"]
 for taski in task_list:
+    print(f"Dealing with task: {taski}")
     ids = set()
     cands = []
     for fn in glob("output/answer_%d_*.csv"%taski):
         t = read(fn).strip().split('\n')
+        # print(f"  Line: {t}")
         ids.add(t[0])
         for cand in t[1:]:
             img, score = cand.split()
+            # print(f"  Cand: <img> {score}")
             cands.append((float(score), img))
 
     # assert(len(ids) == 1)
@@ -232,16 +206,94 @@ for taski in task_list:
             score, img = cand
             if not img in best:
                 best.append(img)
-                if len(best) == 3:
+                if len(best) == 2:
                     break
-        if not best: best.append('|0|')
+        # Ensure that there's 2 attempts - Pierre 20241029
+        while len(best) < 2: best.append('|0|')
+        print(f"  Append: {id+','+' '.join(best)}")
         combined.append(id+','+' '.join(best))
-    # elif len(ids) == 0:
-    #     combined.append(taski+"_0,|0|")
     else:
-        print(f"Error: wrong number of ids for task {taski}: {len(ids)}")
+        print(f"Error: No result for task {taski}: {len(ids)}")
 
 outf = open('submission_part.csv', 'w')
 for line in combined:
     print(line, file=outf)
 outf.close()
+
+# Do the same again, but for jsons - Pierre 20241029
+submission = {}
+for taski in task_list:
+    print(f"Dealing with task: {taski}")
+    ids = set()
+    cands = []
+    for fn in glob("output/answer_%d_*.json"%taski):
+        with open(fn, 'r') as file:
+            data = json.load(file)
+        print(data)
+
+        for t, t_v in data.items():
+            # print(f"{t}")
+            items = list(t_v[0].items())
+            for (_, score), (_, img) in zip(items[::2], items[1::2]):
+                print(f"{score}\n  {img}")
+                ids.add(t)
+                print(f"  Task: {t} Cand: {score} <img>")
+                cands.append((float(score), img))
+
+    # assert(len(ids) == 1)
+    if len(ids) == 1:
+        t = ids.pop()
+        task_id, output_idx = t.split('_')
+        cands.sort(reverse=True)
+        best = []
+        # for cand in cands:
+        #     score, output_idx, img = cand
+        #     print(f"Sorted: {score} {output_idx} {img}")
+        #     if not img in best:
+        #         best.append(img)
+        #         if len(best) == 2:
+        #             break
+        # # Ensure that there's 2 attempts - Pierre 20241029
+        # while len(best) < 2: best.append([[0]])
+        # print(f"  Append: {id+','+' '.join(best)}")
+
+        # best = []
+        for cand in cands:
+            score, img = cand
+            if img and not img in best:  # Check if pred is not an empty string
+                # img_lines = img.split('|')[1:-1]  # Remove empty strings from split
+                # img_matrix = [list(map(int, line)) for line in img_lines]
+                # best.append(img_matrix)
+                best.append(img)
+                if len(best) == 2:
+                    break
+
+        attempt_1 = best[0] if len(best) > 0 else [[0]]
+        attempt_2 = best[1] if len(best) > 1 else [[0]]
+
+        if task_id not in submission:
+            submission[task_id] = []
+
+        attempt = {
+            "attempt_1": attempt_1,
+            "attempt_2": attempt_2
+        }
+        if output_idx == '0':
+            submission[task_id].insert(0, attempt)
+        else:
+            submission[task_id].append(attempt)
+
+        # empty_dict = {
+        #     "attempt_1": [[0]],
+        #     "attempt_2": [[0]]
+        # }
+
+        # for json_id in json_name:
+        #     if json_id not in submission_dict:
+        #         submission_dict[json_id] = []
+        #         submission_dict[json_id].append(empty_dict)
+    else:
+        print(f"Error: No result for task {taski}: {len(ids)}")
+
+with open('submission_part.json', 'w') as file:
+    json.dump(submission, file, indent=4)
