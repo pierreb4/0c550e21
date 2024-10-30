@@ -448,12 +448,34 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     // cout << "  - " << __FILE__ << " Cands.size: " << cands.size() << endl;
     // cout << "  - " << __FILE__ << " Train.size: " << train.size() << endl;
 
-    int goods = 0;
+    // Finetune comparison - Pierre 20241030
+    // int goods = 0;
+    double goods = 0;
+    cout << __FILE__;
     for (int i = 0; i < train.size(); i++) {
-      goods += (imgs[i] == train[i].second);
+      // goods += (imgs[i] == train[i].second);
+      goods += comp(imgs[i], train[i].second);
+      cout << std::dec << imgs[i].x << imgs[i].y 
+           << imgs[i].w << imgs[i].h << " " << std::hex;
+      int h = imgs[i].h;
+      int w = imgs[i].w;
+      for (int j = 0; j < h; j++) 
+      for (int k = 0; k < w; k++)
+        cout << int(imgs[i].mask[j*w+k]);
+      cout << std::dec << endl;
+      cout << train[i].second.x << train[i].second.y
+           << train[i].second.w << train[i].second.h << " " << std::hex;
+      int h2 = train[i].second.h;
+      int w2 = train[i].second.w;
+      for (int j = 0; j < h2; j++)
+      for (int k = 0; k < w2; k++)
+        cout << int(train[i].second.mask[j*w2+k]);
+      cout << std::dec << " -> " << int(imgs[i] == train[i].second) << " " 
+          << comp(imgs[i], train[i].second) << endl;
     }
+    
 
-    double score = goods-prior*0.01;
+    double score = goods - prior * 0.0001;
 
     // Collect functions - Pierre 20241018
     for (int pi : cand.pis) {

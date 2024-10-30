@@ -52,10 +52,11 @@ void writeVerdict(int si, string sid, int verdict) {
 int MINDEPTH = 20;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
-int keep_best = 4;
+int keep_best = 8;
 
 // Need to check/update - Pierre 20241028
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
+// int MAXSIDE = 30, MAXAREA = 30*30, MAXPIXELS = 30*30*5; //Just default values
 
 int print_times = 1, print_mem = 1, print_nodes = 1;
 
@@ -171,7 +172,7 @@ void run(int only_sid = -1, int arg = -1) {
 //      cerr << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
       cout << __FILE__ << " ARG_MAXDEPTH: " << ARG_MAXDEPTH << endl;
 
-      MAXSIDE = 100;
+      // MAXSIDE = 100;
       MAXAREA = maxarea * 2;
       MAXPIXELS = MAXAREA * 5;
     }

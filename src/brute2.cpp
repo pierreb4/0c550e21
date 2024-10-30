@@ -350,7 +350,11 @@ void DAG::build(int DEPTH) {
 
   for (int curi = 0; curi < tiny_node.size(); curi++) {
     int ndepth = tiny_node[curi].depth;
-    if (ndepth+1 > DEPTH) continue;
+    // Tighten this a bit? - Pierre 20241028
+    if (ndepth >= DEPTH) continue;
+    // Try this - Pierre 20241030
+    // if (ndepth < DEPTH-20) continue;
+
 
     State nxt;
     state_time.start();
@@ -360,8 +364,7 @@ void DAG::build(int DEPTH) {
       // cout << __FILE__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
       nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
       // Tighten this a bit - Pierre 20241028
-      // if (nxt.depth > DEPTH) continue;
-      if (nxt.depth+1 > DEPTH) continue;
+      if (nxt.depth > DEPTH) continue;
       if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
         int newi = add(nxt);
         tiny_node.addChild(curi, fi, newi);

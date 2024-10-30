@@ -148,8 +148,8 @@ else:
 
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 64"%i))
-    depth3.append(Command("./run %d 74"%i))
+    depth3.append(Command("./run %d 65"%i))
+    depth3.append(Command("./run %d 75"%i))
     depth3.append(Command("./run %d  5"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
@@ -184,7 +184,7 @@ def read(fn):
 
 combined = ["output_id,output"]
 for taski in task_list:
-    print(f"Dealing with task: {taski}")
+    # print(f"Dealing with task: {taski}")
     ids = set()
     cands = []
     for fn in glob("output/answer_%d_*.csv"%taski):
@@ -199,7 +199,6 @@ for taski in task_list:
     # assert(len(ids) == 1)
     if len(ids) == 1:
         id = ids.pop()
-
         cands.sort(reverse=True)
         best = []
         for cand in cands:
@@ -210,7 +209,7 @@ for taski in task_list:
                     break
         # Ensure that there's 2 attempts - Pierre 20241029
         while len(best) < 2: best.append('|0|')
-        print(f"  Append: {id+','+' '.join(best)}")
+        # print(f"  Append: {id+','+' '.join(best)}")
         combined.append(id+','+' '.join(best))
     else:
         print(f"Error: No result for task {taski}: {len(ids)}")

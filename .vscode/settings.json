@@ -4,7 +4,9 @@
         "__split_buffer": "cpp",
         "deque": "cpp",
         "string": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "tuple": "cpp",
+        "regex": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
