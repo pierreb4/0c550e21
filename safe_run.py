@@ -223,21 +223,21 @@ outf.close()
 # Do the same again, but for jsons - Pierre 20241029
 submission = {}
 for taski in task_list:
-    print(f"Dealing with task: {taski}")
+    # print(f"Dealing with task: {taski}")
     ids = set()
     cands = []
     for fn in glob("output/answer_%d_*.json"%taski):
         with open(fn, 'r') as file:
             data = json.load(file)
-        print(data)
+        # print(data)
 
         for t, t_v in data.items():
             # print(f"{t}")
             items = list(t_v[0].items())
             for (_, score), (_, img) in zip(items[::2], items[1::2]):
-                print(f"{score}\n  {img}")
+                # print(f"{score}\n  {img}")
                 ids.add(t)
-                print(f"  Task: {t} Cand: {score} <img>")
+                # print(f"  Task: {t} Cand: {score} <img>")
                 cands.append((float(score), img))
 
     # assert(len(ids) == 1)
