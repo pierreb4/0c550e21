@@ -148,8 +148,8 @@ else:
 
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 65"%i))
-    depth3.append(Command("./run %d 75"%i))
+    depth3.append(Command("./run %d 64"%i))
+    depth3.append(Command("./run %d 74"%i))
     depth3.append(Command("./run %d  5"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
