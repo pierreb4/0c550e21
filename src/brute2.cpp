@@ -365,7 +365,7 @@ void DAG::build(int DEPTH) {
     for (int fi : depth[DEPTH / 10 - 1].func.list) {
       // cout << __FILE__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
       nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
-      // Tighten this a bit - Pierre 20241028
+      // Tighten this a bit? - Pierre 20241028
       if (nxt.depth > DEPTH) continue;
       if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
         int newi = add(nxt);

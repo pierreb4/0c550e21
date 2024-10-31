@@ -52,7 +52,7 @@ void writeVerdict(int si, string sid, int verdict) {
 int MINDEPTH = 20;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
-int keep_best = 8;
+int keep_best = 4;
 
 // Need to check/update - Pierre 20241028
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
