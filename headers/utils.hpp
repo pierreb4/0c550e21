@@ -74,15 +74,28 @@ inline double comp(Image_ a, Image_ b) {
   //   + 0.2 * (a.sz == b.sz) 
   //   + 0.7 * (a.mask == b.mask);
 
+  // double ret = 0;
+  // double max = 0;
+  // if (a.sz == b.sz)
+  //   for (int i = 0; i < a.h; i++)
+  //     for (int j = 0; j < a.w; j++)
+  //     {
+  //       ret += (a.mask[i * a.w + j] == b.mask[i * b.w + j]);
+  //       max += 1;
+  //     }
+  // if (max == 0) return 0;
+  // else
+  //   return (a.p == b.p) * (a.sz == b.sz) * ret / max;
+
   double ret = 0;
-  double max = 0;
+  double max = a.mask.size();
+
   if (a.sz == b.sz)
-    for (int i = 0; i < a.h; i++)
-      for (int j = 0; j < a.w; j++)
-      {
-        ret += (a.mask[i * a.w + j] == b.mask[i * b.w + j]);
-        max += 1;
-      }
+    ret = std::inner_product(a.mask.begin(), a.mask.end(), b.mask.begin(),
+      0.0, std::plus<>(), std::equal_to<>());
+  else
+    max = 0;
+
   if (max == 0) return 0;
   else
     return (a.p == b.p) * (a.sz == b.sz) * ret / max;
