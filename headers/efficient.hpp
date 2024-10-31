@@ -142,12 +142,26 @@ struct TinyNodeBank {
     v.vimg = new int[v.imgs];
     for (int i = 0; i < v.imgs; i++) {
       v.vimg[i] = imgs.size();
-      imgs.emplace_back(state.vimg[i], bank);
+
+      try {
+        imgs.emplace_back(state.vimg[i], bank);
+      } catch (const std::length_error& e) {
+        std::cerr << "Caught exception: " << __FILE__ << ": " << __LINE__ 
+          << e.what() << std::endl;
+        return;
+      }
     }
     v.isvec = state.isvec;
     v.ispiece = ispiece;
     v.depth = state.depth;
-    node.push_back(std::move(v));
+    
+    try {
+      node.push_back(std::move(v));
+    } catch (const std::length_error& e) {
+      std::cerr << "Caught exception: " << __FILE__ << ": " << __LINE__ 
+        << e.what() << std::endl;
+      return;
+    }
   }
   void addChild(int ni, int fi, int to) {
     node[ni].child.add(fi, to);

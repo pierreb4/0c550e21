@@ -148,33 +148,31 @@ else:
 
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d 64"%i))
-    depth3.append(Command("./run %d 74"%i))
-    depth3.append(Command("./run %d  5"%i))
+    depth3.append(Command("./run %d  3"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
 
-# depth63 = []
-# for i in range(ntasks):
-#     # Watch this, as stats3 doesn't get populated correctly when commands above fail
-#     status, t, m = stats3[depth3[i].cmd]
-#     depth63.append(Command("./run %d 63"%i, t*2, m*2, 100))
-#     # depth63.append(Command("./run %d 63"%i, 120))
-# stats63 = runAll(depth63, 4)
+depth63 = []
+for i in range(ntasks):
+    # Watch this, as stats3 doesn't get populated correctly when commands above fail
+    status, t, m = stats3[depth3[i].cmd]
+    depth63.append(Command("./run %d 63"%i, t*2, m*2, 100))
+    # depth63.append(Command("./run %d 63"%i, 120))
+stats63 = runAll(depth63, 4)
 
-# depth73 = []
-# for i in range(ntasks):
-#     status, t, m = stats3[depth3[i].cmd]
-#     depth73.append(Command("./run %d 73"%i, t*2, m*2, 100))
-#     # depth73.append(Command("./run %d 73"%i, 120))
-# stats73 = runAll(depth73, 4)
+depth73 = []
+for i in range(ntasks):
+    status, t, m = stats3[depth3[i].cmd]
+    depth73.append(Command("./run %d 73"%i, t*2, m*2, 100))
+    # depth73.append(Command("./run %d 73"%i, 120))
+stats73 = runAll(depth73, 4)
 
-# depth4 = []
-# for i in range(ntasks):
-#     status, t, m = stats3[depth3[i].cmd]
-#     depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
-#     # depth4.append(Command("./run %d 4"%i, 1200))
-# stats4 = runAll(depth4, 2)
+depth4 = []
+for i in range(ntasks):
+    status, t, m = stats3[depth3[i].cmd]
+    depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+    # depth4.append(Command("./run %d 4"%i, 1200))
+stats4 = runAll(depth4, 2)
 
 def read(fn):
     f = open(fn)

@@ -14,6 +14,8 @@ Image replaceTemplate(Image_ in, Image_ need_, Image_ marked_, int overlapping =
 Image swapTemplate(Image_ in, Image_ a, Image_ b, int rigids = 0);
 Image spreadCols(Image img, int skipmaj = 0);
 vImage splitColumns(Image_ img);
+// Add new function to solve challenge 0 - Pierre 20241031
+// vImage smearRows(Image_ img);
 vImage splitRows(Image_ img);
 Image half(Image_ img, int id);
 Image smear(Image_ img, int id);

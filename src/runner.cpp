@@ -131,6 +131,10 @@ void run(int only_sid = -1, int arg = -1) {
 
     const Sample& s = sample[si];
 
+#ifdef MBP
+    cout << "Task #" << si << " (" << s.id << "): " << endl;
+#endif
+
     // Normalize sample
     Simplifier sim = normalizeCols(s.train);
     if (no_norm)
