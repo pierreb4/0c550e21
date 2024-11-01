@@ -474,7 +474,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
       //     << comp(imgs[i], train[i].second) << endl;
     }
     
-
+    
     double score = goods - prior * 0.0001;
 
     // Collect functions - Pierre 20241018

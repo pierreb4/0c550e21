@@ -217,80 +217,80 @@ for line in combined:
     print(line, file=outf)
 outf.close()
 
-# # Do the same again, but for jsons - Pierre 20241029
-# submission = {}
-# for taski in task_list:
-#     # print(f"Dealing with task: {taski}")
-#     ids = set()
-#     cands = []
-#     for fn in glob("output/answer_%d_*.json"%taski):
-#         with open(fn, 'r') as file:
-#             data = json.load(file)
-#         # print(data)
+# Do the same again, but for jsons - Pierre 20241029
+submission = {}
+for taski in task_list:
+    # print(f"Dealing with task: {taski}")
+    ids = set()
+    cands = []
+    for fn in glob("output/answer_%d_*.json"%taski):
+        with open(fn, 'r') as file:
+            data = json.load(file)
+        # print(data)
 
-#         for t, t_v in data.items():
-#             # print(f"{t}")
-#             items = list(t_v[0].items())
-#             for (_, score), (_, img) in zip(items[::2], items[1::2]):
-#                 # print(f"{score}\n  {img}")
-#                 ids.add(t)
-#                 # print(f"  Task: {t} Cand: {score} <img>")
-#                 cands.append((float(score), img))
+        for t, t_v in data.items():
+            # print(f"{t}")
+            items = list(t_v[0].items())
+            for (_, score), (_, img) in zip(items[::2], items[1::2]):
+                # print(f"{score}\n  {img}")
+                ids.add(t)
+                # print(f"  Task: {t} Cand: {score} <img>")
+                cands.append((float(score), img))
 
-#     # assert(len(ids) == 1)
-#     if len(ids) == 1:
-#         t = ids.pop()
-#         task_id, output_idx = t.split('_')
-#         cands.sort(reverse=True)
-#         best = []
-#         # for cand in cands:
-#         #     score, output_idx, img = cand
-#         #     print(f"Sorted: {score} {output_idx} {img}")
-#         #     if not img in best:
-#         #         best.append(img)
-#         #         if len(best) == 2:
-#         #             break
-#         # # Ensure that there's 2 attempts - Pierre 20241029
-#         # while len(best) < 2: best.append([[0]])
-#         # print(f"  Append: {id+','+' '.join(best)}")
+    # assert(len(ids) == 1)
+    if len(ids) == 1:
+        t = ids.pop()
+        task_id, output_idx = t.split('_')
+        cands.sort(reverse=True)
+        best = []
+        # for cand in cands:
+        #     score, output_idx, img = cand
+        #     print(f"Sorted: {score} {output_idx} {img}")
+        #     if not img in best:
+        #         best.append(img)
+        #         if len(best) == 2:
+        #             break
+        # # Ensure that there's 2 attempts - Pierre 20241029
+        # while len(best) < 2: best.append([[0]])
+        # print(f"  Append: {id+','+' '.join(best)}")
 
-#         # best = []
-#         for cand in cands:
-#             score, img = cand
-#             if img and not img in best:  # Check if pred is not an empty string
-#                 # img_lines = img.split('|')[1:-1]  # Remove empty strings from split
-#                 # img_matrix = [list(map(int, line)) for line in img_lines]
-#                 # best.append(img_matrix)
-#                 best.append(img)
-#                 if len(best) == 2:
-#                     break
+        # best = []
+        for cand in cands:
+            score, img = cand
+            if img and not img in best:  # Check if pred is not an empty string
+                # img_lines = img.split('|')[1:-1]  # Remove empty strings from split
+                # img_matrix = [list(map(int, line)) for line in img_lines]
+                # best.append(img_matrix)
+                best.append(img)
+                if len(best) == 2:
+                    break
 
-#         attempt_1 = best[0] if len(best) > 0 else [[0]]
-#         attempt_2 = best[1] if len(best) > 1 else [[0]]
+        attempt_1 = best[0] if len(best) > 0 else [[0]]
+        attempt_2 = best[1] if len(best) > 1 else [[0]]
 
-#         if task_id not in submission:
-#             submission[task_id] = []
+        if task_id not in submission:
+            submission[task_id] = []
 
-#         attempt = {
-#             "attempt_1": attempt_1,
-#             "attempt_2": attempt_2
-#         }
-#         if output_idx == '0':
-#             submission[task_id].insert(0, attempt)
-#         else:
-#             submission[task_id].append(attempt)
+        attempt = {
+            "attempt_1": attempt_1,
+            "attempt_2": attempt_2
+        }
+        if output_idx == '0':
+            submission[task_id].insert(0, attempt)
+        else:
+            submission[task_id].append(attempt)
 
-#         # empty_dict = {
-#         #     "attempt_1": [[0]],
-#         #     "attempt_2": [[0]]
-#         # }
+        # empty_dict = {
+        #     "attempt_1": [[0]],
+        #     "attempt_2": [[0]]
+        # }
 
-#         # for json_id in json_name:
-#         #     if json_id not in submission_dict:
-#         #         submission_dict[json_id] = []
-#         #         submission_dict[json_id].append(empty_dict)
-#     else:
-#         print(f"Error: No result for task {taski}: {len(ids)}")
+        # for json_id in json_name:
+        #     if json_id not in submission_dict:
+        #         submission_dict[json_id] = []
+        #         submission_dict[json_id].append(empty_dict)
+    else:
+        print(f"Error: No result for task {taski}: {len(ids)}")
 
-# with open('submission_part.json', 'w') as file:
-#     json.dump(submission, file, indent=4)
+with open('submission_part.json', 'w') as file:
+    json.dump(submission, file, indent=4)
