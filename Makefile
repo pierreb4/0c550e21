@@ -8,6 +8,7 @@ ifeq ($(shell hostname),mbp-2022.local)
 else ifeq ($(shell hostname),mbp-2022.lan)
   FLAGS += -DMBP
 else
+  FLAGS += -DKAGGLE
   LIBS = -lstdc++ -lstdc++fs
 endif
 

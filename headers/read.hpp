@@ -29,3 +29,7 @@ struct Writer {
 
 void writeAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vector<double> scores);
 void writeJsonAnswersWithScores(const Sample&s, string fn, vector<Image> imgs, vector<double> scores);
+
+inline bool operator<(const Sample& a, const Sample& b) {
+  return a.test_in < b.test_in;
+}

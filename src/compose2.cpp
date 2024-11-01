@@ -21,7 +21,7 @@ struct Candidate {
 */
 
 
-extern int MAXDEPTH, keep_best, print_times;
+extern int MINDEPTH, MAXDEPTH, keep_best, print_times;
 
 
 struct mybitset {
@@ -474,27 +474,31 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
       //     << comp(imgs[i], train[i].second) << endl;
     }
     
-    
-    double score = goods - prior * 0.0001;
+    // Set to just goods but no difference initially - Pierre 20241101
+    // double score = goods - prior * 0.0001;
+    double score = goods;
 
     // Collect functions - Pierre 20241018
     for (int pi : cand.pis) {
-      int*ind = &pieces.mem[pieces.piece[pi].memi];
+      int* ind = &pieces.mem[pieces.piece[pi].memi];
       for (int j = 0; j < pieces.dag.size(); j++) {
         int pfis = pieces.dag[j].getPfiSize(ind[j]);
         for (int k = 0; k < pfis; k++) {
           int pfi = pieces.dag[j].getPfi(ind[j], k);
-          if (pfi != TinyChildren::None) {
-            // Store scores in pieces.dag[j] - Pierre 20241018
-            auto it = pieces.dag[j].depth[MAXDEPTH/10-1].score_map.find(pfi);
-            if (it != pieces.dag[j].depth[MAXDEPTH/10-1].score_map.end()) {
-              // Update fn score if needed
-              if (it->second < score) {
-                it->second = score;
+          for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+            if (pfi != TinyChildren::None) {
+              // Store scores in pieces.dag[j] - Pierre 20241018
+              auto it = pieces.dag[j].depth[DEPTH / 10 - 1].score_map.find(pfi);
+              if (it != pieces.dag[j].depth[DEPTH / 10 - 1].score_map.end()) {
+                // Update fn score if needed
+                if (it->second < score) {
+                  it->second = score;
+                }
               }
-            } else {
-              // Insert fn with score
-              pieces.dag[j].depth[MAXDEPTH/10-1].score_map[pfi] = score;
+              else {
+                // Insert fn with score
+                pieces.dag[j].depth[DEPTH / 10 - 1].score_map[pfi] = score;
+              }
             }
           }
         }
@@ -523,22 +527,24 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
       ret.emplace_back(imgs, pis, score);
   }
 
-  // Store and sort scores in pieces.dag[j] - Pierre 20241018
-  for (int j = 0; j < pieces.dag.size(); j++) {
-    Depth & depth = pieces.dag[j].depth[MAXDEPTH/10-1];
-    depth.score.clear();
-    depth.score.reserve(depth.score_map.size());
-    copy(depth.score_map.begin(), depth.score_map.end(), back_inserter(depth.score));
-    sort(depth.score.begin(), depth.score.end(), compareScore);
+  for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    // Store and sort scores in pieces.dag[j] - Pierre 20241018
+    for (int j = 0; j < pieces.dag.size(); j++) {
+      Depth& depth = pieces.dag[j].depth[DEPTH / 10 - 1];
+      depth.score.clear();
+      depth.score.reserve(depth.score_map.size());
+      copy(depth.score_map.begin(), depth.score_map.end(), back_inserter(depth.score));
+      sort(depth.score.begin(), depth.score.end(), compareScore);
 
-    // Keep only a number of best scores - Pierre 20241027
-    depth.score.resize(std::min(depth.score.size(), static_cast<size_t>(keep_best)));
-    // depth.score.shrink_to_fit()
+      // Keep only a number of best scores - Pierre 20241027
+      depth.score.resize(std::min(depth.score.size(), static_cast<size_t>(keep_best)));
+      // depth.score.shrink_to_fit()
 
-    // for (const auto& s : pieces.dag[j].scores) {
-    //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
-    // }
-    // cout << endl;
+      // for (const auto& s : pieces.dag[j].scores) {
+      //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
+      // }
+      // cout << endl;
+    }
   }
 
   sort(ret.begin(), ret.end());

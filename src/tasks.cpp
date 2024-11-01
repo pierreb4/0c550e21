@@ -330,9 +330,6 @@ Image solveTask(const Image& img, const vector<pair<Image,Image>>&train, int tas
 }
 
 
-
-
-
 void evalTasks() {
   vector<Sample> sample = readAll("training", 100);//evaluation
   Visu visu;

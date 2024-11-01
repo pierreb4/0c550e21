@@ -353,10 +353,8 @@ void DAG::build(int DEPTH) {
   for (int curi = 0; curi < tiny_node.size(); curi++) {
     int ndepth = tiny_node[curi].depth;
     // Tighten this a bit? - Pierre 20241028
-    if (ndepth >= DEPTH) continue;
-    // Try this - Pierre 20241030
-    // if (ndepth < DEPTH-20) continue;
-
+    // if (ndepth >= DEPTH) continue;
+    if (ndepth != DEPTH - 10) continue;
 
     State nxt;
     state_time.start();
@@ -366,13 +364,17 @@ void DAG::build(int DEPTH) {
       // cout << __FILE__ << " Depth: " << depth << " Function: " << depth[DEPTH/10-1].getName(fi) << endl;
       nxt.depth = ndepth + depth[DEPTH / 10 - 1].func.cost[fi];
       // Tighten this a bit? - Pierre 20241028
-      if (nxt.depth > DEPTH) continue;
+      // if (nxt.depth > DEPTH) continue;
+      if (nxt.depth != DEPTH) {
+        cerr << __FILE__ << ": " << __LINE__ << " Depth mismatch: " << nxt.depth << " " << DEPTH << endl;
+        continue;
+      }
       if (depth[DEPTH / 10 - 1].func.f_list[fi](cur_state, nxt)) {
         int newi = add(nxt);
-        tiny_node.addChild(curi, fi, newi);
+        tiny_node.addChildBuild(curi, fi, newi);
       }
       else {
-        tiny_node.addChild(curi, fi, -1);
+        tiny_node.addChildBuild(curi, fi, -1);
       }
     }
   }
@@ -547,7 +549,8 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
     if (print) cout << "InitFuncs3 with sizes.size: " << sizes.size() << endl;
 
-    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
       // if (pieces.dag[ti].depth[DEPTH / 10 - 1].func.name.size() == 0) 
       {
         Functions func = initFuncs3(sizes);
@@ -586,7 +589,8 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
     // Above is initializations, below, build is running the functions - Pierre 20241016
     double start_time = now();
-    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10) {
       pieces.dag[ti].build(DEPTH);
       cout << __FILE__ << " piece.size: " << pieces.piece.size() << endl;
       cout << __FILE__ << ":" << __LINE__ << " ti: " << ti << " node.size: " << pieces.dag[ti].tiny_node.size() << endl;

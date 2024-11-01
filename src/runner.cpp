@@ -49,10 +49,10 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
+int keep_best = 4;
 int MINDEPTH = 20;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
-int keep_best = 4;
 
 // Need to check/update - Pierre 20241028
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
@@ -102,6 +102,12 @@ void run(int only_sid = -1, int arg = -1) {
   // Load all samples
   vector<Sample> sample = readAll(sample_dir, samples);
 
+#ifndef MBP
+  // Sort samples, as processing goes faster for smaller images - Pierre 20241101
+  sort(sample.begin(), sample.end());
+  // Don't sort on MBP when we want to sample the performance - Pierre 20241101
+#endif
+
   // Limit to a range of samples
   //sample = vector<Sample>(sample.begin()+200, sample.begin()+300);
   
@@ -132,7 +138,7 @@ void run(int only_sid = -1, int arg = -1) {
     const Sample& s = sample[si];
 
 #ifdef MBP
-    cout << "Task #" << si << " (" << s.id << "): " << endl;
+    cout << "Task # " << si << " (" << s.id << ")" << endl;
 #endif
 
     // Normalize sample

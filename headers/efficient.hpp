@@ -163,14 +163,23 @@ struct TinyNodeBank {
     //   return;
     // }
   }
-  void addChild(int ni, int fi, int to) {
+  void addChildBuild(int ni, int fi, int to) {
     node[ni].child.add(fi, to);
-//    if (to != -1 && fi != TinyChildren::None && to != ni) {
+    // if (to != -1 && fi != TinyChildren::None && to != ni) {
     if (to != -1 && to != ni) {
       // if (fi == 27 || to == 19)
       //   cout << "Ni: " << ni << " Fi: " << fi << " To: " << to << endl;
       node[to].pfi.push_back(fi);
     }
+  }
+  void addChild(int ni, int fi, int to) {
+    node[ni].child.add(fi, to);
+    // //  if (to != -1 && fi != TinyChildren::None && to != ni) {
+    // if (to != -1 && to != ni) {
+    //   // if (fi == 27 || to == 19)
+    //   //   cout << "Ni: " << ni << " Fi: " << fi << " To: " << to << endl;
+    //   node[to].pfi.push_back(fi);
+    // }
   }
   int getChild(int ni, int fi) {
     return node[ni].child.get(fi);

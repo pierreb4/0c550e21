@@ -1,7 +1,8 @@
 #include "runner.hpp"
+#include "evals.hpp"
+#include "tasks.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <unistd.h>
 
 int main(int argc, char**argv) {
@@ -11,6 +12,19 @@ int main(int argc, char**argv) {
   //bruteSubmission();
   //bruteSolve();
   int only_sid = -1;
+
+  // if (argc == 1) {
+  //   if (argv[1][0] == 'e') {
+  //     evalEvals(1);
+  //   }
+  //   else if (argv[1][0] == 't') {
+  //     evalTasks();
+  //   }
+  //   else {
+  //     exit(0);
+  //   }
+  // }
+
   if (argc >= 2) {
     only_sid = atoi(argv[1]);
     printf("Running only task # %d\n", only_sid);
