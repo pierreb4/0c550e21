@@ -776,8 +776,3 @@ void evalEvals(int print = 1) {
   if (!print)
     assert(corrects == 95);
 }
-
-
-int main() {
-  evalEvals();
-}
