@@ -475,8 +475,8 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     }
     
     // Set to just goods but no difference initially - Pierre 20241101
-    // double score = goods - prior * 0.0001;
-    double score = goods;
+    double score = goods - prior * 0.0001;
+    // double score = goods;
 
     // Collect functions - Pierre 20241018
     for (int pi : cand.pis) {
