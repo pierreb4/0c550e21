@@ -49,8 +49,8 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int keep_best = 4;
-int MINDEPTH = 20;
+int keep_best = 8;
+int MINDEPTH = 30;
 int ARG_MAXDEPTH = -1; //Argument
 int MAXDEPTH;
 
