@@ -225,13 +225,16 @@ Functions initFuncs3(const vector<point>&sizes) {
     funcs.add("half "+to_string(id), 10,
         [id](Image_ img) {return half(img, id);});
 
-
   for (int dy = -2; dy <= 2; dy++) {
     for (int dx = -2; dx <= 2; dx++) {
       funcs.add("Move "+to_string(dx)+" "+to_string(dy), 10,
     [dx,dy](Image_ img) {return Move(img, Pos(dx,dy));}, 0);
     }
   }
+
+  // Add new functions to help solve challenges like 0 - Pierre 20241106
+  funcs.add("colorColumns", 10, colorColumns);
+  funcs.add("colorRows",    10, colorRows);
 
 
   // Binary
@@ -250,9 +253,6 @@ Functions initFuncs3(const vector<point>&sizes) {
   funcs.add("splitAll",     10, splitAll);
   funcs.add("splitColumns", 10, splitColumns);
   funcs.add("splitRows",    10, splitRows);
-  // Add new functions to help solve challenges like 0 - Pierre 20241106
-  funcs.add("colorColumns", 10, colorColumns);
-  funcs.add("colorRows",    10, colorRows);
   funcs.add("insideMarked", 10, insideMarked);
   for (int id = 0; id < 4; id++)
     funcs.add("gravity "+to_string(id), 10,

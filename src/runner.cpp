@@ -104,7 +104,7 @@ void run(int only_sid = -1, int arg = -1, int mindepth = 10) {
   // Load all samples
   vector<Sample> sample = readAll(sample_dir, samples);
 
-#ifndef MBP
+#ifdef KAGGLE
   // Sort samples, as processing goes faster for smaller images - Pierre 20241101
   sort(sample.begin(), sample.end());
   // Don't sort on MBP when we want to sample the performance - Pierre 20241101

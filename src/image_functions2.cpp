@@ -515,14 +515,14 @@ Image colorColumns(Image_ img) {
   Image ret = img;
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
-      if (img(i, j)) {
+      if (img(i, j) > 0) {
         // Set col between 0 and 9 - Pierre 20241106
         int color = img(i, j) - 1;
         ret(i, j) = (j + color) % 10 + 1;
       }
       else
-        // Dont touch black pixels - Pierre 20241106
-        ret(i, j) = 0;
+        // Dont touch other pixels - Pierre 20241106
+        ret(i, j) = img(i, j);
   return ret;
 }
 
@@ -532,14 +532,14 @@ Image colorRows(Image_ img) {
   Image ret = img;
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
-      if (img(i, j)) {
+      if (img(i, j) > 0) {
         // Set col between 0 and 9 - Pierre 20241106
         int color = img(i, j) - 1;
         ret(i, j) = (i + color) % 10 + 1;
       }
       else
-        // Dont touch black pixels - Pierre 20241106
-        ret(i, j) = 0;
+        // Dont touch other pixels - Pierre 20241106
+        ret(i, j) = img(i, j);
   return ret;
 }
 
