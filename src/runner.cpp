@@ -50,9 +50,10 @@ void writeVerdict(int si, string sid, int verdict) {
 }
 
 size_t keep_best = 2;
-int MINDEPTH;
+int MINDEPTH = 30;
 int MAXDEPTH;
 int ARG_MAXDEPTH = -1;
+int force_func = -1;
 int d;
 
 // Need to check/update - Pierre 20241028
@@ -61,7 +62,9 @@ int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
 
 int print_times = 1, print_mem = 1, print_nodes = 1;
 
-void run(int only_sid = -1, int arg = -1, int mindepth = 30) {
+void run(int only_sid = -1, int arg = -1, int mindepth = -1,
+  int force_func = -1) {
+
   //rankFeatures();
   //evalNormalizeRigid();
   //evalTasks();
@@ -70,7 +73,8 @@ void run(int only_sid = -1, int arg = -1, int mindepth = 30) {
   //evalEvals(1);
   //deduceEvals();
 
-  MINDEPTH = mindepth;
+  if (mindepth != -1)
+    MINDEPTH = mindepth;
 
   int no_norm   = (arg >= 10 && arg < 20);
   int add_flips = (arg >= 60 && arg < 80);

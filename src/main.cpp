@@ -34,10 +34,15 @@ int main(int argc, char**argv) {
     maxdepth = atoi(argv[2]);
     printf("Using max depth %d\n", maxdepth);
   }
-  int mindepth = 10;
+  int mindepth = -1;
   if (argc >= 4) {
     mindepth = atoi(argv[3]);
     printf("Using min depth %d\n", mindepth);
   }
-  run(only_sid, maxdepth, mindepth);
+  int force_func = -1;
+  if (argc >= 5) {
+    force_func = atoi(argv[4]);
+    printf("Forcing func %d\n", force_func);
+  }
+  run(only_sid, maxdepth, mindepth, force_func);
 }

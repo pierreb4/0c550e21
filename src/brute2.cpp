@@ -16,7 +16,7 @@ using namespace std;
 
 #include "timer.hpp"
 
-extern int MINDEPTH, MAXDEPTH, print_nodes;
+extern int MINDEPTH, MAXDEPTH, force_func, print_nodes;
 
 //double build_f_time = 0, apply_f_time = 0;
 //double real_f_time = 0;
@@ -576,7 +576,9 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
           }
 
           // Force some functions to always be there - Pierre 20241106
-          // list.insert(Functions::findfi("ComposeGrowing"));
+          // list.insert(func.findfi("ComposeGrowing"));
+          if (force_func != -1)
+            list.insert(force_func);
 
           s_func.list = list;
           // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), s_funcs);
