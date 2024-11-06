@@ -36,7 +36,7 @@ int main(int argc, char**argv) {
   }
   int mindepth = 10;
   if (argc >= 4) {
-    mindepth = atoi(argv[2]);
+    mindepth = atoi(argv[3]);
     printf("Using min depth %d\n", mindepth);
   }
   run(only_sid, maxdepth, mindepth);

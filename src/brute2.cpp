@@ -249,9 +249,10 @@ Functions initFuncs3(const vector<point>&sizes) {
   funcs.add("splitCols", 10, [](Image_ img) {return splitCols(img);});
   funcs.add("splitAll",     10, splitAll);
   funcs.add("splitColumns", 10, splitColumns);
-  // Add new function to solve challenge 0 - Pierre 20241031
-  // funcs.add("smearRows",    10, smearRows);
   funcs.add("splitRows",    10, splitRows);
+  // Add new functions to help solve challenges like 0 - Pierre 20241106
+  funcs.add("colorColumns", 10, colorColumns);
+  funcs.add("colorRows",    10, colorRows);
   funcs.add("insideMarked", 10, insideMarked);
   for (int id = 0; id < 4; id++)
     funcs.add("gravity "+to_string(id), 10,

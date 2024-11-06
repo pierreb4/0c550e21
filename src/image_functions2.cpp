@@ -482,28 +482,6 @@ Image spreadCols(Image img, int skipmaj = 0) {
 }
 
 
-// vImage smearColumns(Image_ img) {
-//   if (img.w * img.h <= 0) return {};
-//   vector<Image> ret(img.w);
-//   for (int j = 0; j < img.w; j++) {
-//     ret[j].p = { j,0 };
-//     ret[j].sz = { 1,img.h };
-//     ret[j].mask.resize(img.h);
-
-//     vector<int> col(img.h);
-//     for (int i = 0; i < img.h; i++)
-//       col[i] = img(i, j);
-
-//     for (int i = 0; i < img.h; i++)
-//       ret[j].mask[i] = img(i, j);
-
-//     for (int i = 0; i < img.h; i++)
-//       ret[j].mask[i] = img(i, j);
-//   }
-//   return ret;
-// }
-
-
 vImage splitColumns(Image_ img) {
   if (img.w * img.h <= 0) return {};
   vector<Image> ret(img.w);
@@ -518,20 +496,6 @@ vImage splitColumns(Image_ img) {
 }
 
 
-// vImage smearRows(Image_ img) {
-//   if (img.w * img.h <= 0) return {};
-//   vector<Image> ret(img.h);
-//   for (int i = 0; i < img.h; i++) {
-//     ret[i].p = { 0,i };
-//     ret[i].sz = { img.w,1 };
-//     ret[i].mask.resize(img.w);
-//     for (int j = 0; j < img.w; j++)
-//       ret[i].mask[j] = min(9, i * (img(i, min(9, img.w - 1 - i)) != 0));
-//   }
-//   return ret;
-// }
-
-
 vImage splitRows(Image_ img) {
   if (img.w * img.h <= 0) return {};
   vector<Image> ret(img.h);
@@ -542,6 +506,40 @@ vImage splitRows(Image_ img) {
     for (int j = 0; j < img.w; j++)
       ret[i].mask[j] = img(i, j);
   }
+  return ret;
+}
+
+
+Image colorColumns(Image_ img) {
+  if (img.w * img.h <= 0) return {};
+  Image ret = img;
+  for (int i = 0; i < img.h; i++)
+    for (int j = 0; j < img.w; j++)
+      if (img(i, j)) {
+        // Set col between 0 and 9 - Pierre 20241106
+        int color = img(i, j) - 1;
+        ret(i, j) = (j + color) % 10 + 1;
+      }
+      else
+        // Dont touch black pixels - Pierre 20241106
+        ret(i, j) = 0;
+  return ret;
+}
+
+
+Image colorRows(Image_ img) {
+  if (img.w * img.h <= 0) return {};
+  Image ret = img;
+  for (int i = 0; i < img.h; i++)
+    for (int j = 0; j < img.w; j++)
+      if (img(i, j)) {
+        // Set col between 0 and 9 - Pierre 20241106
+        int color = img(i, j) - 1;
+        ret(i, j) = (i + color) % 10 + 1;
+      }
+      else
+        // Dont touch black pixels - Pierre 20241106
+        ret(i, j) = 0;
   return ret;
 }
 
