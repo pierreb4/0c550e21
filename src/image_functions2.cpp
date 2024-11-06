@@ -510,37 +510,21 @@ vImage splitRows(Image_ img) {
 }
 
 
-Image colorColumns(Image_ img) {
-  if (img.w * img.h <= 0) return {};
-  Image ret = img;
+Image colorColumns(Image img) {
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
-      if (img(i, j) > 0) {
-        // Set col between 0 and 9 - Pierre 20241106
-        int color = img(i, j) - 1;
-        ret(i, j) = (j + color) % 10 + 1;
-      }
-      else
-        // Dont touch other pixels - Pierre 20241106
-        ret(i, j) = img(i, j);
-  return ret;
+      // Set col between 0 and 9 - Pierre 20241106
+      img(i, j) = (j + img(i, j)) % 10;
+  return img;
 }
 
 
-Image colorRows(Image_ img) {
-  if (img.w * img.h <= 0) return {};
-  Image ret = img;
+Image colorRows(Image img) {
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
-      if (img(i, j) > 0) {
-        // Set col between 0 and 9 - Pierre 20241106
-        int color = img(i, j) - 1;
-        ret(i, j) = (i + color) % 10 + 1;
-      }
-      else
-        // Dont touch other pixels - Pierre 20241106
-        ret(i, j) = img(i, j);
-  return ret;
+      // Set col between 0 and 9 - Pierre 20241106
+      img(i, j) = (i + img(i, j)) % 10;
+  return img;
 }
 
 

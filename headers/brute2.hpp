@@ -37,7 +37,7 @@ struct Functions {
 
 struct Score {
   // Set the overall score in dimension[0] - Pierre 20241104
-  static constexpr size_t SIZE = 14;
+  static constexpr size_t SIZE = 13;
   std::array <double, SIZE> dimension;
   
   Score() {
@@ -149,7 +149,7 @@ inline Score compare(Image_ a, Image_ b) {
 
   ret.dimension[d++] = 1.0 - abs(a_h - b_h);
 
-  for (char c = 0; c <= 10; c++) {
+  for (char c = 0; c < 10; c++) {
     // Compare number of color c pixels - Pierre 20241105
     double a_cnt = std::count(a.mask.begin(), a.mask.end(), c);
     double b_cnt = std::count(b.mask.begin(), b.mask.end(), c);

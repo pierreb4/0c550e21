@@ -468,11 +468,12 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     Score score(goods);
 
     for (d = 0; d < Score::SIZE; d++) {
-      cout << __FILE__ << ":" << __LINE__ << " goods[" << d << "]: " << score.dimension[d] << endl;
+      score.dimension[d] -= prior * 0.0001;
+
+      cout << __FILE__ << ":" << __LINE__ << " goods[" << d << "]: " << goods.dimension[d] << endl;
       cout << __FILE__ << ":" << __LINE__ << " score[" << d << "]: " << score.dimension[d] << endl;
     }
 
-    score.dimension[0] -= prior * 0.0001;
 
     cout << __FILE__ << ":" << __LINE__ << " cand.pis.size: " << cand.pis.size() << endl;
 
@@ -534,27 +535,27 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
       Depth& depth = pieces.dag[j].depth[DEPTH / 10 - 1];
       depth.scoreVec.clear();
 
-      cout << __FILE__ << ":" << __LINE__ << " map.size: " << depth.scoreMap.size() << endl;
+      // cout << __FILE__ << ":" << __LINE__ << " map.size: " << depth.scoreMap.size() << endl;
 
       depth.scoreVec.reserve(depth.scoreMap.size());
       copy(depth.scoreMap.begin(), depth.scoreMap.end(), back_inserter(depth.scoreVec));
 
-      cout << __FILE__ << ":" << __LINE__ << " Copied map" << endl;
+      // cout << __FILE__ << ":" << __LINE__ << " Copied map" << endl;
 
       // Sort and keep only a number of best scores for each dimension - Pierre 20241104
       for (d = 0; d < Score::SIZE; d++) {
 
-        cout << __FILE__ << ":" << __LINE__ << " depth.scoreVec: " 
-          << depth.scoreVec.size() << endl;
+        // cout << __FILE__ << ":" << __LINE__ << " depth.scoreVec: " 
+        //   << depth.scoreVec.size() << endl;
 
         if (depth.scoreVec.begin() + d * keep_best < depth.scoreVec.end()) {
           sort(depth.scoreVec.begin() + d * keep_best, depth.scoreVec.end(), compareScoreD);
         }
       }
 
-      cout << __FILE__ << ":" << __LINE__ << " Size before: " << depth.scoreVec.size() << endl;
+      // cout << __FILE__ << ":" << __LINE__ << " Size before: " << depth.scoreVec.size() << endl;
       depth.scoreVec.resize(std::min(depth.scoreVec.size(), Score::SIZE * keep_best));        
-      cout << __FILE__ << ":" << __LINE__ << " Size after: " << depth.scoreVec.size() << endl;
+      // cout << __FILE__ << ":" << __LINE__ << " Size after: " << depth.scoreVec.size() << endl;
 
       // for (const auto& s : pieces.dag[j].scores) {
       //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;

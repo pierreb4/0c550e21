@@ -574,6 +574,10 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
             // Limit to a number of functions, in evaluateCands - Pierre 20241027
             list.insert(score.first);
           }
+
+          // Force some functions to always be there - Pierre 20241106
+          list.insert(Functions::findfi("ComposeGrowing"));
+
           s_func.list = list;
           // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), s_funcs);
           pieces.dag[ti].depth[DEPTH / 10 - 1].func = std::move(s_func);

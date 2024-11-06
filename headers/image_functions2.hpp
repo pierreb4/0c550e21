@@ -14,8 +14,8 @@ Image replaceTemplate(Image_ in, Image_ need_, Image_ marked_, int overlapping =
 Image swapTemplate(Image_ in, Image_ a, Image_ b, int rigids = 0);
 Image spreadCols(Image img, int skipmaj = 0);
 // Add new functions to help solve challenges like 0 - Pierre 20241106
-Image colorColumns(Image_ img);
-Image colorRows(Image_ img);
+Image colorColumns(Image img);
+Image colorRows(Image img);
 vImage splitColumns(Image_ img);
 vImage splitRows(Image_ img);
 Image half(Image_ img, int id);
