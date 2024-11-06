@@ -557,9 +557,9 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 
         cout << __FILE__ << " ti: " << ti << endl;
         cout << " depth: " << DEPTH << endl;
-        cout << " score.size: " << pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() << endl;
+        cout << " score.size: " << pieces.dag[ti].depth[DEPTH / 10 - 1].scoreVec.size() << endl;
 
-        if (pieces.dag[ti].depth[DEPTH / 10 - 1].score.size() == 0) {
+        if (pieces.dag[ti].depth[DEPTH / 10 - 1].scoreVec.size() == 0) {
           cout << __FILE__ << " No score yet for " << DEPTH << endl;
           // pieces.dag[ti].funcs.insert(pieces.dag[ti].funcs.begin(), funcs);
           pieces.dag[ti].depth[DEPTH / 10 - 1].func = std::move(func);
@@ -569,7 +569,7 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
           // Add functions with scores - Pierre 20241019
           Functions s_func = func;
           set<int> list;
-          for (pair<int, double> score : pieces.dag[ti].depth[DEPTH / 10 - 1].score) {
+          for (pair<int, double> score : pieces.dag[ti].depth[DEPTH / 10 - 1].scoreVec) {
             // Limit to a number of functions, in evaluateCands - Pierre 20241027
             list.insert(score.first);
           }

@@ -21,7 +21,8 @@ struct Candidate {
 */
 
 
-extern int MINDEPTH, MAXDEPTH, keep_best, print_times;
+extern size_t keep_best, d_size;
+extern int MINDEPTH, MAXDEPTH, d, print_times;
 
 
 struct mybitset {
@@ -450,33 +451,30 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
     // Finetune comparison - Pierre 20241030
     // int goods = 0;
-    double goods = 0;
-    cout << __FILE__;
+    Score goods;
     for (int i = 0; i < train.size(); i++) {
+      // cout << __FILE__ << ":" << __LINE__ << " Goods.dimension[0] before: " 
+      //   << goods.dimension[0] << endl;
+
       // goods += (imgs[i] == train[i].second);
-      goods += comp(imgs[i], train[i].second);
-      // cout << std::dec << imgs[i].x << imgs[i].y 
-      //      << imgs[i].w << imgs[i].h << " " << std::hex;
-      // int h = imgs[i].h;
-      // int w = imgs[i].w;
-      // for (int j = 0; j < h; j++) 
-      // for (int k = 0; k < w; k++)
-      //   cout << int(imgs[i].mask[j*w+k]);
-      // cout << std::dec << endl;
-      // cout << train[i].second.x << train[i].second.y
-      //      << train[i].second.w << train[i].second.h << " " << std::hex;
-      // int h2 = train[i].second.h;
-      // int w2 = train[i].second.w;
-      // for (int j = 0; j < h2; j++)
-      // for (int k = 0; k < w2; k++)
-      //   cout << int(train[i].second.mask[j*w2+k]);
-      // cout << std::dec << " -> " << int(imgs[i] == train[i].second) << " " 
-      //     << comp(imgs[i], train[i].second) << endl;
+      goods += compare(imgs[i], train[i].second);
+
+      // cout << __FILE__ << ":" << __LINE__ << " Goods.dimension[0] after: " 
+      //   << goods.dimension[0] << endl;
     }
     
     // Set to just goods but no difference initially - Pierre 20241101
-    double score = goods - prior * 0.0001;
-    // double score = goods;
+    // Score score = goods - prior * 0.0001;
+    Score score(goods);
+
+    for (d = 0; d < Score::SIZE; d++) {
+      cout << __FILE__ << ":" << __LINE__ << " goods[" << d << "]: " << score.dimension[d] << endl;
+      cout << __FILE__ << ":" << __LINE__ << " score[" << d << "]: " << score.dimension[d] << endl;
+    }
+
+    score.dimension[0] -= prior * 0.0001;
+
+    cout << __FILE__ << ":" << __LINE__ << " cand.pis.size: " << cand.pis.size() << endl;
 
     // Collect functions - Pierre 20241018
     for (int pi : cand.pis) {
@@ -488,16 +486,17 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
           for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
             if (pfi != TinyChildren::None) {
               // Store scores in pieces.dag[j] - Pierre 20241018
-              auto it = pieces.dag[j].depth[DEPTH / 10 - 1].score_map.find(pfi);
-              if (it != pieces.dag[j].depth[DEPTH / 10 - 1].score_map.end()) {
+              auto it = pieces.dag[j].depth[DEPTH / 10 - 1].scoreMap.find(pfi);
+              if (it != pieces.dag[j].depth[DEPTH / 10 - 1].scoreMap.end()) {
                 // Update fn score if needed
                 if (it->second < score) {
-                  it->second = score;
+                  it->second = std::move(score);
                 }
               }
               else {
                 // Insert fn with score
-                pieces.dag[j].depth[DEPTH / 10 - 1].score_map[pfi] = score;
+                cout << __FILE__ << ":" << __LINE__ << " Inserting score" << endl;
+                pieces.dag[j].depth[DEPTH / 10 - 1].scoreMap[pfi] = std::move(score);
               }
             }
           }
@@ -514,38 +513,58 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
 
     Image answer = imgs.back();
     if (answer.w > 30 || answer.h > 30 || answer.w * answer.h == 0) {
-      goods = 0;
+      goods.dimension[0] = 0;
       // cout << __FILE__ << " bad size" << endl;
     }
     for (int i = 0; i < answer.h; i++)
       for (int j = 0; j < answer.w; j++)
         if (answer(i, j) < 0 || answer(i, j) >= 10) {
-          goods = 0;
+          goods.dimension[0] = 0;
           // cout << __FILE__ << " bad value" << endl;
         }
-    if (goods)
-      ret.emplace_back(imgs, pis, score);
+    if (goods.dimension[0])
+      ret.emplace_back(imgs, pis, score.dimension[0]);
   }
+
+  cout << __FILE__ << ":" << __LINE__ << " Done with cands" << endl;
 
   for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10) {
     // Store and sort scores in pieces.dag[j] - Pierre 20241018
     for (int j = 0; j < pieces.dag.size(); j++) {
       Depth& depth = pieces.dag[j].depth[DEPTH / 10 - 1];
-      depth.score.clear();
-      depth.score.reserve(depth.score_map.size());
-      copy(depth.score_map.begin(), depth.score_map.end(), back_inserter(depth.score));
-      sort(depth.score.begin(), depth.score.end(), compareScore);
+      depth.scoreVec.clear();
 
-      // Keep only a number of best scores - Pierre 20241027
-      depth.score.resize(std::min(depth.score.size(), static_cast<size_t>(keep_best)));
-      // depth.score.shrink_to_fit()
+      cout << __FILE__ << ":" << __LINE__ << " map.size: " << depth.scoreMap.size() << endl;
+
+      depth.scoreVec.reserve(depth.scoreMap.size());
+      copy(depth.scoreMap.begin(), depth.scoreMap.end(), back_inserter(depth.scoreVec));
+
+      cout << __FILE__ << ":" << __LINE__ << " Copied map" << endl;
+
+      // Sort and keep only a number of best scores for each dimension - Pierre 20241104
+      for (d = 0; d < Score::SIZE; d++) {
+
+        cout << __FILE__ << ":" << __LINE__ << " depth.scoreVec: " 
+          << depth.scoreVec.size() << endl;
+
+        if (depth.scoreVec.begin() + d * keep_best < depth.scoreVec.end()) {
+          sort(depth.scoreVec.begin() + d * keep_best, depth.scoreVec.end(), compareScoreD);
+        }
+      }
+
+      cout << __FILE__ << ":" << __LINE__ << " Size before: " << depth.scoreVec.size() << endl;
+      depth.scoreVec.resize(std::min(depth.scoreVec.size(), Score::SIZE * keep_best));        
+      cout << __FILE__ << ":" << __LINE__ << " Size after: " << depth.scoreVec.size() << endl;
 
       // for (const auto& s : pieces.dag[j].scores) {
       //   cout << __FILE__ << " DAG[" << j << "]: " << s.first << " " << s.second << endl;
       // }
       // cout << endl;
     }
+    cout << __FILE__ << ":" << __LINE__ << " DEPTH: " << DEPTH << endl;
   }
+
+  cout << __FILE__ << ":" << __LINE__ << " ret.size: " << ret.size() << endl;
 
   sort(ret.begin(), ret.end());
   //printf("%.20f\n\n", ret[0].score);

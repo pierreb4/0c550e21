@@ -195,6 +195,8 @@ extern int MAXDEPTH;
 void addDeduceOuterProduct(Pieces&pieces, vector<pair<Image,Image>> train, vector<Candidate>&cands) {
   deduceOuterProduct deduce_op(train);
 
+  cout << __FILE__ << ":" << __LINE__ << " cands.size: " << cands.size() << endl;
+
   int interestings = 0;
   for (auto [in,out] : deduce_op.train_targets) {
     if (core::count(in) > 1 && core::count(out) > 1) interestings++;
@@ -245,6 +247,7 @@ void addDeduceOuterProduct(Pieces&pieces, vector<pair<Image,Image>> train, vecto
     vector<int> fis;
     for (int i = 0; i <= train.size(); i++)
       imgs.push_back(deduce_op.reconstruct(a[i],b[i]));
+    // cands.emplace_back(imgs, fis, 2, MAXDEPTH, MAXDEPTH*2);
     cands.emplace_back(imgs, fis, 2, MAXDEPTH, MAXDEPTH*2);
   }
 

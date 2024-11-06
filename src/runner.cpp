@@ -49,10 +49,11 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-int keep_best = 32;
-int MINDEPTH = 30;
-int ARG_MAXDEPTH = -1; //Argument
+size_t keep_best = 2;
+int MINDEPTH;
 int MAXDEPTH;
+int ARG_MAXDEPTH = -1;
+int d;
 
 // Need to check/update - Pierre 20241028
 int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
@@ -60,7 +61,7 @@ int MAXSIDE = 100, MAXAREA = 40*40, MAXPIXELS = 40*40*5; //Just default values
 
 int print_times = 1, print_mem = 1, print_nodes = 1;
 
-void run(int only_sid = -1, int arg = -1) {
+void run(int only_sid = -1, int arg = -1, int mindepth = 10) {
   //rankFeatures();
   //evalNormalizeRigid();
   //evalTasks();
@@ -69,6 +70,8 @@ void run(int only_sid = -1, int arg = -1) {
   //evalEvals(1);
   //deduceEvals();
 
+  MINDEPTH = mindepth;
+
   int no_norm   = (arg >= 10 && arg < 20);
   int add_flips = (arg >= 60 && arg < 80);
   int add_flip_id = (arg >= 60 && arg < 70 ? 6 : 7);
@@ -76,11 +79,10 @@ void run(int only_sid = -1, int arg = -1) {
   if (arg == -1) arg = 2;
   ARG_MAXDEPTH = arg % 10 * 10;
 
-  // Make this 1 before submission - Pierre 20240924
-#ifdef MBP
-  int eval = 0;
-#else // KAGGLE
+#ifdef KAGGLE
   int eval = 1;
+#else // MBP
+  int eval = 0;
 #endif
 
 
@@ -200,7 +202,7 @@ void run(int only_sid = -1, int arg = -1) {
       // Initialize depth (only for train?) - Pierre 20241021
       for (int i = 0; i < pieces.dag.size(); i++) {
         pieces.dag[i].depth.resize(ARG_MAXDEPTH / 10);
-        cout << __FILE__ << " score.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].score.size() << endl;
+        cout << __FILE__ << " scoreVec.size: " << pieces.dag[i].depth[ARG_MAXDEPTH / 10 - 1].scoreVec.size() << endl;
       }
 
       out_sizes = bruteSize(pieces, test_in, train);
@@ -309,10 +311,20 @@ void run(int only_sid = -1, int arg = -1) {
           cout << "composePieces time: " << now() - start_time << endl;
       }
 
-      addDeduceOuterProduct(pieces, train, cands);
+      {
+        double start_time = now();
+        addDeduceOuterProduct(pieces, train, cands);
+        if (print_times)
+          cout << "addDeduceOuterProduct time: " << now() - start_time << endl;
+      }
 
-      // Score candidates
-      cands = evaluateCands(pieces, cands, train);
+      {
+        double start_time = now();
+        // Score candidates
+        cands = evaluateCands(pieces, cands, train);
+        if (print_times)
+          cout << "evaluateCands time: " << now() - start_time << endl;
+      }
 
       // List functions - Pierre 20241015
       // for (int j = 0; j < pieces.dag.size(); j++) {
