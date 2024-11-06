@@ -50,7 +50,7 @@ void writeVerdict(int si, string sid, int verdict) {
 }
 
 size_t keep_best = 2;
-int MINDEPTH = 30;
+int MINDEPTH = 20;
 int MAXDEPTH;
 int ARG_MAXDEPTH = -1;
 int force_func = -1;
