@@ -556,7 +556,9 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
       }
 
       // cout << __FILE__ << ":" << __LINE__ << " Size before: " << depth.scoreVec.size() << endl;
-      depth.scoreVec.resize(std::min(depth.scoreVec.size(), Score::SIZE * keep_best * DEPTH / 10));        
+      // Not sure that this maade sense - Pierre 20241107
+      // depth.scoreVec.resize(std::min(depth.scoreVec.size(), Score::SIZE * keep_best * DEPTH / 10));        
+      depth.scoreVec.resize(std::min(depth.scoreVec.size(), Score::SIZE * keep_best));        
       // cout << __FILE__ << ":" << __LINE__ << " Size after: " << depth.scoreVec.size() << endl;
 
       // for (const auto& s : pieces.dag[j].scores) {
