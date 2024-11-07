@@ -10,7 +10,7 @@ using namespace std;
 #include "pieces.hpp"
 #include "compose2.hpp"
 
-extern int MAXDEPTH, print_times;
+extern int ARG_MAXDEPTH, MAXDEPTH, print_times;
 
 bool operator<(const point a, const point b) {
   if (a.x != b.x) return a.x < b.x;
@@ -149,7 +149,10 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
   for (auto [in,out] : train) out_sizes.push_back(out.sz);
 
   int cp = MAXDEPTH;
-  MAXDEPTH = min(MAXDEPTH, 30);
+
+  // Base MAXDEPTH on ARG_MAXDEPTH - Pierre 20241107
+  // MAXDEPTH = min(MAXDEPTH, 30);
+  MAXDEPTH = min(ARG_MAXDEPTH, 30);
   {
     double start_time = now();
 

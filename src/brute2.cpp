@@ -605,7 +605,8 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
     }
 
     if (print) cout << now()-start_time << endl;
-    for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
+    // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
+    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
       pieces.dag[ti].applyFunc(DEPTH, "composeGrowing", 1);
     if (print) cout << now()-start_time << endl;
 

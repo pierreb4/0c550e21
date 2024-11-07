@@ -301,7 +301,7 @@ vector<Candidate> greedyCompose2(Pieces&pieces, vector<Image>&target, vector<poi
 
   // Try more - Pierre 20241107
   // int maxiters = 10;
-  int maxiters = 150 * MAXDEPTH / 10;
+  int maxiters = 16 * MAXDEPTH / 10;
 
   //vector<int> skip(img_ind.size());
   //vector<int> order;
