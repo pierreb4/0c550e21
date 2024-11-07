@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-size_t keep_best = 2;
+size_t keep_best = 1;
 int MINDEPTH = 30;
 int MAXDEPTH;
 int ARG_MAXDEPTH = -1;
@@ -111,7 +111,9 @@ void run(int only_sid = -1, int arg = -1, int mindepth = -1,
 #ifdef KAGGLE
   // Sort samples, as processing goes faster for smaller images - Pierre 20241101
   sort(sample.begin(), sample.end());
-  // Don't sort on MBP when we want to sample the performance - Pierre 20241101
+#else // MBP
+  // Maybe don't sort on MBP when we want to sample the performance - Pierre 20241101
+  sort(sample.begin(), sample.end());
 #endif
 
   // Limit to a range of samples

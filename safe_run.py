@@ -148,7 +148,7 @@ else:
 
 depth3 = []
 for i in range(ntasks):
-    depth3.append(Command("./run %d  3"%i))
+    depth3.append(Command("./run %d  3 20"%i))
     # depth3.append(Command("./run %d 3"%i, 4*60))
 stats3 = runAll(depth3, 4)
 
@@ -171,14 +171,14 @@ depth64 = []
 for i in range(ntasks):
     # Watch this, as stats3 doesn't get populated correctly when commands above fail
     status, t, m = stats3[depth3[i].cmd]
-    depth64.append(Command("./run %d 64"%i, t*20, m*20, 2))
+    depth64.append(Command("./run %d 64 20"%i, t*20, m*20, 2))
     # depth64.append(Command("./run %d 63"%i, 120))
 stats64 = runAll(depth64, 1)
 
 depth74 = []
 for i in range(ntasks):
     status, t, m = stats3[depth3[i].cmd]
-    depth74.append(Command("./run %d 74"%i, t*20, m*20, 2))
+    depth74.append(Command("./run %d 74 20"%i, t*20, m*20, 2))
     # depth74.append(Command("./run %d 73"%i, 120))
 stats74 = runAll(depth74, 1)
 
@@ -186,7 +186,7 @@ stats74 = runAll(depth74, 1)
 depth4 = []
 for i in range(ntasks):
     status, t, m = stats3[depth3[i].cmd]
-    depth4.append(Command("./run %d 4"%i, t*20, m*20, 2))
+    depth4.append(Command("./run %d 4 20"%i, t*20, m*20, 2))
     # depth4.append(Command("./run %d 4"%i, 1200))
 stats4 = runAll(depth4, 1)
 

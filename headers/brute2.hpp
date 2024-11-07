@@ -37,7 +37,7 @@ struct Functions {
 
 struct Score {
   // Set the overall score in dimension[0] - Pierre 20241104
-  static constexpr size_t SIZE = 13;
+  static constexpr size_t SIZE = 15;
   std::array <double, SIZE> dimension;
   
   Score() {
@@ -103,7 +103,7 @@ inline Score compare(Image_ a, Image_ b) {
   //     ret.overall *= close(0, 10);
   // }
 
-
+  // Compare pixels - Pierre 20241107
   ret.dimension[d] = (a.x == b.x) * (a.y == b.y) * (a.w == b.w) * (a.h == b.h);
   
   if (a.sz == b.sz)
@@ -119,6 +119,7 @@ inline Score compare(Image_ a, Image_ b) {
 
   ret.dimension[d++] *= dimension;
 
+  // Compare widths - Pierre 20241107
   double a_w = a.w;
   double b_w = b.w;
   int w = a.w + b.w;
@@ -134,6 +135,7 @@ inline Score compare(Image_ a, Image_ b) {
   
   ret.dimension[d++] = 1.0 - abs(a_w - b_w);
 
+  // Compare heights - Pierre 20241107
   double a_h = a.h;
   double b_h = b.h;
   int h = a.h + b.h;
@@ -149,8 +151,8 @@ inline Score compare(Image_ a, Image_ b) {
 
   ret.dimension[d++] = 1.0 - abs(a_h - b_h);
 
+  // Compare number of color pixels - Pierre 20241107
   for (char c = 0; c < 10; c++) {
-    // Compare number of color c pixels - Pierre 20241105
     double a_cnt = std::count(a.mask.begin(), a.mask.end(), c);
     double b_cnt = std::count(b.mask.begin(), b.mask.end(), c);
 
@@ -163,6 +165,66 @@ inline Score compare(Image_ a, Image_ b) {
       b_cnt = 0.0;
     else
       b_cnt /= b.mask.size();
+
+    ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
+  }
+
+  // Compare number of same neighbors in line - Pierre 20241107
+  {
+    double a_cnt = 0.0;
+    double b_cnt = 0.0;
+    int a_w = a.w;
+    int b_w = b.w;
+
+    for (int i = 0; i < a.h; i++)
+      for (int j = 0; j < a.w - 1; j++)
+        if (a(i, j) == a(i, j + 1))
+          a_cnt++;
+
+    for (int i = 0; i < b.h; i++)
+      for (int j = 0; j < b.w - 1; j++)
+        if (b(i, j) == b(i, j + 1))
+          b_cnt++;
+
+    if (a_w * a_h == 0)
+      a_cnt = 0.0;
+    else
+      a_cnt /= a_w * a_h;
+
+    if (b_w * b_h == 0)
+      b_cnt = 0.0;
+    else
+      b_cnt /= b_w * b_h;
+
+    ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
+  }
+
+  // Compare number of same neighbors in column - Pierre 20241107
+  {
+    double a_cnt = 0.0;
+    double b_cnt = 0.0;
+    int a_w = a.w;
+    int b_w = b.w;
+
+    for (int i = 0; i < a.h - 1; i++)
+      for (int j = 0; j < a.w; j++)
+        if (a(i, j) == a(i + 1, j))
+          a_cnt++;
+
+    for (int i = 0; i < b.h - 1; i++)
+      for (int j = 0; j < b.w; j++)
+        if (b(i, j) == b(i + 1, j))
+          b_cnt++;
+
+    if (a_w * a_h == 0)
+      a_cnt = 0.0;
+    else
+      a_cnt /= a_w * a_h;
+
+    if (b_w * b_h == 0)
+      b_cnt = 0.0;
+    else
+      b_cnt /= b_w * b_h;
 
     ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
   }
