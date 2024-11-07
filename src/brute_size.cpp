@@ -152,7 +152,8 @@ vector<point> bruteSize(Pieces& pieces, Image_ test_in, vector<pair<Image,Image>
 
   // Base MAXDEPTH on ARG_MAXDEPTH - Pierre 20241107
   // MAXDEPTH = min(MAXDEPTH, 30);
-  MAXDEPTH = min(ARG_MAXDEPTH, 30);
+  // MAXDEPTH = min(ARG_MAXDEPTH, 30);
+  MAXDEPTH = 20;
   {
     double start_time = now();
 
