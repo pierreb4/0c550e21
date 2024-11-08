@@ -470,7 +470,7 @@ vector<Candidate> evaluateCands(Pieces&pieces, const vector<Candidate>&cands, ve
     Score score(goods);
 
     for (d = 0; d < Score::SIZE; d++) {
-      // score.dimension[d] -= prior * 0.0001;
+      score.dimension[d] -= prior * 0.0001;
 
       cout << __FILE__ << ":" << __LINE__ << " goods[" << d << "]: " << goods.dimension[d] << endl;
       cout << __FILE__ << ":" << __LINE__ << " score[" << d << "]: " << score.dimension[d] << endl;

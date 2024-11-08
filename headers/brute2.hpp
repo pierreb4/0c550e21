@@ -37,7 +37,7 @@ struct Functions {
 
 struct Score {
   // Set the overall score in dimension[0] - Pierre 20241104
-  static constexpr size_t SIZE = 15;
+  static constexpr size_t SIZE = 3;
   std::array <double, SIZE> dimension;
   
   Score() {
@@ -85,26 +85,13 @@ inline double close(double a, double b) {
 
 inline Score compare(Image_ a, Image_ b) {
   Score ret;
-  int d = 0;
+  // int d = 0;
   double dimension;
   double max = a.mask.size();
 
 
-  // for (int i = 0; i < std::min(a.h, b.h); i++) {
-  //   for (int j = 0; j < std::min(a.w, b.w); j++) 
-  //     ret.overall *= close(a(i, j), b(i, j));
-  //   for (int j = std::min(a.w, b.w); j < std::max(a.w, b.w); j++) 
-  //     ret.overall *= close(0, b(i, j));
-  // }
-  // for (int i = std::min(a.h, b.h); i < std::max(a.h, b.h); i++) {
-  //   for (int j = 0; j < std::min(a.w, b.w); j++) 
-  //     ret.overall *= close(0, b(i, j));
-  //   for (int j = std::min(a.w, b.w); j < std::max(a.w, b.w); j++) 
-  //     ret.overall *= close(0, 10);
-  // }
-
   // Compare pixels - Pierre 20241107
-  ret.dimension[d] = (a.x == b.x) * (a.y == b.y) * (a.w == b.w) * (a.h == b.h);
+  ret.dimension[0] = (a.x == b.x) * (a.y == b.y) * (a.w == b.w) * (a.h == b.h);
   
   if (a.sz == b.sz)
     dimension = std::inner_product(a.mask.begin(), a.mask.end(), b.mask.begin(),
@@ -133,41 +120,46 @@ inline Score compare(Image_ a, Image_ b) {
   else
     dimension /= max;
 
-  ret.dimension[d++] *= dimension;
+  ret.dimension[0] *= dimension;
 
-  // Compare widths - Pierre 20241107
-  double a_w = a.w;
-  double b_w = b.w;
-  int w = a.w + b.w;
+  // Not very useful, as sizes are computed separately - Pierre 20241108
 
-  if (w == 0) {
-    a_w = 0.0;
-    b_w = 0.0;
-  }
-  else {
-    a_w /= w;
-    b_w /= w;
-  }
+  // // Compare widths - Pierre 20241107
+  // double a_w = a.w;
+  // double b_w = b.w;
+  // int w = a.w + b.w;
+
+  // if (w == 0) {
+  //   a_w = 0.0;
+  //   b_w = 0.0;
+  // }
+  // else {
+  //   a_w /= w;
+  //   b_w /= w;
+  // }
   
-  ret.dimension[d++] = 1.0 - abs(a_w - b_w);
+  // ret.dimension[d++] = 1.0 - abs(a_w - b_w);
 
-  // Compare heights - Pierre 20241107
-  double a_h = a.h;
-  double b_h = b.h;
-  int h = a.h + b.h;
+  // // Compare heights - Pierre 20241107
+  // double a_h = a.h;
+  // double b_h = b.h;
+  // int h = a.h + b.h;
 
-  if (h == 0) {
-    a_h = 0.0;
-    b_h = 0.0;
-  }
-  else {
-    a_h /= h;
-    b_h /= h;
-  }
+  // if (h == 0) {
+  //   a_h = 0.0;
+  //   b_h = 0.0;
+  // }
+  // else {
+  //   a_h /= h;
+  //   b_h /= h;
+  // }
 
-  ret.dimension[d++] = 1.0 - abs(a_h - b_h);
+  // ret.dimension[d++] = 1.0 - abs(a_h - b_h);
+
 
   // Compare number of color pixels - Pierre 20241107
+  ret.dimension[1] = 0.0;
+
   for (char c = 0; c < 10; c++) {
     double a_cnt = std::count(a.mask.begin(), a.mask.end(), c);
     double b_cnt = std::count(b.mask.begin(), b.mask.end(), c);
@@ -182,64 +174,101 @@ inline Score compare(Image_ a, Image_ b) {
     else
       b_cnt /= b.mask.size();
 
-    ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
+    ret.dimension[1] += 1.0 - abs(a_cnt - b_cnt);
   }
 
-  // Compare number of same neighbors in line - Pierre 20241107
+  ret.dimension[1] /= 10.0;
+
+  // Compare count of same and diff neighbors in line - Pierre 20241107
+
+  ret.dimension[2] = 0.0;
+
   {
-    double a_cnt = 0.0;
-    double b_cnt = 0.0;
+    double a_same_cnt = 0.0;
+    double a_diff_cnt = 0.0;
+    double b_same_cnt = 0.0;
+    double b_diff_cnt = 0.0;
 
     for (int i = 0; i < a.h; i++)
       for (int j = 0; j < a.w - 1; j++)
         if (a(i, j) == a(i, j + 1))
-          a_cnt++;
+          a_same_cnt++;
+        else
+          a_diff_cnt++;
 
     for (int i = 0; i < b.h; i++)
       for (int j = 0; j < b.w - 1; j++)
         if (b(i, j) == b(i, j + 1))
-          b_cnt++;
+          b_same_cnt++;
+        else
+          b_diff_cnt++;
 
-    if (a.w * a.h == 0)
-      a_cnt = 0.0;
-    else
-      a_cnt /= a.w * a.h;
+    if (a.w * a.h == 0) {
+      a_same_cnt = 0.0;
+      a_diff_cnt = 0.0;
+    }
+    else {
+      a_same_cnt /= a.w * a.h;
+      a_diff_cnt /= a.w * a.h;
+    }
 
-    if (b.w * b.h == 0)
-      b_cnt = 0.0;
-    else
-      b_cnt /= b.w * b.h;
+    if (b.w * b.h == 0) {
+      b_same_cnt = 0.0;
+      b_diff_cnt = 0.0;
+    }
+    else {
+      b_diff_cnt /= b.w * b.h;
+      b_diff_cnt /= b.w * b.h;
+    }
 
-    ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
+    ret.dimension[2] += 1.0 - abs(a_same_cnt - b_same_cnt);
+    ret.dimension[2] += 1.0 - abs(a_diff_cnt - b_diff_cnt);
   }
 
-  // Compare number of same neighbors in column - Pierre 20241107
+  // Compare count of same and diff neighbors in column - Pierre 20241107
   {
-    double a_cnt = 0.0;
-    double b_cnt = 0.0;
+    double a_same_cnt = 0.0;
+    double a_diff_cnt = 0.0;
+    double b_same_cnt = 0.0;
+    double b_diff_cnt = 0.0;
 
     for (int i = 0; i < a.h - 1; i++)
       for (int j = 0; j < a.w; j++)
         if (a(i, j) == a(i + 1, j))
-          a_cnt++;
+          a_same_cnt++;
+        else
+          a_diff_cnt++;
 
     for (int i = 0; i < b.h - 1; i++)
       for (int j = 0; j < b.w; j++)
         if (b(i, j) == b(i + 1, j))
-          b_cnt++;
+          b_same_cnt++;
+        else
+          b_diff_cnt++;
 
-    if (a.w * a.h == 0)
-      a_cnt = 0.0;
-    else
-      a_cnt /= a.w * a.h;
+    if (a.w * a.h == 0) {
+      a_same_cnt = 0.0;
+      a_diff_cnt = 0.0;
+    }
+    else {
+      a_same_cnt /= a.w * a.h;
+      a_diff_cnt /= a.w * a.h;
+    }
 
-    if (b.w * b.h == 0)
-      b_cnt = 0.0;
-    else
-      b_cnt /= b.w * b.h;
+    if (b.w * b.h == 0) {
+      b_same_cnt = 0.0;
+      b_diff_cnt = 0.0;
+    }
+    else {
+      b_same_cnt /= b.w * b.h;
+      b_diff_cnt /= b.w * b.h;
+    }
 
-    ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
+    ret.dimension[2] += 1.0 - abs(a_same_cnt - b_same_cnt);
+    ret.dimension[2] += 1.0 - abs(a_diff_cnt - b_diff_cnt);
   }
+
+  ret.dimension[2] /= 4.0;
 
   return ret;
 }
