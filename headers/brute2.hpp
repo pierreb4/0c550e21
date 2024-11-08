@@ -87,7 +87,7 @@ inline Score compare(Image_ a, Image_ b) {
   Score ret;
   int d = 0;
   double dimension;
-  int max = a.mask.size();
+  double max = a.mask.size();
 
 
   // for (int i = 0; i < std::min(a.h, b.h); i++) {
@@ -110,9 +110,25 @@ inline Score compare(Image_ a, Image_ b) {
     dimension = std::inner_product(a.mask.begin(), a.mask.end(), b.mask.begin(),
       0.0, std::plus<>(), std::equal_to<>());
   else
-    max = 0;
+    max = 0.0;
 
-  if (max == 0)
+  // cout << __FILE__ << " Max: " << max << " Dimension: " << dimension << endl;
+
+  // if (max == 20) {
+  //   int n = 0;
+  //   cout << __FILE__ << " a mask.size: " << a.mask.size() << " a.h: " << a.h << " a.w: " << a.w;
+  //   cout <<             " b mask.size: " << b.mask.size() << " b.h: " << b.h << " b.w: " << b.w << endl;
+    
+  //   for (int i = 0; i < a.h; i++) {
+  //     for (int j = 0; j < a.w; j++) {
+  //       cout << __FILE__ << " a Pixel:" << int(a(i, j)) << " Mask: " << int(a.mask[n]);
+  //       cout <<             " b Pixel:" << int(b(i, j)) << " Mask: " << int(b.mask[n]) << endl;
+  //       n++;
+  //     }
+  //   }
+  // }
+
+  if (max == 0.0)
     dimension = 0.0;
   else
     dimension /= max;
@@ -173,8 +189,6 @@ inline Score compare(Image_ a, Image_ b) {
   {
     double a_cnt = 0.0;
     double b_cnt = 0.0;
-    int a_w = a.w;
-    int b_w = b.w;
 
     for (int i = 0; i < a.h; i++)
       for (int j = 0; j < a.w - 1; j++)
@@ -186,15 +200,15 @@ inline Score compare(Image_ a, Image_ b) {
         if (b(i, j) == b(i, j + 1))
           b_cnt++;
 
-    if (a_w * a_h == 0)
+    if (a.w * a.h == 0)
       a_cnt = 0.0;
     else
-      a_cnt /= a_w * a_h;
+      a_cnt /= a.w * a.h;
 
-    if (b_w * b_h == 0)
+    if (b.w * b.h == 0)
       b_cnt = 0.0;
     else
-      b_cnt /= b_w * b_h;
+      b_cnt /= b.w * b.h;
 
     ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
   }
@@ -203,8 +217,6 @@ inline Score compare(Image_ a, Image_ b) {
   {
     double a_cnt = 0.0;
     double b_cnt = 0.0;
-    int a_w = a.w;
-    int b_w = b.w;
 
     for (int i = 0; i < a.h - 1; i++)
       for (int j = 0; j < a.w; j++)
@@ -216,15 +228,15 @@ inline Score compare(Image_ a, Image_ b) {
         if (b(i, j) == b(i + 1, j))
           b_cnt++;
 
-    if (a_w * a_h == 0)
+    if (a.w * a.h == 0)
       a_cnt = 0.0;
     else
-      a_cnt /= a_w * a_h;
+      a_cnt /= a.w * a.h;
 
-    if (b_w * b_h == 0)
+    if (b.w * b.h == 0)
       b_cnt = 0.0;
     else
-      b_cnt /= b_w * b_h;
+      b_cnt /= b.w * b.h;
 
     ret.dimension[d++] = 1.0 - abs(a_cnt - b_cnt);
   }

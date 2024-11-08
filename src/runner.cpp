@@ -49,7 +49,7 @@ void writeVerdict(int si, string sid, int verdict) {
   }
 }
 
-size_t keep_best = 1;
+size_t keep_best = 2;
 int MINDEPTH = 30;
 int MAXDEPTH;
 int ARG_MAXDEPTH = -1;
@@ -346,111 +346,114 @@ void run(int only_sid = -1, int arg = -1, int mindepth = -1,
       if (!eval)
         s2 = scoreCands(cands, test_in, test_out);
 
-      // Pick top 3 best distinct candidates (filter duplicate images) - Pierre 20241024
-      vector<Candidate> answers = cands;
+      if (MAXDEPTH == ARG_MAXDEPTH) {
+        // Pick top 3 best distinct candidates (filter duplicate images) - Pierre 20241024
+        vector<Candidate> answers = cands;
 
-      {
-        sort(cands.begin(), cands.end());
-        vector<Candidate> filtered;
-        set<ull> seen;
-        for (const Candidate &cand : cands)
         {
-          vector<int> pis = cand.pis;
-          // printf("%.20f\n", cand.score);
-          // cout << __FILE__ << " Cand.score: " << cand.score << endl;
-
-          ull h = hashImage(cand.imgs.back());
-          if (seen.insert(h).second)
+          sort(cands.begin(), cands.end());
+          vector<Candidate> filtered;
+          set<ull> seen;
+          for (const Candidate& cand : cands)
           {
-            filtered.push_back(cand);
-            cout << "Score: " << cand.score << " Answer: ";
-            for (int pi : cand.pis)
-              cout << pi << ' ';
-            cout << endl;
-            // Keep best 2 scores - Pierre 20241029
-            if (filtered.size() == 2 + skips * 3)
-              break;
+            vector<int> pis = cand.pis;
+            // printf("%.20f\n", cand.score);
+            // cout << __FILE__ << " Cand.score: " << cand.score << endl;
+
+            ull h = hashImage(cand.imgs.back());
+            if (seen.insert(h).second)
+            {
+              filtered.push_back(cand);
+              cout << "Score: " << cand.score << " Answer: ";
+              for (int pi : cand.pis)
+                cout << pi << ' ';
+              cout << endl;
+              // Keep best 2 scores - Pierre 20241029
+              if (filtered.size() == 2 + skips * 3)
+                break;
+            }
+          }
+          for (int i = 0; i < skips * 3 && filtered.size(); i++)
+            filtered.erase(filtered.begin());
+          answers = std::move(filtered);
+        }
+
+        // Reconstruct answers
+        vector<Image> rec_answers;
+        vector<double> answer_scores;
+        for (Candidate& cand : answers)
+        {
+          rec_answers.push_back(sim.rec(s.test_in, cand.imgs.back()));
+          double score = cand.score;
+          if (add_flips)
+          {
+            score /= 2 - 1e-5;
+          }
+          answer_scores.push_back(score);
+        }
+      
+
+        int s3 = 0;
+        if (!eval)
+          s3 = scoreAnswers(rec_answers, s.test_in, s.test_out);
+
+        if (!eval)
+        { //! eval && s1 && !s2) {
+          visu.next(to_string(si) + " - test");
+          for (auto& [in, out] : train) {
+            visu.add(in, out);
+            // cout << "[in, out]" << endl;
+            // print(in);
+            // print(out);
+          }
+          visu.next(to_string(si) + " - test");
+          visu.add(test_in, test_out);
+          //   cout << "[test_in, test_out]" << endl;
+          // print(test_in);
+          // print(test_out);
+          visu.next(to_string(si) + " - cands");
+          for (int i = 0; i < min((int)answers.size(), 5); i++)
+          {
+            Image answer_out = answers[i].imgs.back();
+            visu.add(test_in, test_out);
+            // cout << "[test_in, answer_out]" << endl;
+            // print(test_in);
+            // print(answer_out);
           }
         }
-        for (int i = 0; i < skips * 3 && filtered.size(); i++)
-          filtered.erase(filtered.begin());
-        answers = std::move(filtered);
-      }
 
-      // Reconstruct answers
-      vector<Image> rec_answers;
-      vector<double> answer_scores;
-      for (Candidate &cand : answers)
-      {
-        rec_answers.push_back(sim.rec(s.test_in, cand.imgs.back()));
-        double score = cand.score;
-        if (add_flips)
+        /*if (!eval && (s2 || s3) && !s1) {
+          cout << si << endl;
+          }*/
+
+        if (!eval)
         {
-          score /= 2 - 1e-5;
-        }
-        answer_scores.push_back(score);
-      }
+          if (s3)
+            verdict[si] = 3;
+          else if (s2)
+            verdict[si] = 2;
+          else if (s1)
+            verdict[si] = 1;
+          else
+            verdict[si] = 0;
+          scores[verdict[si]]++;
 
-      int s3 = 0;
-      if (!eval)
-        s3 = scoreAnswers(rec_answers, s.test_in, s.test_out);
-
-      if (!eval)
-      { //! eval && s1 && !s2) {
-        visu.next(to_string(si) + " - test");
-        for (auto &[in, out] : train) {
-          visu.add(in, out);
-          // cout << "[in, out]" << endl;
-          // print(in);
-          // print(out);
+          writeVerdict(si, s.id, verdict[si]);
         }
-        visu.next(to_string(si) + " - test");
-        visu.add(test_in, test_out);
-        //   cout << "[test_in, test_out]" << endl;
-        // print(test_in);
-        // print(test_out);
-        visu.next(to_string(si) + " - cands");
-        for (int i = 0; i < min((int)answers.size(), 5); i++)
         {
-          Image answer_out = answers[i].imgs.back();
-          visu.add(test_in, test_out);
-          // cout << "[test_in, answer_out]" << endl;
-          // print(test_in);
-          // print(answer_out);
+          string fn = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".csv";
+          // Writer writer(fn);
+          // writer(s, rec_answers);
+          writeAnswersWithScores(s, fn, rec_answers, answer_scores);
+          string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".json";
+          writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
+        }
+
+        // If correct, go to next sample - Pierre 20241026
+        if (verdict[si] == 3) {
+          break;
         }
       }
-
-      /*if (!eval && (s2 || s3) && !s1) {
-        cout << si << endl;
-        }*/
-
-      if (!eval)
-      {
-        if (s3)
-          verdict[si] = 3;
-        else if (s2)
-          verdict[si] = 2;
-        else if (s1)
-          verdict[si] = 1;
-        else
-          verdict[si] = 0;
-        scores[verdict[si]]++;
-
-        writeVerdict(si, s.id, verdict[si]);
-      }
-      {
-        string fn = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".csv";
-        // Writer writer(fn);
-        // writer(s, rec_answers);
-        writeAnswersWithScores(s, fn, rec_answers, answer_scores);
-        string fnj = "output/answer_" + to_string(only_sid) + "_" + to_string(arg) + "_" + to_string(MAXDEPTH) + ".json";
-        writeJsonAnswersWithScores(s, fnj, rec_answers, answer_scores);
-      }
-
-      // If correct, go to next sample - Pierre 20241026
-      if (verdict[si] == 3) {
-        break;
-      } 
 
       // Save depth vector for next round - Pierre 20241028
       for (int i = 0; i < train.size() + 1; i++) {

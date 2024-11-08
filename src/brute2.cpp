@@ -605,9 +605,11 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
     }
 
     if (print) cout << now()-start_time << endl;
+    // Need to understand this better - Pierre 20241108
     // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
-    for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
-      pieces.dag[ti].applyFunc(DEPTH, "composeGrowing", 1);
+    // for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
+    //   pieces.dag[ti].applyFunc(DEPTH, "composeGrowing", 1);
+    pieces.dag[ti].applyFunc(MAXDEPTH, "composeGrowing", 1);
     if (print) cout << now()-start_time << endl;
 
     if (sizes.size() > 1) {
@@ -618,8 +620,9 @@ void brutePieces2(Pieces& pieces, Image_ test_in, const vector<pair<Image,Image>
 	        toapply.emplace_back("colShape "+to_string(c),1);
       toapply.emplace_back("embed 1",2);
       // for (int DEPTH = MINDEPTH; DEPTH <= MAXDEPTH; DEPTH += 10)
+      // for (int DEPTH = 10; DEPTH <= MAXDEPTH; DEPTH += 10)
       //   pieces.dag[ti].applyFuncs(DEPTH, toapply, 0);
-        pieces.dag[ti].applyFuncs(MAXDEPTH, toapply, 0);
+      pieces.dag[ti].applyFuncs(MAXDEPTH, toapply, 0);
       /*
       dag[ti].applyFunc("toOrigin", 0);
       if (print) cout << now()-start_time << endl;
