@@ -387,7 +387,8 @@ void run(int only_sid = -1, int arg = -1, int mindepth = -1,
           double score = cand.score;
           if (add_flips)
           {
-            score /= 2 - 1e-5;
+            score /= 2;
+            score += 1e-5;
           }
           answer_scores.push_back(score);
         }

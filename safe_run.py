@@ -173,7 +173,7 @@ for i in range(ntasks):
     status, t, m = stats3[depth3[i].cmd]
     depth4p.append(Command("./run %d  4 30"%i, t*20, m*20, 2))
     depth4p.append(Command("./run %d 64 30"%i, t*20, m*20, 2))
-    depth4p.append(Command("./run %d 64 30"%i, t*20, m*20, 2))
+    depth4p.append(Command("./run %d 74 30"%i, t*20, m*20, 2))
     depth4p.append(Command("./run %d  5 30"%i, t*400, m*400, 2))
     # depth4.append(Command("./run %d 4"%i, 1200))
 stats4p = runAll(depth4p, 4)
