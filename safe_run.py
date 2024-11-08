@@ -77,6 +77,13 @@ class Command:
         return self.time < other.time
 
 
+def read(fn):
+    f = open(fn)
+    t = f.read()
+    f.close()
+    return t
+
+
 def runAll(cmd_list, threads):
     THREAD_LIMIT = threads
 
@@ -98,6 +105,28 @@ def runAll(cmd_list, threads):
     while len(running) or cmdi < len(cmd_list):
         while cmdi < len(cmd_list) and len(running) < THREAD_LIMIT:
             cmd = cmd_list[cmdi]
+
+            taski    = int(cmd.cmd.split()[1])
+            maxdepth = int(cmd.cmd.split()[2])
+            mindepth = int(cmd.cmd.split()[3])
+            # print("Running task: ", taski)
+            cands = []
+            if maxdepth != 3:
+                for fn in glob("output/answer_%d_*.csv"%taski):
+                    t = read(fn).strip().split('\n')
+                    for cand in t[1:]:
+                        img, score = cand.split()
+                        cands.append((float(score), img))
+                        # print("Score:" ,float(score))
+                cands.sort(reverse=True)
+            if len(cands) > 0:
+                score, _ = cands[0]
+                if score - int(score) > 0.99:
+                    # print(f"Skipping task: {taski} - score: {score}" )
+                    cmdi += 1
+                    continue
+
+
             process = Process(cmd.cmd, cmd.time*cmd.slack, cmd.mem*cmd.slack)
             running.append(process)
             cmdi += 1
@@ -171,12 +200,12 @@ depth4p = []
 for i in range(ntasks):
     # Watch this, as stats3 doesn't get populated correctly when commands above fail
     status, t, m = stats3[depth3[i].cmd]
-    depth4p.append(Command("./run %d  4 30"%i, t*20, m*20, 2))
-    depth4p.append(Command("./run %d 64 30"%i, t*20, m*20, 2))
-    depth4p.append(Command("./run %d 74 30"%i, t*20, m*20, 2))
-    depth4p.append(Command("./run %d  5 30"%i, t*400, m*400, 2))
+    depth4p.append(Command("./run %d  4 30"%i, t*10, m*10, 2))
+    depth4p.append(Command("./run %d 64 30"%i, t*10, m*10, 2))
+    depth4p.append(Command("./run %d 74 30"%i, t*10, m*10, 2))
+    depth4p.append(Command("./run %d  5 30"%i, t*100, m*100, 2))
     # depth4.append(Command("./run %d 4"%i, 1200))
-stats4p = runAll(depth4p, 4)
+stats4p = runAll(depth4p, 1)
 
 # depth64 = []
 # for i in range(ntasks):
@@ -198,12 +227,6 @@ stats4p = runAll(depth4p, 4)
 #     depth4.append(Command("./run %d 4 30"%i, t*20, m*20, 2))
 #     # depth4.append(Command("./run %d 4"%i, 1200))
 # stats4 = runAll(depth4, 4)
-
-def read(fn):
-    f = open(fn)
-    t = f.read()
-    f.close()
-    return t
 
 combined = ["output_id,output"]
 for taski in task_list:
