@@ -82,7 +82,7 @@ def runAll(cmd_list, threads):
 
     ret_stats = {}
 
-    cmd_list = sorted(cmd_list)
+    # cmd_list = sorted(cmd_list)
 
     dt = 0.1
     running = []
