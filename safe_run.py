@@ -204,7 +204,7 @@ for i in range(ntasks):
     depth4p.append(Command("./run %d 74 30"%i))
     depth4p.append(Command("./run %d  5 30"%i, 900, 10240, 1))
     # depth4.append(Command("./run %d 4"%i, 1200))
-stats4p = runAll(depth4p, 1)
+stats4p = runAll(depth4p, 4)
 
 # depth64 = []
 # for i in range(ntasks):
