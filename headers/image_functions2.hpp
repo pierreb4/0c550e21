@@ -16,6 +16,8 @@ Image spreadCols(Image img, int skipmaj = 0);
 // Add new functions to help solve challenges like 0 - Pierre 20241106
 Image colorColumns(Image img);
 Image colorRows(Image img);
+Image colorHorizontal(Image img);
+Image colorVertical(Image img);
 vImage splitColumns(Image_ img);
 vImage splitRows(Image_ img);
 Image half(Image_ img, int id);

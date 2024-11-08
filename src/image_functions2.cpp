@@ -514,7 +514,7 @@ Image colorColumns(Image img) {
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
       // Set col between 0 and 9 - Pierre 20241106
-      img(i, j) = (j + img(i, j)) % 10;
+      img(i, j) = (img(i, j) + j) % 10;
   return img;
 }
 
@@ -523,7 +523,27 @@ Image colorRows(Image img) {
   for (int i = 0; i < img.h; i++)
     for (int j = 0; j < img.w; j++)
       // Set col between 0 and 9 - Pierre 20241106
-      img(i, j) = (i + img(i, j)) % 10;
+      img(i, j) = (img(i, j) + i) % 10;
+  return img;
+}
+
+
+Image colorHorizontal(Image img) {
+  int n = 0;
+  for (int i = 0; i < img.h; i++)
+    for (int j = 0; j < img.w; j++)
+      // Set col between 0 and 9 - Pierre 20241106
+      img(i, j) = (img(i, j) + n++) % 10;
+  return img;
+}
+
+
+Image colorVertical(Image img) {
+  int n = 0;
+  for (int j = 0; j < img.w; j++)
+    for (int i = 0; i < img.h; i++)
+      // Set col between 0 and 9 - Pierre 20241106
+      img(i, j) = (img(i, j) + n++) % 10;
   return img;
 }
 

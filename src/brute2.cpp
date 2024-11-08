@@ -233,8 +233,10 @@ Functions initFuncs3(const vector<point>&sizes) {
   }
 
   // Add new functions to help solve challenges like 0 - Pierre 20241106
-  funcs.add("colorColumns", 10, colorColumns);
-  funcs.add("colorRows",    10, colorRows);
+  funcs.add("colorColumns",    10, colorColumns);
+  funcs.add("colorRows",       10, colorRows);
+  funcs.add("colorHorizontal", 10, colorHorizontal);
+  funcs.add("colorVertical",   10, colorVertical);
 
 
   // Binary
